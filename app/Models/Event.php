@@ -20,7 +20,7 @@ class Event extends UuidModel
      */
     protected $fillable = ['name', 'date', 'location', 'survey', 'created_at', 'updated_at', 'deleted_at'];
 
-	protected $casts = ['location' => 'array'];
+	protected $casts = ['location' => 'array', 'survey' => 'array'];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany

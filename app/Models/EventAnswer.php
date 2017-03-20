@@ -21,7 +21,7 @@ class EventAnswer extends UuidModel
      */
     protected $fillable = ['event_id', 'sales_id', 'location', 'answer', 'created_at', 'updated_at', 'deleted_at'];
 
-	protected $casts = ['location' => 'array'];
+	protected $casts = ['location' => 'array', 'answer' => 'array'];
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
