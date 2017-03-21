@@ -16,7 +16,7 @@ class CreateEventAnswersTable extends Migration
         Schema::create('event_answers', function (Blueprint $table) {
 	        $table->uuid('id');
 	        $table->uuid('event_id');
-	        $table->uuid('sales_id');
+	        $table->uuid('user_id');
 	        $table->text('location')->nullable(); // json
 	        $table->text('answer');
 	        $table->timestamps();
@@ -24,7 +24,7 @@ class CreateEventAnswersTable extends Migration
 
 	        $table->primary('id');
 	        $table->foreign('event_id')->references('id')->on('events');
-	        $table->foreign('sales_id')->references('id')->on('sales');
+	        $table->foreign('user_id')->references('id')->on('users');
         });
     }
 

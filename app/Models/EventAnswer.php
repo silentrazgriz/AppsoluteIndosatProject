@@ -19,7 +19,7 @@ class EventAnswer extends UuidModel
     /**
      * @var array
      */
-    protected $fillable = ['event_id', 'sales_id', 'location', 'answer', 'created_at', 'updated_at', 'deleted_at'];
+    protected $fillable = ['event_id', 'user_id', 'location', 'answer', 'created_at', 'updated_at', 'deleted_at'];
 
 	protected $casts = ['location' => 'array', 'answer' => 'array'];
     /**

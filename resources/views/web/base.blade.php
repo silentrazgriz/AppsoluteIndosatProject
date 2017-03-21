@@ -1,7 +1,4 @@
-@extends('skeleton')
-
-@section('body')
-@endsection
+@extends('app')
 
 @section('styles')
 	@yield('child_styles')

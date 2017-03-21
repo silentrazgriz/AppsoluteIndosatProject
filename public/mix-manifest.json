@@ -1,5 +1,5 @@
 {
-  "/js/jquery.min.js": "/js/jquery.min.js",
-  "/css/app.css": "/css/app.css",
-  "/js/bootstrap.min.js": "/js/bootstrap.min.js"
+  "/mix.js": "/mix.js",
+  "/css/admin.css": "/css/admin.css",
+  "/css/app.css": "/css/app.css"
 }

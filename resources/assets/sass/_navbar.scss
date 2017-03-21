@@ -1,0 +1,36 @@
+@import "variables";
+
+h2 {
+	font-weight: bold;
+}
+
+.status-bar {
+	display: block;
+	background-color: $brand-primary;
+	height: 160px;
+	padding: 10px;
+	margin-bottom: 50px;
+	.title {
+		margin: auto;
+		max-width: 480px;
+		color: $title-text-color;
+		.logo {
+			height: 80px;
+			margin: auto;
+			background-color: #ffffff;
+			border-radius: 40px;
+			padding: 5px 30px;
+		}
+		h2 {
+			margin: 20px auto 10px;
+		}
+	}
+	&.small {
+		height: 75px;
+		.title {
+			h2 {
+				margin: 10px auto;
+			}
+		}
+	}
+}

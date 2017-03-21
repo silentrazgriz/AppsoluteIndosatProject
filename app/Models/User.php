@@ -16,12 +16,12 @@ namespace App\Models;
  * @property string $deleted_at
  * @property EventAnswer[] $eventAnswers
  */
-class Sales extends UuidAuthenticatable
+class User extends UuidAuthenticatable
 {
     /**
      * @var array
      */
-    protected $fillable = ['email', 'password', 'name', 'gender', 'phone', 'balance', 'last_location', 'created_at', 'updated_at', 'deleted_at'];
+    protected $fillable = ['email', 'password', 'name', 'gender', 'phone', 'balance', 'last_location', 'is_admin', 'created_at', 'updated_at', 'deleted_at'];
 
     protected $casts = ['last_location' => 'array'];
 
@@ -30,6 +30,6 @@ class Sales extends UuidAuthenticatable
      */
     public function eventAnswers()
     {
-        return $this->hasMany('App\Models\EventAnswer', 'sales_id');
+        return $this->hasMany('App\Models\EventAnswer', 'user_id');
     }
 }

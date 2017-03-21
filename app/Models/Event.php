@@ -18,7 +18,7 @@ class Event extends UuidModel
     /**
      * @var array
      */
-    protected $fillable = ['name', 'date', 'location', 'survey', 'created_at', 'updated_at', 'deleted_at'];
+    protected $fillable = ['name', 'date', 'location', 'survey', 'auth_code', 'created_at', 'updated_at', 'deleted_at'];
 
 	protected $casts = ['location' => 'array', 'survey' => 'array'];
 

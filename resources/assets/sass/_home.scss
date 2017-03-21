@@ -1,0 +1,37 @@
+@import "variables";
+
+label {
+	color: $brand-danger;
+}
+
+.container {
+	max-width: 480px !important;
+}
+
+.btn {
+	border: 0;
+}
+
+.border-bottom-only {
+	border: 0;
+	outline: 0;
+	box-shadow: none;
+	border-bottom: solid 2px $input-border;
+}
+
+.border-bottom-only:focus {
+	border: 0;
+	outline: 0;
+	box-shadow: none;
+	border-bottom: solid 2px $input-border-focus;
+}
+
+.no-border-radius {
+	border-radius: 0;
+}
+
+.border-round {
+	min-width: 100px;
+	border-radius: 30px;
+	padding: 6px 20px;
+}

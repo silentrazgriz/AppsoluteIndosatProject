@@ -1,7 +1,4 @@
-@extends('skeleton')
-
-@section('body')
-@endsection
+@extends('app')
 
 @section('styles')
 	<link rel="stylesheet" href="{{ asset('plugins/adminlte/css/AdminLTE.min.css') }}"/>
