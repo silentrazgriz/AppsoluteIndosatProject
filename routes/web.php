@@ -11,10 +11,13 @@
 |
 */
 
-Route::get('/', function () {
-    return "Hi!";
+Route::get('/', 'HomeController@index');
+Route::post('/login', 'Auth\LoginController@login')->name('login');
+
+Route::get('/survey/{eventId}', 'EventController@index');
+
+Route::group(['middleware' => 'admin', 'prefix' => 'cms'], function() {
+	Route::get('/', 'AdminController@index');
+	Route::get('/new-sales', 'Auth\RegisterController@showRegistrationForm');
+	Route::post('/new-sales', 'Auth\RegisterController@register')->name('register');
 });
-
-Auth::routes();
-
-Route::get('/home', 'HomeController@index');

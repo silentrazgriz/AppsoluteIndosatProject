@@ -1,0 +1,87 @@
+@import "variables";
+
+label {
+	color: $brand-danger;
+}
+
+.btn {
+	border: 0;
+}
+
+// >>> Border
+.border-bottom-only {
+	border: 0;
+	outline: 0;
+	box-shadow: none;
+	border-bottom: solid 2px $input-border;
+}
+
+.border-bottom-only:focus {
+	border: 0;
+	outline: 0;
+	box-shadow: none;
+	border-bottom: solid 2px $input-border-focus;
+}
+
+.no-border-radius {
+	border-radius: 0;
+}
+
+.border-round {
+	min-width: 100px;
+	border-radius: 30px;
+	padding: 6px 20px;
+}
+// <<< End Border
+
+// >>> Radio Button & Checkbox
+.radio {
+	margin-top: 0;
+	label {
+		padding-left: 0;
+		margin-right: 15px;
+	}
+}
+.checkbox:hover {
+	cursor: pointer;
+}
+input[type="radio"], input[type="checkbox"] {
+	display: none;
+	& + .indicator {
+		position: relative;
+		display: inline-block;
+		top: 6px;
+		width: 24px;
+		height: 24px;
+		margin-right: 5px;
+		border: solid 1px $laravel-border-color;
+	}
+}
+input[type="radio"] {
+	& + .indicator {
+		border-radius: 100%;
+	}
+	&:checked + .indicator > span {
+		display: block;
+		margin: 6px;
+		width: 10px;
+		height: 10px;
+		border-radius: 100%;
+		background: $label-color;
+	}
+}
+input[type="checkbox"] {
+	&:checked + .indicator > span {
+		content: '';
+		position: absolute;
+		top: 5px;
+		left: 5px;
+		width: 14px;
+		height: 8px;
+		border: 3px solid red;
+		border-top: none;
+		border-right: none;
+		transform: rotate(-45deg);
+	}
+}
+// <<< End Radio Button

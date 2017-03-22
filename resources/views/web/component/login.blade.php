@@ -13,7 +13,6 @@
 		@endif
 	</div>
 	<div class="form-group text-center">
-		<p><button type="submit" class="btn btn-primary border-round">LOGIN</button></p>
-		<p><a href="{{ route("register") }}" class="btn btn-primary border-round">SIGN UP</a></p>
+		<button type="submit" class="btn btn-primary border-round">LOGIN</button>
 	</div>
 </form>
