@@ -13,6 +13,7 @@
 
 Route::get('/', 'HomeController@index');
 Route::post('/login', 'Auth\LoginController@login')->name('login');
+Route::get('/logout', 'Auth\LoginController@logout')->name('logout');
 
 Route::get('/survey/{eventId}', 'EventController@index');
 

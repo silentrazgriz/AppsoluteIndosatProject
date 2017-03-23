@@ -26,6 +26,8 @@ $line-height-base: 1.6;
 $text-color: #636b6f;
 $title-text-color: #333333;
 
+$map-background-color: #eaeaea;
+
 // Navbar
 $navbar-default-bg: #fff;
 
@@ -39,3 +41,5 @@ $input-color-placeholder: lighten($text-color, 30%);
 
 // Panels
 $panel-default-heading-bg: #fff;
+
+$grid-gutter-width: 10px;

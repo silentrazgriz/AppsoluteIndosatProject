@@ -23,6 +23,7 @@ class CreateUsersTable extends Migration
             $table->unsignedBigInteger('balance');
 	        $table->text('last_location')->nullable(); // json
 	        $table->boolean('is_admin');
+	        $table->string('remember_token')->nullable();
             $table->timestamps();
             $table->softDeletes();
 

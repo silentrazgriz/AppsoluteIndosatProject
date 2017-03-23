@@ -9,6 +9,7 @@
 		<meta name="csrf-token" content="{{ csrf_token() }}">
 
 		<title>Survey Site</title>
+		<link rel="stylesheet" type="text/css" href="{{ asset('plugins/fontawesome/css/font-awesome.min.css') }}">
 		<link rel="stylesheet" type="text/css" href="{{ asset('css/app.css') }}">
 		@yield('styles')
 	</head>

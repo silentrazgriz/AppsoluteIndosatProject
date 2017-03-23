@@ -12,6 +12,7 @@
 			<span class="help-block"><strong>{{ $errors->first('password') }}</strong></span>
 		@endif
 	</div>
+	@include('fields.geomap')
 	<div class="form-group text-center">
 		<button type="submit" class="btn btn-primary border-round">LOGIN</button>
 	</div>

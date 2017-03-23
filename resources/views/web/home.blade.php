@@ -11,9 +11,8 @@
 
 @section('content')
 	@if (Auth::guest())
-		@component('web.component.login')
-		@endcomponent
+		@include('web.component.login')
 	@else
-		Logged in
+		@include('web.component.home')
 	@endif
 @endsection
