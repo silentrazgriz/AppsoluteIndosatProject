@@ -1,4 +1,4 @@
-@extends('web.base')
+@extends('admin.base')
 
 @section('navigation')
 	<div class="status-bar small">
@@ -9,6 +9,5 @@
 @endsection
 
 @section('content')
-	@component('web.component.signup')
-	@endcomponent
+	@include('admin.component.signup')
 @endsection
