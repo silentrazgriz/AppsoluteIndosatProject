@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * @property string $id
@@ -16,6 +17,8 @@ namespace App\Models;
  */
 class EventAnswer extends UuidModel
 {
+	use SoftDeletes;
+
     /**
      * @var array
      */

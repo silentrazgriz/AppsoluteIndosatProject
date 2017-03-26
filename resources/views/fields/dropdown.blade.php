@@ -1,7 +1,12 @@
 <div class="form-group {{ $errors->has($field['key']) ? 'has-error' : '' }}">
-	<label for="{{ $field['key'] }}">{{ $field['text'] }}</label>
+	@if(isset($field['text']))
+		<label for="{{ $field['key'] }}">{{ $field['text'] }}</label>
+	@endif
 	<span class="select">
-		<select id="{{ $field['key'] }}" class="form-control border-round" name="{{ $field['key'] }}" >
+		<select id="{{ $field['key'] }}"
+		        class="form-control sumo-select {{ isset($field['class']) ? $field['class'] : 'border-round' }}"
+		        name="{{ $field['key'] }}"
+		        @if(isset($field['disabled']) && $field['disabled']) disabled @endif>>
 			@foreach($field['values'] as $value)
 				<option value="{{ $value['key'] }}">{{ $value['text'] }}</option>
 			@endforeach

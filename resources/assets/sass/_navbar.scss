@@ -13,6 +13,7 @@ h2 {
 	.title {
 		margin: auto;
 		max-width: 480px;
+		font-size: 16px;
 		color: $title-text-color;
 		.logo {
 			height: 80px;
@@ -21,14 +22,15 @@ h2 {
 			border-radius: 40px;
 			padding: 5px 30px;
 		}
-		h2 {
+		h3 {
 			margin: 20px auto 10px;
 		}
 	}
 	&.small {
 		height: 75px;
 		.title {
-			h2 {
+			font-size: 16px;
+			h3 {
 				margin: 10px auto;
 			}
 		}

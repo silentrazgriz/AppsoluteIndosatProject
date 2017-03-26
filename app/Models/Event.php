@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * @property string $id
@@ -15,12 +16,16 @@ namespace App\Models;
  */
 class Event extends UuidModel
 {
+	use SoftDeletes;
+
     /**
      * @var array
      */
-    protected $fillable = ['name', 'date', 'location', 'survey', 'auth_code', 'created_at', 'updated_at', 'deleted_at'];
+    protected $fillable = ['name', 'date', 'auth_code', 'survey', 'created_at', 'updated_at', 'deleted_at'];
 
-	protected $casts = ['location' => 'array', 'survey' => 'array'];
+    protected $hidden = ['created_at', 'updated_at', 'deleted_at'];
+
+	protected $casts = ['survey' => 'array'];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany

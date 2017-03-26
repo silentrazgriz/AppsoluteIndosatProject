@@ -25,7 +25,7 @@ class UserSeeder extends Seeder
 			    "name" => $faker->name,
 			    "gender" => "male",
 			    "phone" => "081211221122",
-			    "balance" => "0",
+			    "balance" => "500000",
 			    "last_location" => '{"data":{"formatted_address":"Stasiun Gambir, Jl. Medan Merdeka Tim. No.1, Gambir, Kota Jakarta Pusat, DKI Jakarta 10110, Indonesia","geometry":{"lat":-6.1765322,"long":106.8306315},"establishment":{"long_name":"Stasiun Gambir","short_name":"Stasiun Gambar"},"placeID":"ChIJ4YTZsDL0aS4RivOJNmIVHDQ"}}',
 			    "is_admin" => true,
 			    "created_at" => $date,
@@ -33,7 +33,7 @@ class UserSeeder extends Seeder
 		    ],
 		    [
 			    "id" => "7464c2cf-9a6a-44d1-8197-26be65df42ba",
-			    "email" => $faker->freeEmail,
+			    "email" => "sales1@indosat.com",
 			    "password" => bcrypt("sales"),
 			    "name" => $faker->name,
 			    "gender" => "male",
@@ -46,7 +46,7 @@ class UserSeeder extends Seeder
 		    ],
 		    [
 			    "id" => "efaf6f73-be88-4e42-a328-35173876c2c1",
-			    "email" => $faker->freeEmail,
+			    "email" => "sales2@indosat.com",
 			    "password" => bcrypt("sales"),
 			    "name" => $faker->name,
 			    "gender" => "male",
@@ -59,7 +59,7 @@ class UserSeeder extends Seeder
 		    ],
 		    [
 			    "id" => "1c7c4587-91ee-459f-ae3e-57144958a24d",
-			    "email" => $faker->freeEmail,
+			    "email" => "sales3@indosat.com",
 			    "password" => bcrypt("sales"),
 			    "name" => $faker->name,
 			    "gender" => "female",

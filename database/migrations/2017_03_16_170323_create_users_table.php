@@ -22,7 +22,7 @@ class CreateUsersTable extends Migration
             $table->string('phone');
             $table->unsignedBigInteger('balance');
 	        $table->text('last_location')->nullable(); // json
-	        $table->boolean('is_admin');
+	        $table->boolean('is_admin')->default(false);
 	        $table->string('remember_token')->nullable();
             $table->timestamps();
             $table->softDeletes();

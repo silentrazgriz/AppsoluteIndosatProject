@@ -1,19 +1,7 @@
-<form role="form" method="POST" action="{{ route('login') }}">
+<form role="form" method="POST" action="{{ route('post-login') }}">
 	{{ csrf_field() }}
-	<div class="form-group {{ $errors->has('email') ? 'has-error' : '' }}">
-		<input id="email" type="email" class="form-control border-bottom-only no-border-radius" name="email" value="{{ old('email') }}" placeholder="Email" required autofocus>
-		@if ($errors->has('email'))
-			<span class="help-block"><strong>{{ $errors->first('email') }}</strong></span>
-		@endif
-	</div>
-	<div class="form-group {{ $errors->has('password') ? 'has-error' : '' }}">
-		<input id="password" type="password" class="form-control border-bottom-only no-border-radius"  name="password" placeholder="Password" required>
-		@if ($errors->has('password'))
-			<span class="help-block"><strong>{{ $errors->first('password') }}</strong></span>
-		@endif
-	</div>
-	@include('fields.geomap')
-	<div class="form-group text-center">
-		<button type="submit" class="btn btn-primary border-round">LOGIN</button>
-	</div>
+	@include('fields.email', ['field' => ['key' => 'email', 'class' => 'border-bottom-only no-border-radius', 'placeholder' => 'Email', 'required' => 1]])
+	@include('fields.password', ['field' => ['key' => 'password', 'class' => 'border-bottom-only no-border-radius', 'placeholder' => 'Password', 'required' => 1]])
+	@include('fields.geomap', ['field' => ['key' => 'map']])
+	@include('fields.submit', ['field' => ['text' => 'LOGIN']])
 </form>

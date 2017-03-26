@@ -10,17 +10,21 @@
 
 		<title>Survey Site</title>
 		<link rel="stylesheet" type="text/css" href="{{ asset('plugins/fontawesome/css/font-awesome.min.css') }}">
+		<link rel="stylesheet" type="text/css" href="{{ asset('plugins/sumoselect/css/sumoselect.min.css') }}">
 		<link rel="stylesheet" type="text/css" href="{{ asset('css/app.css') }}">
 		@yield('styles')
 	</head>
 	<body>
-		@yield('navigation')
-		<div class="container">
-			@yield('content')
-		</div>
+		@yield('body')
 
 		<script type="text/javascript" src="{{ asset('js/jquery.min.js') }}"></script>
 		<script type="text/javascript" src="{{ asset('js/bootstrap.min.js') }}"></script>
+		<script type="text/javascript" src="{{ asset('plugins/sumoselect/js/jquery.sumoselect.min.js') }}"></script>
 		@yield('scripts')
+		<script>
+			$(function() {
+				$('.sumo-select').SumoSelect();
+			});
+		</script>
 	</body>
 </html>

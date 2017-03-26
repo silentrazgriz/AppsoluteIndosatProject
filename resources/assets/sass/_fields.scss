@@ -42,8 +42,11 @@ label {
 		margin-right: 15px;
 	}
 }
-.checkbox:hover {
-	cursor: pointer;
+.checkbox {
+	margin-top: 0;
+	&:hover {
+		cursor: pointer;
+	}
 }
 input[type="radio"], input[type="checkbox"] {
 	display: none;

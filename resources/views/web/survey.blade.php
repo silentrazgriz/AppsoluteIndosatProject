@@ -1,31 +1,78 @@
-@extends('web.base')
+@extends('web.app')
 
 @section('navigation')
 	<div class="status-bar small">
-		<div class="title text-center">
-			<h2>Survey</h2>
+		<div class="title row">
+			<div class="col-xs-6">
+				<h3><i class="fa fa-calendar-plus-o"></i> Report 36</h3>
+			</div>
+			<div class="col-xs-6 text-center">
+				<div class="step-indicator">
+					@foreach($event['survey'] as $key => $step)
+					<div id="{{ $step['key'] }}-indicator" class="survey-indicator">
+						<span class="bubble">{{ $key+1 }}</span>
+					</div>
+					@endforeach
+				</div>
+				<div id="step-description" class="text-center"></div>
+			</div>
 		</div>
 	</div>
 @endsection
 
 @section('content')
-	@foreach($survey['data']['items'] as $step)
-		<div>{{ $step['description'] }}</div>
-		@foreach($step['questions'] as $question)
-			@include('fields.' . $question['type'], ['field' => $question])
+	<form method="POST" action="{{ route('post-survey', ['id' => $event['id']]) }}">
+		{{ csrf_field() }}
+		@foreach($event['survey'] as $key => $step)
+			<div id="{{ $step['key'] }}" class="survey-step" data-step="{{ $key }}">
+				@foreach($step['questions'] as $question)
+					@include('fields.' . $question['type'], ['field' => $question])
+				@endforeach
+				<div class="form-group text-center">
+				@if ($key != 0)
+					<button type="button" class="btn btn-primary btn-prev border-round" data-next-step="{{ $key-1 }}"><i class="fa fa-arrow-circle-left"></i> Kembali</button>
+				@endif
+				@if ($key == count($event['survey']) - 1)
+					<button type="submit" id="btn-submit" class="btn btn-success border-round">Kirim</button>
+				@else
+					<button type="button" class="btn btn-primary btn-next border-round" data-next-step="{{ $key+1 }}">Lanjut <i class="fa fa-arrow-circle-right"></i></button>
+				@endif
+				</div>
+			</div>
 		@endforeach
-	@endforeach
+		<div class="form-group text-center">
+			<hr/>
+			<button type="button" id="btn-terminate" class="btn btn-danger border-round">Terminate</button>
+		</div>
+	</form>
 @endsection
 
-@section('child_styles')
-	<link rel="stylesheet" href="{{ asset('plugins/sumoselect/css/sumoselect.min.css') }}">
-@endsection
-
-@section('child_scripts')
-	<script src="{{ asset('plugins/sumoselect/js/jquery.sumoselect.min.js') }}"></script>
+@section('scripts')
 	<script>
-		$(document).ready(function() {
-			$('select').SumoSelect();
+		let surveyData = JSON.parse('{!! json_encode($event['survey']) !!}');
+		$(function() {
+			// Set first step as first form
+			showStep(0);
+
+			$('.btn-next, .btn-prev').click(function(e) {
+				let next = $(this).data('next-step');
+				showStep(next);
+				e.preventDefault();
+			});
 		});
+
+		function showStep(index) {
+			let target = surveyData[index];
+			$('.survey-step').hide();
+			$('#' + target.key).show();
+			setIndicator(target);
+		}
+
+		function setIndicator(target) {
+			$('.survey-indicator').removeClass('active');
+			$('#' + target.key + '-indicator').addClass('active');
+
+			$('#step-description').html(target.description);
+		}
 	</script>
-@endsection
+@append

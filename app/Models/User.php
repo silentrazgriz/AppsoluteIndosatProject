@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * @property string $id
@@ -18,10 +19,14 @@ namespace App\Models;
  */
 class User extends UuidAuthenticatable
 {
+	use SoftDeletes;
+
     /**
      * @var array
      */
-    protected $fillable = ['email', 'password', 'name', 'gender', 'phone', 'balance', 'last_location', 'is_admin', 'created_at', 'updated_at', 'deleted_at'];
+    protected $fillable = ['email', 'password', 'name', 'gender', 'phone', 'balance', 'last_location', 'is_admin', 'remember_token', 'created_at', 'updated_at', 'deleted_at'];
+
+    protected $hidden = ['password', 'last_location', 'is_admin', 'remember_token', 'created_at', 'updated_at', 'deleted_at'];
 
     protected $casts = ['last_location' => 'array'];
 

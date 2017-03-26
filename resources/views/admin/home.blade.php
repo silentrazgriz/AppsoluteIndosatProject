@@ -1,7 +1,5 @@
-@extends('admin.base')
-
-@section('navigation')
-@endsection
+@extends('admin.app')
 
 @section('content')
+	In Development
 @endsection
