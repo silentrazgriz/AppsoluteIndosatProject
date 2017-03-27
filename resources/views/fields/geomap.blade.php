@@ -27,17 +27,12 @@
 					marker.setPosition(pos);
 					map.setCenter(pos);
 				}, function() {
-					handleLocationError(true, infoWindow, map.getCenter());
+					console.log('Geolocation service failed');
 				});
 			} else {
 				// Browser doesn't support Geolocation
-				handleLocationError(false, infoWindow, map.getCenter());
+				console.log('Browser doesn\'t support geolocation');
 			}
-		}
-
-		function handleLocationError(browserHasGeolocation, infoWindow, pos) {
-			infoWindow.setPosition(pos);
-			infoWindow.setContent(browserHasGeolocation ? 'Error: The Geolocation service failed.' : 'Error: Your browser doesn\'t support geolocation.');
 		}
 	</script>
 	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBDAhnt_qpkhG5FlFACby9KAZUjMVZqWGo&callback=initMap"></script>
