@@ -18,8 +18,8 @@ class HomeController extends Controller
     {
     	$data = [
     		'date' => Carbon::now()->format("d F Y, h:i A"),
-		    'event' => Event::first()->toArray(),
-		    'user' => Auth::user()->toArray()
+		    'event' => (!Auth::guest()) ? Event::first()->toArray() : null,
+		    'user' => (!Auth::guest()) ? Auth::user()->toArray() : null
 	    ];
 
         return view('web.home', $data);
