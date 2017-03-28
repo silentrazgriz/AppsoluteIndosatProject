@@ -4,7 +4,7 @@
 	<div class="status-bar small">
 		<div class="title row">
 			<div class="col-xs-6">
-				<h3><a href="{{ route('home') }}"><i class="fa fa-home"></i></a> Report {{ $count }}</h3>
+				<h3><i class="fa fa-calendar-plus-o"></i> Report {{ $count }}</h3>
 			</div>
 			<div class="col-xs-6 text-center">
 				<div class="step-indicator">
@@ -35,6 +35,8 @@
 				<div class="form-group text-center">
 				@if ($key != 0)
 					<button type="button" class="btn btn-primary btn-prev border-round" data-next-step="{{ $key-1 }}"><i class="fa fa-arrow-circle-left"></i> PREV</button>
+				@else
+					<a href="{{ route('home') }}" class="btn btn-primary border-round"><i class="fa fa-home"></i> HOME</a>
 				@endif
 				@if ($key == count($event['survey']) - 1)
 					<button type="submit" id="btn-submit" class="btn btn-success border-round">Kirim</button>

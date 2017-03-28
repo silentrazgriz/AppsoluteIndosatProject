@@ -40,21 +40,26 @@ class HomeController extends Controller
 		    ->where('state', 'login')
 	        ->orderBy('created_at', 'desc')
 	        ->get()
-		    ->last()
-	        ->toArray();
+		    ->last();
 
-	    $client = new Client();
-	    $response = $client->request('GET',
-		    'https://maps.googleapis.com/maps/api/geocode/json?latlng=' . $userLocation['location']['lat'] . ',' . $userLocation['location']['lng'] .
-		    '&key=AIzaSyCNuAicyuHAcSTDb7fZVeJH-pU9Qns0KBk');
-	    $gmapsLocation = json_decode($response->getBody(), true)['results'];
-	    foreach($gmapsLocation as $gmapLocation) {
-		    if (in_array('establishment', $gmapLocation['types']) ||
-			    in_array('route', $gmapLocation['types']) ||
-			    in_array('street_address', $gmapLocation['types'])) {
-			    return $gmapLocation['formatted_address'];
+    	if (isset($userLocation)) {
+		    $userLocation = $userLocation->toArray();
+
+		    $client = new Client();
+		    $response = $client->request('GET',
+			    'https://maps.googleapis.com/maps/api/geocode/json?latlng=' . $userLocation['location']['lat'] . ',' . $userLocation['location']['lng'] .
+			    '&key=AIzaSyCNuAicyuHAcSTDb7fZVeJH-pU9Qns0KBk');
+		    $gmapsLocation = json_decode($response->getBody(), true)['results'];
+		    foreach ($gmapsLocation as $gmapLocation) {
+			    if (in_array('establishment', $gmapLocation['types']) ||
+				    in_array('route', $gmapLocation['types']) ||
+				    in_array('street_address', $gmapLocation['types'])
+			    ) {
+				    return $gmapLocation['formatted_address'];
+			    }
 		    }
 	    }
+
 	    return 'Location not found';
     }
 
