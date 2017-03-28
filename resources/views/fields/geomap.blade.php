@@ -1,7 +1,9 @@
-<div class="form-group {{ $errors->has('lat') || $errors->has('lng') ? 'has-error' : '' }}">
+<div class="form-group {{ $errors->has('location') ? 'has-error' : '' }}">
 	<div id="{{ $field['key'] }}" class="gmap"></div>
-	<input type="hidden" id="lat" name="lat" value="">
-	<input type="hidden" id="lng" name="lng" value="">
+	@if ($errors->has('location'))
+		<span class="help-block"><strong>{{ $errors->first($field['key']) }}</strong></span>
+	@endif
+	<input type="hidden" id="location" name="location" value="">
 </div>
 @section('scripts')
 	<script>
@@ -21,8 +23,7 @@
 						lng: position.coords.longitude
 					};
 
-					document.getElementById('lat').value = pos.lat;
-					document.getElementById('lng').value = pos.lng;
+					document.getElementById('location').value = JSON.stringify(pos);
 
 					marker.setPosition(pos);
 					map.setCenter(pos);

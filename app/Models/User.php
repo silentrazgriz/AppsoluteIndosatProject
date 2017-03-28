@@ -24,9 +24,9 @@ class User extends UuidAuthenticatable
     /**
      * @var array
      */
-    protected $fillable = ['email', 'password', 'name', 'gender', 'phone', 'balance', 'last_location', 'is_admin', 'remember_token', 'created_at', 'updated_at', 'deleted_at'];
+    protected $fillable = ['email', 'password', 'name', 'gender', 'phone', 'balance', 'is_admin', 'remember_token', 'created_at', 'updated_at', 'deleted_at'];
 
-    protected $hidden = ['password', 'last_location', 'is_admin', 'remember_token', 'created_at', 'updated_at', 'deleted_at'];
+    protected $hidden = ['password', 'is_admin', 'remember_token', 'created_at', 'updated_at', 'deleted_at'];
 
     protected $casts = ['last_location' => 'array'];
 
@@ -36,5 +36,10 @@ class User extends UuidAuthenticatable
     public function eventAnswers()
     {
         return $this->hasMany('App\Models\EventAnswer', 'user_id');
+    }
+
+    public function userLocations()
+    {
+    	return $this->hasMany('App\Models\UserLocation', 'user_id');
     }
 }

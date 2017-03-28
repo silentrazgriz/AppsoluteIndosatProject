@@ -13,7 +13,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string $updated_at
  * @property string $deleted_at
  * @property Event $event
- * @property Sale $sale
  */
 class EventAnswer extends UuidModel
 {
@@ -22,9 +21,9 @@ class EventAnswer extends UuidModel
     /**
      * @var array
      */
-    protected $fillable = ['event_id', 'user_id', 'location', 'answer', 'created_at', 'updated_at', 'deleted_at'];
+    protected $fillable = ['event_id', 'user_id', 'answer', 'is_terminated', 'created_at', 'updated_at', 'deleted_at'];
 
-	protected $casts = ['location' => 'array', 'answer' => 'array'];
+	protected $casts = ['answer' => 'array'];
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
@@ -36,8 +35,8 @@ class EventAnswer extends UuidModel
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function sale()
+    public function user()
     {
-        return $this->belongsTo('App\Models\Sale', 'sales_id');
+        return $this->belongsTo('App\Models\User', 'user_id');
     }
 }

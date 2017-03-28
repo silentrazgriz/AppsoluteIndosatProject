@@ -22,11 +22,10 @@ class UserSeeder extends Seeder
 			    "id" => "8b55fb6f-8fa2-4f45-8d11-652d00052f37",
 			    "email" => "admin@indosat.com",
 			    "password" => bcrypt("admin"),
-			    "name" => $faker->name,
+			    "name" => "Administrator",
 			    "gender" => "male",
 			    "phone" => "081211221122",
 			    "balance" => "500000",
-			    "last_location" => '{"data":{"formatted_address":"Stasiun Gambir, Jl. Medan Merdeka Tim. No.1, Gambir, Kota Jakarta Pusat, DKI Jakarta 10110, Indonesia","geometry":{"lat":-6.1765322,"long":106.8306315},"establishment":{"long_name":"Stasiun Gambir","short_name":"Stasiun Gambar"},"placeID":"ChIJ4YTZsDL0aS4RivOJNmIVHDQ"}}',
 			    "is_admin" => true,
 			    "created_at" => $date,
 			    "updated_at" => $date
@@ -39,7 +38,6 @@ class UserSeeder extends Seeder
 			    "gender" => "male",
 			    "phone" => "081211223344",
 			    "balance" => "1000000",
-			    "last_location" => '{"data":{"formatted_address":"Stasiun Gambir, Jl. Medan Merdeka Tim. No.1, Gambir, Kota Jakarta Pusat, DKI Jakarta 10110, Indonesia","geometry":{"lat":-6.1765322,"long":106.8306315},"establishment":{"long_name":"Stasiun Gambir","short_name":"Stasiun Gambar"},"placeID":"ChIJ4YTZsDL0aS4RivOJNmIVHDQ"}}',
 			    "is_admin" => false,
 			    "created_at" => $date,
 			    "updated_at" => $date
@@ -52,7 +50,6 @@ class UserSeeder extends Seeder
 			    "gender" => "male",
 			    "phone" => "081211223355",
 			    "balance" => "1000000",
-			    "last_location" => '{"data":{"formatted_address":"Stasiun Gambir, Jl. Medan Merdeka Tim. No.1, Gambir, Kota Jakarta Pusat, DKI Jakarta 10110, Indonesia","geometry":{"lat":-6.1765322,"long":106.8306315},"establishment":{"long_name":"Stasiun Gambir","short_name":"Stasiun Gambar"},"placeID":"ChIJ4YTZsDL0aS4RivOJNmIVHDQ"}}',
 			    "is_admin" => false,
 			    "created_at" => $date,
 			    "updated_at" => $date
@@ -65,7 +62,6 @@ class UserSeeder extends Seeder
 			    "gender" => "female",
 			    "phone" => "081244223344",
 			    "balance" => "1000000",
-			    "last_location" => '{"data":{"formatted_address":"Stasiun Gambir, Jl. Medan Merdeka Tim. No.1, Gambir, Kota Jakarta Pusat, DKI Jakarta 10110, Indonesia","geometry":{"lat":-6.1765322,"long":106.8306315},"establishment":{"long_name":"Stasiun Gambir","short_name":"Stasiun Gambar"},"placeID":"ChIJ4YTZsDL0aS4RivOJNmIVHDQ"}}',
 			    "is_admin" => false,
 			    "created_at" => $date,
 			    "updated_at" => $date

@@ -17,8 +17,8 @@ class CreateEventAnswersTable extends Migration
 	        $table->uuid('id');
 	        $table->uuid('event_id');
 	        $table->uuid('user_id');
-	        $table->text('location')->nullable(); // json
 	        $table->text('answer');
+	        $table->boolean('is_terminated');
 	        $table->timestamps();
 	        $table->softDeletes();
 

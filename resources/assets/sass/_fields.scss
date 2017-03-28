@@ -1,11 +1,28 @@
 @import "variables";
 
+* {
+	outline: none !important;
+}
+
 label {
 	color: $brand-danger;
 }
 
 .btn {
 	border: 0;
+}
+
+textarea {
+	border-radius: 10px;
+	padding: 5px;
+	width: 100%;
+	height: 200px;
+	resize: none;
+	border: solid 1px $input-border;
+}
+
+textarea:focus {
+	border: solid 1px $input-border-focus;
 }
 
 // >>> Border
@@ -92,7 +109,44 @@ input[type="checkbox"] {
 // >>> Google Map
 .gmap {
 	height: 200px;
-	margin: 25px 0;
+	margin: 0 0 25px;
 	background: $map-background-color;
 }
 // <<< End Google Map
+
+// >>> Input type file
+input[type="file"] {
+	display: none;
+}
+// <<< End Input type file
+
+// >>> User balance
+.form-group {
+	span.icon-red {
+		display: inline-block;
+		width: 32px;
+		height: 32px;
+		margin-right: 5px;
+		.fa {
+			margin: 6px 0;
+		}
+	}
+	.user-balance {
+		color: lighten($text-color, 20%);
+	}
+}
+// <<< End user balance
+
+// >>> Modal
+.modal-close {
+	position: absolute;
+	top: -12px;
+	right: -12px;
+	padding: 0 6px;
+	background: $brand-danger;
+	border-radius: 100%;
+	color: white;
+	border: solid 1px rgba(0, 0, 0, 0.2);
+	box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+// <<< End Modal

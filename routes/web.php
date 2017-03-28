@@ -13,7 +13,7 @@
 
 Route::get('/', 'HomeController@index')->name('home');
 Route::post('/login', 'Auth\LoginController@login')->name('post-login');
-Route::get('/logout', 'Auth\LoginController@logout')->name('logout');
+Route::post('/logout', 'Auth\LoginController@logout')->name('post-logout');
 
 Route::get('/survey/{id}', 'EventController@survey')->name('survey');
 Route::post('/survey/{id}', 'EventController@storeAnswer')->name('post-survey');

@@ -4,7 +4,7 @@
 	<div class="status-bar small">
 		<div class="title row">
 			<div class="col-xs-6">
-				<h3><i class="fa fa-calendar-plus-o"></i> Report 36</h3>
+				<h3><a href="{{ route('home') }}"><i class="fa fa-home"></i></a> Report {{ $count }}</h3>
 			</div>
 			<div class="col-xs-6 text-center">
 				<div class="step-indicator">
@@ -21,29 +21,30 @@
 @endsection
 
 @section('content')
-	<form method="POST" action="{{ route('post-survey', ['id' => $event['id']]) }}">
+	<form method="POST" action="{{ route('post-survey', ['id' => $event['id']]) }}" enctype="multipart/form-data">
 		{{ csrf_field() }}
 		@foreach($event['survey'] as $key => $step)
 			<div id="{{ $step['key'] }}" class="survey-step" data-step="{{ $key }}">
 				@foreach($step['questions'] as $question)
-					@include('fields.' . $question['type'], ['field' => $question])
+					@if ($question['type'] != 'balance')
+						@include('fields.' . $question['type'], ['field' => $question])
+					@else
+						@include('fields.' . $question['type'], ['field' => $question, 'user' => $user])
+					@endif
 				@endforeach
 				<div class="form-group text-center">
 				@if ($key != 0)
-					<button type="button" class="btn btn-primary btn-prev border-round" data-next-step="{{ $key-1 }}"><i class="fa fa-arrow-circle-left"></i> Kembali</button>
+					<button type="button" class="btn btn-primary btn-prev border-round" data-next-step="{{ $key-1 }}"><i class="fa fa-arrow-circle-left"></i> PREV</button>
 				@endif
 				@if ($key == count($event['survey']) - 1)
 					<button type="submit" id="btn-submit" class="btn btn-success border-round">Kirim</button>
 				@else
-					<button type="button" class="btn btn-primary btn-next border-round" data-next-step="{{ $key+1 }}">Lanjut <i class="fa fa-arrow-circle-right"></i></button>
+					<button type="button" class="btn btn-primary btn-next border-round" data-next-step="{{ $key+1 }}">NEXT <i class="fa fa-arrow-circle-right"></i></button>
 				@endif
 				</div>
 			</div>
 		@endforeach
-		<div class="form-group text-center">
-			<hr/>
-			<button type="button" id="btn-terminate" class="btn btn-danger border-round">Terminate</button>
-		</div>
+		@include('fields.terminate')
 	</form>
 @endsection
 

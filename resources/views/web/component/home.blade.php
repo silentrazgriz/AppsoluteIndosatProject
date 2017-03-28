@@ -10,19 +10,32 @@
 	</div>
 	<div class="row">
 		<div class="col-xs-2"><span class="icon-red"><i class="fa fa-calendar-check-o" aria-hidden="true"></i></span></div>
-		<div class="col-xs-4">100 Success report</div>
+		<div class="col-xs-4">{{ number_format($reports['success']) }} Success report</div>
 		<div class="col-xs-2"><span class="icon-red"><i class="fa fa-calendar-times-o" aria-hidden="true"></i></span></div>
-		<div class="col-xs-4">5 Failed report</div>
+		<div class="col-xs-4">{{ number_format($reports['failed']) }} Failed report</div>
 	</div>
 	<div class="row">
 		<div class="col-xs-2"><span class="icon-red"><i class="fa fa-map-marker" aria-hidden="true"></i></span></div>
-		<div class="col-xs-10">Pesanggrahan, Kembangan, Meruya Utara, DKI Jakarta 11620</div>
+		<div class="col-xs-10">{{ $location }}</div>
 	</div>
 </div>
 <div class="row text-center">
 	<a href="{{ route('survey', ['id' => $event['id']]) }}" class="btn btn-primary border-round"><i class="fa fa-plus-circle" aria-hidden="true"></i> REPORT</a>
 </div>
-@include('fields.geomap', ['field' => ['key' => 'map']])
+<hr/>
 <div class="row text-center">
-	<a href="{{ route('logout') }}" class="btn btn-primary border-round">LOGOUT</a>
+	<form method="POST" action="{{ route('post-logout') }}">
+		@include('fields.geomap', ['field' => ['key' => 'map']])
+		{{ csrf_field() }}
+		<button type="submit" class="btn btn-primary border-round">LOGOUT</button>
+	</form>
 </div>
+
+@section('scripts')
+	<script>
+		$(function() {
+			let location = $.get("https://maps.googleapis.com/maps/api/geocode/json?latlng=-6.1992129,106.7842264&key=AIzaSyCNuAicyuHAcSTDb7fZVeJH-pU9Qns0KBk");
+			console.log(location);
+		});
+	</script>
+@append

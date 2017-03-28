@@ -4,7 +4,7 @@
 	<div class="status-bar @if(!Auth::guest()) small @endif">
 		<div class="title text-center">
 			@if (Auth::guest())
-			<img src="{{ asset("images/indosat_ooredoo.png") }}" alt="Indosat ooredoo logo" class="logo">
+			<img src="{{ asset("images/im3_ooredoo.png") }}" alt="IM3 ooredoo logo" class="logo">
 			<h3>Activations Reporting Tools</h3>
 			@else
 				<h3>Welcome, {{ $user['name'] }}</h3>
