@@ -5,7 +5,11 @@
 	<div class="row">
 		<div class="col-xs-2"><span class="icon-red"><i class="fa fa-calendar" aria-hidden="true"></i></span></div>
 		<div class="col-xs-4">{{ $event['name'] }}</div>
-		<div class="col-xs-2"><span class="icon-red"><i class="fa fa-dollar" aria-hidden="true"></i></span></div>
+		<div class="col-xs-2">
+			<button type="button" id="btn-add-balance" class="icon-red" data-toggle="modal" data-target="#add-balance-modal">
+				<i class="fa fa-dollar" aria-hidden="true"></i>
+			</button>
+		</div>
 		<div class="col-xs-4">Rp. {{ number_format($user['balance']) }}</div>
 	</div>
 	<div class="row">
@@ -22,6 +26,7 @@
 <div class="row text-center">
 	<a href="{{ route('survey', ['id' => $event['id']]) }}" class="btn btn-primary border-round"><i class="fa fa-plus-circle" aria-hidden="true"></i> REPORT</a>
 </div>
+@include('web.component.balance')
 <hr/>
 <div class="row text-center">
 	<form method="POST" action="{{ route('post-logout') }}">

@@ -23,7 +23,7 @@
 				<nav class="navbar navbar-static-top" role="navigation">
 					<div class="navbar-custom-menu">
 						<ul class="nav navbar-nav">
-							<li><a href="{{ route('logout') }}" class="dropdown-toggle" data-toggle="dropdown">Keluar</a></li>
+							<li><a href="{{ route('post-logout') }}" class="dropdown-toggle" data-toggle="dropdown">Keluar</a></li>
 						</ul>
 					</div>
 				</nav>

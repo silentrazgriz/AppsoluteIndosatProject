@@ -4,7 +4,7 @@
 			@foreach($data['columns'] as $column)
 			<th>{{ ucfirst($column) }}</th>
 			@endforeach
-			@if(isset($data['edit']) || isset($data['destroy']) || isset($data['detail']))
+			@if(isset($data['edit']) || isset($data['destroy']) || isset($data['detail']) || isset($data['popup']))
 			<th style="width:180px;">Actions</th>
 			@endif
 		</tr>
@@ -14,7 +14,7 @@
 			@foreach($data['columns'] as $column)
 				<th>{{ ucfirst($column) }}</th>
 			@endforeach
-			@if(isset($data['edit']) || isset($data['destroy']) || isset($data['detail']))
+			@if(isset($data['edit']) || isset($data['destroy']) || isset($data['detail']) || isset($data['popup']))
 			<th>Actions</th>
 			@endif
 		</tr>
@@ -25,8 +25,11 @@
 			@foreach ($data['columns'] as $column)
 			<td>{{ $value[$column] }}</td>
 			@endforeach
-			@if(isset($data['edit']) || isset($data['destroy']) || isset($data['detail']))
+			@if(isset($data['edit']) || isset($data['destroy']) || isset($data['detail']) || isset($data['popup']))
 			<td class="text-center">
+				@if(isset($data['popup']))
+					@include('admin.component.popup', ['data' => $value, 'column' => $data['summary']['column']])
+				@endif
 				@if(isset($data['detail']))
 					<a href="{{ route($data['detail'], ['id' => $value['id']]) }}" class="btn btn-primary btn-xs"><i class="fa fa-search" aria-hidden="true"></i> Lihat</a>
 				@endif

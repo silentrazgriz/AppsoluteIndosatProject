@@ -25,7 +25,7 @@ class Event extends UuidModel
 
     protected $hidden = ['created_at', 'updated_at', 'deleted_at'];
 
-	protected $casts = ['survey' => 'array'];
+	protected $casts = ['survey' => 'array', 'column' => 'array'];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany

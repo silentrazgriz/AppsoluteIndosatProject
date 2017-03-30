@@ -42,4 +42,9 @@ class User extends UuidAuthenticatable
     {
     	return $this->hasMany('App\Models\UserLocation', 'user_id');
     }
+
+    public function balanceHistories()
+    {
+    	return $this->hasMany('App\Models\BalanceHistory', 'user_id');
+    }
 }

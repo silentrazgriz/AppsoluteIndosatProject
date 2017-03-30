@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BalanceHistory;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -34,6 +36,12 @@ class SalesController extends Controller
 	public function updateBalanceValidator($data) {
 		return Validator::make($data, [
 			'id' => 'exists:users,id',
+			'balance' => 'numeric'
+		]);
+	}
+
+	public function updateSalesBalanceValidator($data) {
+		return Validator::make($data, [
 			'balance' => 'numeric'
 		]);
 	}
@@ -73,7 +81,7 @@ class SalesController extends Controller
 	}
 
 	public function editBalance() {
-		$sales = User::select('id as key', 'name as text')->get()->toArray();
+		$sales = User::select('id as key', 'email as text')->get()->toArray();
 
 		return view('admin.sales.balance', ['page' => 'sales-balance', 'data' => $sales]);
 	}
@@ -99,12 +107,40 @@ class SalesController extends Controller
 		return redirect()->route('sales');
 	}
 
+	public function updateSalesBalance(Request $request) {
+		$data = $request->only([
+			'balance'
+		]);
+
+		$validator = $this->updateSalesBalanceValidator($data);
+
+		if ($validator->fails()) {
+			return redirect()->back()
+				->withErrors($validator)
+				->withInput();
+		}
+
+		DB::transaction(function () use ($data) {
+			$user = User::find(Auth::id());
+			$user->balance += $data['balance'];
+			$user->save();
+
+			BalanceHistory::create([
+				'user_id' => Auth::id(),
+				'balance' => $data['balance'],
+				'added_by_admin' => false
+			]);
+		});
+
+		return redirect()->route('home');
+	}
+
 	public function updateBalance(Request $request) {
 		$data = $request->only([
 			'id', 'balance'
 		]);
 
-		$validator = $this->updateValidator($data);
+		$validator = $this->updateBalanceValidator($data);
 
 		if ($validator->fails()) {
 			return redirect()->back()
@@ -117,7 +153,11 @@ class SalesController extends Controller
 			$user->balance += $data['balance'];
 			$user->save();
 
-			print_r($user);
+			BalanceHistory::create([
+				'user_id' => $data['id'],
+				'balance' => $data['balance'],
+				'added_by_admin' => true
+			]);
 		});
 
 		return redirect()->route('sales');

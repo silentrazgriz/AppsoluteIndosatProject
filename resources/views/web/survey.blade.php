@@ -39,7 +39,7 @@
 					<a href="{{ route('home') }}" class="btn btn-primary border-round"><i class="fa fa-home"></i> HOME</a>
 				@endif
 				@if ($key == count($event['survey']) - 1)
-					<button type="submit" id="btn-submit" class="btn btn-success border-round">Kirim</button>
+					<button type="submit" id="btn-submit" class="btn btn-success border-round">SUBMIT</button>
 				@else
 					<button type="button" class="btn btn-primary btn-next border-round" data-next-step="{{ $key+1 }}">NEXT <i class="fa fa-arrow-circle-right"></i></button>
 				@endif

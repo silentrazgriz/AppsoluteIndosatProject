@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BalanceHistory;
 use App\Models\Event;
 use App\Models\EventAnswer;
 use App\Models\User;
@@ -37,8 +38,8 @@ class EventController extends Controller
 			'id' => 'event-table',
 			'columns' => array(),
 			'values' => $events,
-			'edit' => 'edit-event',
-			'destroy' => 'delete-event',
+			//'edit' => 'edit-event',
+			//'destroy' => 'delete-event',
 			'detail' => 'show-event'
 		];
 	    if (count($events) > 0) {
@@ -49,7 +50,32 @@ class EventController extends Controller
     }
 
     public function show($id) {
+		$event = Event::find($id)
+			->select('id', 'name', 'date', 'survey as column')
+			->first()
+			->toArray();
 
+		$eventAnswers = EventAnswer::where('event_id', $id)
+			->join('users', 'event_answers.user_id', '=', 'users.id')
+			->select('event_answers.id as key', 'users.name as sales', 'users.email as email',
+				'event_answers.is_terminated as terminated', 'event_answers.created_at as time',
+				'event_answers.answer as detail')
+			->get()
+			->toArray();
+
+	    $data = [
+		    'id' => 'answer-table',
+		    'summary' => $event,
+		    'columns' => array(),
+		    'values' => $this->parseSurveyAnswer($eventAnswers, $event['column']),
+		    'popup' => true
+	    ];
+
+	    if (count($eventAnswers) > 1) {
+		    $data['columns'] = array_diff(array_keys($eventAnswers[0]), ['id', 'detail', 'key']);
+	    }
+
+		return view('admin.answer.list', ['page' => 'event', 'data' => $data]);
     }
 
     public function create() {
@@ -68,7 +94,7 @@ class EventController extends Controller
 		// Upload file
 		foreach($data as $key => $answer) {
 			if ($request->hasFile($key)) {
-				$path = $request[$key]->store($event['id'] . '/' . $key . '/' . $userId);
+				$path = $request[$key]->store($event['id'] . '/' . str_replace('+', ' ', $key) . '/' . $userId);
 				$data[$key] = $path;
  			}
 		}
@@ -86,6 +112,12 @@ class EventController extends Controller
 
 				$sales->balance -= $data['voucher'];
 				$sales->save();
+
+				BalanceHistory::create([
+					'user_id' => Auth::id(),
+					'balance' => $data['voucher'] * -1,
+					'added_by_admin' => false
+				]);
 			}
 		});
 
@@ -121,6 +153,41 @@ class EventController extends Controller
 
     public function destroy($id) {
 
+    }
+
+    private function parseSurveyAnswer($answers, $columns) {
+	    $questions = array();
+
+	    foreach($columns as $column) {
+		    foreach ($column['questions'] as $question) {
+			    if(isset($question['key'])) {
+				    array_push($questions, $question);
+			    }
+		    }
+	    }
+
+	    array_push($questions, ['key' => 'terminate', 'type' => 'terminate']);
+
+	    foreach($answers as &$answer) {
+		    foreach ($answer['detail'] as $key => &$detail) {
+			    foreach($questions as $question) {
+				    if ($question['type'] != 'line' && $question['key'] == $key) {
+					    switch ($question['type']) {
+						    case 'checkbox':
+							    $detail = ($detail == 1) ? 'True' : 'False';
+							    break;
+						    case 'image':
+							    $detail = (empty($detail)) ? '-' : '<a href="' . asset('storage/' . $detail) . '" target="_blank"><img src="' . asset('storage/' . $detail) . '"/></a>';
+							    break;
+						    default:
+							    $detail = ($detail == '') ? '-' : $detail;
+					    }
+				    }
+			    }
+		    }
+	    }
+
+	    return $answers;
     }
 
     private function getSurveyColumns($event) {
