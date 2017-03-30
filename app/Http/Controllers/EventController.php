@@ -94,7 +94,7 @@ class EventController extends Controller
 		// Upload file
 		foreach($data as $key => $answer) {
 			if ($request->hasFile($key)) {
-				$path = $request[$key]->store($event['id'] . '/' . str_replace('+', ' ', $key) . '/' . $userId);
+				$path = $request[$key]->store($event['id'] . '/' . $key . '/' . $userId);
 				$data[$key] = $path;
  			}
 		}
