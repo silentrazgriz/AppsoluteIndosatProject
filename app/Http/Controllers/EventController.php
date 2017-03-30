@@ -113,11 +113,13 @@ class EventController extends Controller
 				$sales->balance -= $data['voucher'];
 				$sales->save();
 
-				BalanceHistory::create([
-					'user_id' => Auth::id(),
-					'balance' => $data['voucher'] * -1,
-					'added_by_admin' => false
-				]);
+				if ($data['voucher'] > 0) {
+					BalanceHistory::create([
+						'user_id' => Auth::id(),
+						'balance' => $data['voucher'] * -1,
+						'added_by_admin' => false
+					]);
+				}
 			}
 		});
 
