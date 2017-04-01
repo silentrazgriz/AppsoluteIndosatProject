@@ -29,7 +29,6 @@ class HomeController extends Controller
 		    $data['user'] = Auth::user()->toArray();
 			$data['reports'] = $this->getReportCount($data['event']);
 		    $data['location'] = $this->getLocation();
-
 	    }
 
 	    return view('web.home', $data);
