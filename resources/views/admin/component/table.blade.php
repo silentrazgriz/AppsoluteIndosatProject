@@ -56,7 +56,8 @@
 			$('#{{ $data['id'] }}').dataTable({
 				'scrollY': '500px',
 				'scrollCollapse': true,
-				'paging': false
+				'paging': false,
+				'responsive': true
 			});
 		});
 	</script>

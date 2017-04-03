@@ -4,6 +4,7 @@
 	<link rel="stylesheet" href="{{ asset('plugins/adminlte/css/AdminLTE.min.css') }}"/>
 	<link rel="stylesheet" href="{{ asset('plugins/adminlte/css/skins/skin-yellow.css') }}"/>
 	<link rel="stylesheet" href="{{ asset('plugins/datatables.net/css/jquery.dataTables.css') }}"/>
+	<link rel="stylesheet" href="{{ asset('plugins/datatables.net/css/responsive.dataTables.min.css') }}"/>
 	<link rel="stylesheet" href="{{ asset('plugins/bootstrap-datepicker/css/bootstrap-datepicker.css') }}"/>
 	<link rel="stylesheet" href="{{ asset('css/admin.css') }}"/>
 @append
@@ -12,6 +13,7 @@
 	<script type="text/javascript" src="{{ asset('plugins/adminlte/js/app.min.js') }}"></script>
 	<script type="text/javascript" src="{{ asset('plugins/datatables.net/js/jquery.dataTables.js') }}"></script>
 	<script type="text/javascript" src="{{ asset('plugins/datatables.net/js/dataTables.bootstrap.min.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('plugins/datatables.net/js/dataTables.responsive.min.js') }}"></script>
 	<script type="text/javascript" src="{{ asset('plugins/bootstrap-datepicker/js/bootstrap-datepicker.js') }}"></script>
 @append
 
