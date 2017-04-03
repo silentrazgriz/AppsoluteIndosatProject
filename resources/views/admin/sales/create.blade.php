@@ -55,7 +55,7 @@
 					'key' => 'balance',
 					'text' => 'Saldo awal',
 					'required' => true,
-					'step' => 50000,
+					'step' => 1,
 					'value' => 50000
 				]
 			])

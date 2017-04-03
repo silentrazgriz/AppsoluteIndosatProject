@@ -23,8 +23,15 @@
 		<div class="col-xs-10">{{ $location }}</div>
 	</div>
 </div>
-<div class="row text-center">
-	<a href="{{ route('survey', ['id' => $event['id']]) }}" class="btn btn-primary border-round"><i class="fa fa-plus-circle" aria-hidden="true"></i> REPORT</a>
+<div class="row text-center user-action">
+	<div>
+		<a href="{{ route('survey', ['id' => $event['id']]) }}" class="btn btn-primary border-round"><i class="fa fa-plus-circle" aria-hidden="true"></i> REPORT</a>
+	</div>
+	@if(Auth::user()->is_admin)
+		<div>
+			<a href="{{ route('dashboard') }}" class="btn btn-primary border-round">CMS</a>
+		</div>
+	@endif
 </div>
 @include('web.component.balance')
 <hr/>
