@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\TableHelpers;
 use App\Models\BalanceHistory;
 use App\Models\Event;
 use App\Models\EventAnswer;
@@ -33,7 +34,9 @@ class EventController extends Controller
 
     public function index() {
 		$events = Event::select('id', 'name', 'date', 'auth_code as code')
-			->orderBy('date', 'desc')->get()->toArray();
+			->orderBy('date', 'desc')
+			->get()
+			->toArray();
 		$data = [
 			'id' => 'event-table',
 			'columns' => array(),
@@ -43,7 +46,7 @@ class EventController extends Controller
 			'detail' => 'show-event'
 		];
 	    if (count($events) > 0) {
-		    $data['columns'] = array_diff(array_keys($events[0]), ['id']);
+		    $data['columns'] = TableHelpers::getColumns($events[0], ['id']);
 	    }
 
 		return view('admin.event.list', ['page' => 'event', 'data' => $data]);
@@ -72,7 +75,7 @@ class EventController extends Controller
 	    ];
 
 	    if (count($eventAnswers) > 1) {
-		    $data['columns'] = array_diff(array_keys($eventAnswers[0]), ['id', 'detail', 'key']);
+		    $data['columns'] = TableHelpers::getColumns($eventAnswers[0], ['id', 'detail', 'key']);
 	    }
 
 		return view('admin.answer.list', ['page' => 'event', 'data' => $data]);

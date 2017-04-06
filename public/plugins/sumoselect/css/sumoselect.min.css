@@ -7,9 +7,9 @@
 
 /* Filtering style */
 .SumoSelect .hidden { display:none; }
-.SumoSelect .search-txt{display:none;outline:none;}
+.SumoSelect .search-txt{display:none;outline:none;border-radius: 30px;}
 .SumoSelect .no-match{display:none;padding: 6px;}
-.SumoSelect.open .search-txt{display: inline-block;position: absolute;top: 0;left: 0;width: 100%;margin: 0;padding: 5px 8px;border: none;-webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box;border-radius: 5px;}
+.SumoSelect.open .search-txt{display: inline-block;position: absolute;top: 0;left: 0;width: 100%;margin: 0;padding: 5px 8px;border: none;-webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box;border-radius: 30px;}
 .SumoSelect.open>.search>span, .SumoSelect.open>.search>label{visibility:hidden;}
 
 /*this is applied on that hidden select. DO NOT USE display:none; or visiblity:hidden; and Do not override any of these properties. */
@@ -20,7 +20,7 @@
 
 
 .SumoSelect { display: inline-block; position: relative;outline:none;}
-.SumoSelect:focus > .CaptionCont,.SumoSelect:hover > .CaptionCont, .SumoSelect.open > .CaptionCont {box-shadow: 0 0 2px #7799D0;border-color: #7799D0;}
+.SumoSelect:focus > .CaptionCont,.SumoSelect:hover > .CaptionCont, .SumoSelect.open > .CaptionCont {box-shadow: 0 0 2px #fad600;border-color: #fad600;}
 .SumoSelect > .CaptionCont { position: relative; border: 1px solid #ccd0d2; min-height: 14px; background-color: #fff;border-radius:30px;margin:0;}
 .SumoSelect > .CaptionCont > span { display: block; padding-right: 30px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;cursor:default;}
 /*placeholder style*/

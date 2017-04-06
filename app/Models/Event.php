@@ -30,6 +30,11 @@ class Event extends UuidModel
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
+    public function users()
+    {
+    	return $this->hasMany('App\Models\User');
+    }
+
     public function eventAnswers()
     {
         return $this->hasMany('App\Models\EventAnswer');

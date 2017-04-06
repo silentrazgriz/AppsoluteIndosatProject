@@ -5,11 +5,11 @@
 		<form role="form" method="POST" action="{{ route('post-sales-balance') }}">
 			<input type="hidden" name="_method" value="PATCH">
 			{{ csrf_field() }}
-			<h3>Tambah Saldo Sales</h3>
+			<h3>Tambah Saldo Buddies</h3>
 			@include('fields.dropdown', [
 				'field' => [
 					'key' => 'id',
-					'text' => 'Pilih Sales',
+					'text' => 'Pilih Buddies',
 					'values' => $data
 				]
 			])

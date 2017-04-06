@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\TableHelpers;
 use App\Models\BalanceHistory;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -13,6 +14,7 @@ class SalesController extends Controller
 {
 	public function storeValidator($data) {
 		return Validator::make($data, [
+			'sales_area_id' => 'required|exists:sales_areas,id',
 			'name' => 'required|max:255',
 			'email' => 'required|email|max:255|unique:users',
 			'password' => 'required|min:4|confirmed',
@@ -24,9 +26,9 @@ class SalesController extends Controller
 
 	public function updateValidator($data) {
 		return Validator::make($data, [
+			'sales_area_id' => 'exists:sales_areas,id',
 			'name' => 'max:255',
 			'email' => 'email|max:255',
-			'password' => 'min:4|confirmed',
 			'gender' => '',
 			'phone' => 'numeric',
 			'balance' => 'numeric'
@@ -47,7 +49,11 @@ class SalesController extends Controller
 	}
 
 	public function index() {
-		$sales = User::all()->toArray();
+		$sales = User::orderBy('email', 'asc')
+			->leftJoin('sales_areas', 'sales_areas.id', '=', 'sales_area_id')
+			->select('users.id', 'email', 'name', 'gender', 'description as area', 'phone', 'balance')
+			->get()
+			->toArray();
 		$data = [
 			'id' => 'sales-table',
 			'columns' => array(),
@@ -56,7 +62,7 @@ class SalesController extends Controller
 			'destroy' => 'delete-sales'
 		];
 		if (count($sales) > 0) {
-			$data['columns'] = array_diff(array_keys($sales[0]), ['id']);
+			$data['columns'] = TableHelpers::getColumns($sales[0], ['id']);
 			foreach ($data['values'] as &$value) {
 				$value['gender'] = ucfirst($value['gender']);
 				$value['balance'] = 'Rp. ' . number_format($value['balance']);
@@ -88,7 +94,7 @@ class SalesController extends Controller
 
 	public function store(Request $request) {
 		$data = $request->only([
-			'name', 'email', 'password', 'password_confirmation', 'gender', 'phone', 'balance'
+			'sales_area_id', 'name', 'email', 'password', 'password_confirmation', 'gender', 'phone', 'balance'
 		]);
 
 		$validator = $this->storeValidator($data);
@@ -101,6 +107,7 @@ class SalesController extends Controller
 
 		DB::transaction(function () use ($data) {
 			unset($data['password-confirmation']);
+			$data['password'] = bcrypt($data['password']);
 			User::create($data);
 		});
 
@@ -165,7 +172,7 @@ class SalesController extends Controller
 
 	public function update($id, Request $request) {
 		$data = $request->only([
-			'name', 'email', 'gender', 'phone', 'balance'
+			'sales_area_id', 'name', 'email', 'gender', 'phone', 'balance'
 		]);
 
 		$validator = $this->updateValidator($data);
@@ -176,12 +183,13 @@ class SalesController extends Controller
 				->withInput();
 		}
 
+
 		DB::transaction(function () use ($id, $data) {
 			$user = User::find($id);
 
+			$user->sales_area_id = $data['sales_area_id'] ?? $user->sales_area_id;
 			$user->name = $data['name'] ?? $user->name;
 			$user->email = $data['email'] ?? $user->email;
-			$user->password = $data['password'] ?? $user->password;
 			$user->gender = $data['gender'] ?? $user->gender;
 			$user->phone = $data['phone'] ?? $user->phone;
 			$user->balance = $data['balance'] ?? $user->balance;

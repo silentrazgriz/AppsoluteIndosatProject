@@ -5,7 +5,7 @@
 		<form role="form" method="POST" action="{{ route('put-sales', ['id' => $data['id']]) }}">
 			<input type="hidden" name="_method" value="PUT">
 			{{ csrf_field() }}
-			<h3>Buat Akun Sales</h3>
+			<h3>Ubah Akun Buddies</h3>
 			@include('fields.email', [
 				'field' => [
 					'key' => 'email',
@@ -39,6 +39,16 @@
 					'text' => 'No telepon',
 					'required' => true,
 					'value' => $data['phone']
+				]
+			])
+			@include('fields.dropdown', [
+				'field' => [
+					'key' => 'sales_area_id',
+					'text' => 'Sales area',
+					'value' => $data['sales_area_id'],
+					'values' => \App\Models\SalesArea::select('id as key', 'description as text')
+						->get()
+						->toArray()
 				]
 			])
 			@include('fields.number', [

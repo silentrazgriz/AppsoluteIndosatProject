@@ -39,6 +39,7 @@
 		<script>
 			$(function() {
 				$('.sumo-select').SumoSelect();
+				$('.sumo-autocomplete').SumoSelect({search: true, searchText: ''});
 			});
 		</script>
 	</body>

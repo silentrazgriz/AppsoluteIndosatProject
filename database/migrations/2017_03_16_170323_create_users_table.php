@@ -15,6 +15,8 @@ class CreateUsersTable extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->uuid('id');
+            $table->uuid('event_id')->nullable();
+            $table->unsignedInteger('sales_area_id')->nullable();
 	        $table->string('email');
 	        $table->string('password');
             $table->string('name');
@@ -27,6 +29,8 @@ class CreateUsersTable extends Migration
             $table->softDeletes();
 
             $table->primary('id');
+	        $table->foreign('event_id')->references('id')->on('events');
+	        $table->foreign('sales_area_id')->references('id')->on('sales_areas');
         });
     }
 

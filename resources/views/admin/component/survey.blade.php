@@ -17,6 +17,9 @@
 				<span class="help-block"><strong>{{ $errors->first('step-1-description') }}</strong></span>
 			@endif
 		</div>
+		<div class="form-group">
+			<a href="#" class="btn btn-primary border-round">Tambah Pertanyaan</a>
+		</div>
 	</div>
 </div>
 <div class="form-group">

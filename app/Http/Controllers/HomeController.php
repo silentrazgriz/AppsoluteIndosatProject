@@ -21,11 +21,12 @@ class HomeController extends Controller
     {
     	$data = [
     		'date' => Carbon::now()->format("d F Y, h:i A"),
-		    'event' => null,
+		    //'event' => null,
+		    'event' => Event::first()->toArray(),
 		    'user' => null
 	    ];
     	if (!Auth::guest()) {
-		    $data['event'] = Event::first()->toArray();
+    		$data['event'] = Auth::user()->event->toArray();
 		    $data['user'] = Auth::user()->toArray();
 			$data['reports'] = $this->getReportCount($data['event']);
 		    $data['location'] = $this->getLocation();

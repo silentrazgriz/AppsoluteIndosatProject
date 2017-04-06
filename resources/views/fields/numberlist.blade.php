@@ -4,11 +4,11 @@
 	@endif
 	<span class="select">
 		<select id="{{ $field['key'] }}"
-		        class="form-control sumo-select {{ isset($field['class']) ? $field['class'] : 'border-round' }}"
+		        class="form-control sumo-autocomplete {{ isset($field['class']) ? $field['class'] : 'border-round' }}"
 		        name="{{ $field['key'] }}"
 		        @if(isset($field['disabled']) && $field['disabled']) disabled @endif>>
-			@foreach($field['values'] as $value)
-				<option value="{{ $value['key'] }}" @if(isset($field['value']) && $field['value'] == $value['key']) selected @endif>{{ $value['text'] }}</option>
+			@foreach(\App\Models\NumberList::where('is_taken', 0)->get()->toArray() as $value)
+				<option value="{{ $value['number'] }}">{{ $value['number'] }}</option>
 			@endforeach
 		</select>
 	</span>

@@ -14,6 +14,7 @@
 Route::get('/', 'HomeController@index')->name('home');
 Route::post('/login', 'Auth\LoginController@login')->name('post-login');
 Route::post('/logout', 'Auth\LoginController@logout')->name('post-logout');
+Route::get('/logout', 'Auth\LoginController@logout')->name('logout');
 
 Route::group(['middleware' => 'auth'], function() {
 	Route::get('/survey/{id}', 'EventController@survey')->name('survey');
@@ -23,7 +24,7 @@ Route::group(['middleware' => 'auth'], function() {
 });
 
 Route::group(['middleware' => 'admin', 'prefix' => 'cms'], function() {
-	Route::get('/', 'AdminController@index')->name('dashboard');
+	Route::get('/', 'DashboardController@index')->name('dashboard');
 
 	Route::get('/sales', 'SalesController@index')->name('sales');
 	Route::get('/sales/new', 'SalesController@create')->name('create-sales');
@@ -41,4 +42,9 @@ Route::group(['middleware' => 'admin', 'prefix' => 'cms'], function() {
 	Route::post('/event', 'EventController@store')->name('post-event');
 	Route::put('/event/{id}', 'EventController@update')->name('put-event');
 	Route::delete('/event/{id}', 'EventController@destroy')->name('delete-event');
+
+	Route::get('/number', 'NumberListController@index')->name('number');
+	Route::get('/number/new', 'NumberListController@create')->name('create-number');
+	Route::post('/number', 'NumberListController@store')->name('post-number');
+	Route::delete('/number/{id}', 'NumberListController@destroy')->name('delete-number');
 });

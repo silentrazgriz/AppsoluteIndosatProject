@@ -4,7 +4,7 @@
 	<div class="container">
 		<form role="form" method="POST" action="{{ route('post-sales') }}">
 			{{ csrf_field() }}
-			<h3>Buat Akun Sales</h3>
+			<h3>Buat Akun Buddies</h3>
 			@include('fields.email', [
 				'field' => [
 					'key' => 'email',
@@ -48,6 +48,15 @@
 					'key' => 'phone',
 					'text' => 'No telepon',
 					'required' => true
+				]
+			])
+			@include('fields.dropdown', [
+				'field' => [
+					'key' => 'sales_area_id',
+					'text' => 'Sales area',
+					'values' => \App\Models\SalesArea::select('id as key', 'description as text')
+						->get()
+						->toArray()
 				]
 			])
 			@include('fields.number', [

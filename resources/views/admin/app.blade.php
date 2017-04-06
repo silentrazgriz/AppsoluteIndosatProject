@@ -23,9 +23,10 @@
 			<header class="main-header">
 				<a href="#" class="logo">Indosat</a>
 				<nav class="navbar navbar-static-top" role="navigation">
+					<a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button"><span class="sr-only">Toggle navigation</span></a>
 					<div class="navbar-custom-menu">
 						<ul class="nav navbar-nav">
-							<li><a href="{{ route('post-logout') }}" class="dropdown-toggle" data-toggle="dropdown">Keluar</a></li>
+							<li><a href="{{ route('logout') }}">Keluar</a></li>
 						</ul>
 					</div>
 				</nav>
@@ -39,13 +40,20 @@
 						</li>
 						<li class="header">SALES</li>
 						<li @if($page == 'create-sales') class="active" @endif>
-							<a href="{{ route('create-sales') }}"><span><i class="fa fa-user-plus"></i> Buat Sales Baru</span></a>
+							<a href="{{ route('create-sales') }}"><span><i class="fa fa-user-plus"></i> Buat Buddies Baru</span></a>
 						</li>
 						<li @if($page == 'sales-balance') class="active" @endif>
-							<a href="{{ route('sales-balance') }}"><span><i class="fa fa-credit-card"></i> Tambah Saldo Sales</span></a>
+							<a href="{{ route('sales-balance') }}"><span><i class="fa fa-credit-card"></i> Tambah Saldo Buddies</span></a>
 						</li>
 						<li @if($page == 'sales') class="active" @endif>
-							<a href="{{ route('sales') }}"><span><i class="fa fa-users"></i> Lihat Daftar Sales</span></a>
+							<a href="{{ route('sales') }}"><span><i class="fa fa-users"></i> Lihat Daftar Buddies</span></a>
+						</li>
+						<li class="header">NOMOR HP</li>
+						<li @if($page == 'create-number') class="active" @endif>
+							<a href="{{ route('create-number') }}"><span><i class="fa fa-address-card-o"></i> Tambah Nomor HP</span></a>
+						</li>
+						<li @if($page == 'number') class="active" @endif>
+							<a href="{{ route('number') }}"><span><i class="fa fa-address-book-o"></i> Lihat Daftar Nomor HP</span></a>
 						</li>
 						<li class="header">EVENT</li>
 						<li @if($page == 'create-event') class="active" @endif>
