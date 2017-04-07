@@ -33,11 +33,6 @@
 					@endif
 				@endforeach
 				<div class="form-group text-center">
-				@if ($key != 0)
-					<button type="button" class="btn btn-primary btn-prev border-round" data-next-step="{{ $key-1 }}"><i class="fa fa-arrow-circle-left"></i> PREV</button>
-				@else
-					<a href="{{ route('home') }}" class="btn btn-primary border-round"><i class="fa fa-home"></i> HOME</a>
-				@endif
 				@if ($key == count($event['survey']) - 1)
 					<button type="submit" id="btn-submit" class="btn btn-success border-round">SUBMIT</button>
 				@else
@@ -57,7 +52,7 @@
 			// Set first step as first form
 			showStep(0);
 
-			$('.btn-next, .btn-prev').click(function(e) {
+			$('.btn-next').click(function(e) {
 				let next = $(this).data('next-step');
 				showStep(next);
 				e.preventDefault();

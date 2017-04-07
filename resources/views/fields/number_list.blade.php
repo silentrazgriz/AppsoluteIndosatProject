@@ -6,7 +6,8 @@
 		<select id="{{ $field['key'] }}"
 		        class="form-control sumo-autocomplete {{ isset($field['class']) ? $field['class'] : 'border-round' }}"
 		        name="{{ $field['key'] }}"
-		        @if(isset($field['disabled']) && $field['disabled']) disabled @endif>>
+		        @if(isset($field['disabled']) && $field['disabled']) disabled @endif>
+			<option value="-">-</option>
 			@foreach(\App\Models\NumberList::where('is_taken', 0)->get()->toArray() as $value)
 				<option value="{{ $value['number'] }}">{{ $value['number'] }}</option>
 			@endforeach

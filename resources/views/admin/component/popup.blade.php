@@ -9,7 +9,7 @@
 				@foreach($data['detail'] as $key => $row)
 				<div class="row">
 					<div class="col-xs-3 text-right">{{ ucfirst(str_replace('_', ' ', $key)) }} :</div>
-					<div class="col-xs-9 text-left">{!! ucfirst(str_replace('_', ' ', $row)) !!}</div>
+					<div class="col-xs-9 text-left">{!! $row !!}</div>
 				</div>
 				@endforeach
 			</div>
