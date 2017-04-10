@@ -21,7 +21,7 @@ class EventAnswer extends UuidModel
     /**
      * @var array
      */
-    protected $fillable = ['event_id', 'user_id', 'answer', 'is_terminated', 'created_at', 'updated_at', 'deleted_at'];
+    protected $fillable = ['event_id', 'user_id', 'area', 'answer', 'is_terminated', 'created_at', 'updated_at', 'deleted_at'];
 
     protected $hidden = ['event_id', 'updated_at', 'deleted_at'];
 

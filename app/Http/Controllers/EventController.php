@@ -6,6 +6,7 @@ use App\Helpers\TableHelpers;
 use App\Models\BalanceHistory;
 use App\Models\Event;
 use App\Models\EventAnswer;
+use App\Models\NumberList;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -28,8 +29,11 @@ class EventController extends Controller
 		$reportCount = EventAnswer::where('user_id', Auth::id())
 			    ->where('event_id', $event['id'])
 			    ->count();
+		$numbers = NumberList::where('is_taken', 0)
+			->get()
+			->toArray();
 
-		return view('web.survey', ['event' => $event, 'user' => $user, 'count' => $reportCount + 1]);
+		return view('web.survey', ['event' => $event, 'user' => $user, 'count' => $reportCount + 1, 'numbers' => $numbers]);
 	}
 
     public function index() {
@@ -58,11 +62,12 @@ class EventController extends Controller
 			->first()
 			->toArray();
 
-		$eventAnswers = EventAnswer::where('event_id', $id)
+		$eventAnswers = EventAnswer::where('event_answers.event_id', $id)
 			->join('users', 'event_answers.user_id', '=', 'users.id')
 			->select('event_answers.id as key', 'users.name as sales', 'users.email as email',
 				'event_answers.is_terminated as terminated', 'event_answers.created_at as time',
 				'event_answers.answer as detail')
+			->orderBy('event_answers.created_at', 'desc')
 			->get()
 			->toArray();
 
@@ -74,7 +79,7 @@ class EventController extends Controller
 		    'popup' => true
 	    ];
 
-	    if (count($eventAnswers) > 1) {
+	    if (count($eventAnswers) > 0) {
 		    $data['columns'] = TableHelpers::getColumns($eventAnswers[0], ['id', 'detail', 'key']);
 	    }
 
@@ -93,33 +98,32 @@ class EventController extends Controller
 		$event = Event::find($id)->toArray();
 		$userId = Auth::id();
 		$isTerminated = $request['is_terminated'];
-		$data = $request->only($this->getSurveyColumns($event));
-		// Upload file
-		foreach($data as $key => $answer) {
-			if ($request->hasFile($key)) {
-				$path = $request[$key]->store($event['id'] . '/' . $key . '/' . $userId);
-				$data[$key] = $path;
- 			}
-		}
+		$data = $request->only($this->getSurveyColumns($event, ['terminate']));
+		$area = $request['area'];
 
-		DB::transaction(function () use ($data, $event, $userId, $isTerminated) {
+	    $this->parseCustomAnswerTypes($event, $userId, $data);
+
+		DB::transaction(function () use ($data, $area, $event, $userId, $isTerminated) {
 			EventAnswer::create([
 				'event_id' => $event['id'],
 				'user_id' => $userId,
+				'area' => $area,
 				'answer' => $data,
 				'is_terminated' => $isTerminated
  			]);
 
 			if (!$isTerminated && isset($data['voucher'])) {
+				$voucher = $this->getVoucherValue($data['voucher']);
+
 				$sales = User::find(Auth::id());
 
-				$sales->balance -= $data['voucher'];
+				$sales->balance -= $voucher;
 				$sales->save();
 
 				if ($data['voucher'] > 0) {
 					BalanceHistory::create([
 						'user_id' => Auth::id(),
-						'balance' => $data['voucher'] * -1,
+						'balance' => $voucher * -1,
 						'added_by_admin' => false
 					]);
 				}
@@ -160,18 +164,16 @@ class EventController extends Controller
 
     }
 
+    private function getVoucherValue($data) {
+		$total = 0;
+		foreach ($data as $denom) {
+			$total += $denom;
+		}
+		return $total;
+    }
+
     private function parseSurveyAnswer($answers, $columns) {
-	    $questions = array();
-
-	    foreach($columns as $column) {
-		    foreach ($column['questions'] as $question) {
-			    if(isset($question['key'])) {
-				    array_push($questions, $question);
-			    }
-		    }
-	    }
-
-	    array_push($questions, ['key' => 'terminate', 'type' => 'terminate']);
+	    $questions = $this->getQuestions($columns, [['key' => 'terminate', 'type' => 'terminate']]);
 
 	    foreach($answers as &$answer) {
 		    foreach ($answer['detail'] as $key => &$detail) {
@@ -185,9 +187,12 @@ class EventController extends Controller
 							    $detail = (empty($detail)) ? '-' : '<a href="' . asset('storage/' . $detail) . '" target="_blank"><img src="' . asset('storage/' . $detail) . '"/></a>';
 							    break;
 						    default:
-							    $detail = ($detail == '') ? '-' : $detail;
+							    $detail = ($detail == '') ? '-' : str_replace('_', ' ', $detail);
 					    }
 				    }
+			    }
+			    if (is_array($detail)) {
+			    	$detail = implode(',', $detail);
 			    }
 		    }
 	    }
@@ -195,14 +200,54 @@ class EventController extends Controller
 	    return $answers;
     }
 
-    private function getSurveyColumns($event) {
+    private function parseCustomAnswerTypes($event, $userId, &$data) {
+		$questions = $this->getQuestions($event['survey']);
+
+		foreach($questions as $question) {
+			if (isset($question['key'])) {
+				$key = $question['key'];
+				if ($question['type'] == 'checkboxes') {
+					$data[$key] = json_decode($data[$key], TRUE);
+				} else if ($question['type'] == 'image') {
+					if (isset($data[$key])) {
+						$path = $data[$key]->store($event['id'] . '/' . $key . '/' . $userId);
+						$data[$key] = $path;
+					}
+				}
+			}
+		}
+    }
+
+    private function getQuestions($columns, array $extra = null) {
+	    $questions = array();
+
+	    foreach($columns as $column) {
+		    foreach ($column['questions'] as $question) {
+			    if(isset($question['key'])) {
+				    array_push($questions, $question);
+			    }
+		    }
+	    }
+
+	    if (isset($extra)) {
+		    array_merge($questions, $extra);
+	    }
+
+	    return $questions;
+    }
+
+    private function getSurveyColumns($event, array $extra = null) {
 	    $steps = array_column($event['survey'], 'questions');
 	    $questions = array();
+
 	    foreach ($steps as $step) {
 	    	$questions = array_merge($questions, $step);
 	    }
 	    $result = array_diff(array_column($questions, 'key'), ['balance']);
-	    array_push($result, 'terminate');
+	    if (isset($extra)) {
+		    $result = array_merge($result, $extra);
+	    }
+
 	    return $result;
     }
 }

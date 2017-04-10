@@ -51,7 +51,11 @@ class LoginController extends Controller
 	protected function validateLogin(Request $request)
 	{
 		$this->validate($request, [
-			$this->username() => 'required', 'password' => 'required', 'location' => 'required', 'auth_code' => 'required'
+			$this->username() => 'required',
+			'password' => 'required',
+			'location' => 'required',
+			'auth_code' => 'required',
+			'area' => 'required'
 		]);
 	}
 
@@ -63,7 +67,7 @@ class LoginController extends Controller
 
 		$this->getCurrentEvent($request);
 
-		$this->saveLastLocation($request, 'login');
+		$this->saveLocation($request, 'login');
 
 		return $this->authenticated($request, $this->guard()->user())
 			?: (Auth::user()->is_admin) ? redirect()->route('dashboard') : redirect()->intended($this->redirectPath());
@@ -101,7 +105,7 @@ class LoginController extends Controller
 
 	public function logout(Request $request)
 	{
-		$this->saveLastLocation($request, 'logout');
+		$this->saveLocation($request, 'logout');
 
 		$this->guard()->logout();
 
@@ -129,8 +133,13 @@ class LoginController extends Controller
 		});
 	}
 
-	private function saveLastLocation(Request $request, $state) {
+	private function saveLocation(Request $request, $state) {
 		DB::transaction(function () use ($request, $state) {
+			$user = Auth::user();
+
+			$user->area = ($state == 'login') ? $request['area'] : null;
+			$user->save();
+
 			UserLocation::create([
 				'user_id' => Auth::id(),
 				'state' => $state,

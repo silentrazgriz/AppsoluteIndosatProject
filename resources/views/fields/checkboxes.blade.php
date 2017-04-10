@@ -2,7 +2,7 @@
 	@if(isset($field['text']))
 		<label for="{{ $field['key'] }}">{{ $field['text'] }}</label>
 	@endif
-	<input type="hidden" id="{{ $field['key'] }}" name="{{ $field['key'] }}" value="">
+	<input type="hidden" id="{{ $field['key'] }}-input" name="{{ $field['key'] }}" value=""/>
 	@foreach($field['values'] as $key => $value)
 		<label class="checkbox">
 			<input type="checkbox" id="{{ $field['key'] }}-{{ $key }}" data-value="{{ $value['key'] }}">
@@ -20,8 +20,8 @@
 		$(function() {
 			@foreach($field['values'] as $key => $value)
 				$('#{{ $field['key'] }}-{{ $key }}').change(function() {
-					let fieldValue = $('#{{ $field['key'] }}').val();
-					let values = (fieldValue == '') ? [] : fieldValue.split(',');
+					let fieldValue = $('#{{ $field['key'] }}-input').val();
+					let values = (fieldValue == '') ? [] : JSON.parse(fieldValue);
 					let data = $(this).data('value');
 					let index = values.indexOf(data);
 
@@ -31,9 +31,7 @@
 						values.splice(values.indexOf(data), 1);
 					}
 
-					console.log(values);
-
-					$('#{{ $field['key'] }}').val(values.join(','));
+					$('#{{ $field['key'] }}-input').val(JSON.stringify(values));
 				});
 			@endforeach
 		});

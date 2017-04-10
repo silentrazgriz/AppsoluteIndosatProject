@@ -18,8 +18,16 @@
 	])
 	@include('fields.text', [
 		'field' => [
-			'key' => 'auth_code',
+			'key' => 'area',
 			'class' => 'border-bottom-only no-border-radius',
+			'placeholder' => 'Lokasi',
+			'required' => 1
+		]
+	])
+	@include('fields.text', [
+		'field' => [
+			'key' => 'auth_code',
+			'class' => 'border-bottom-only no-border-radius collapse',
 			'placeholder' => 'Kode otentikasi',
 			'value' => $event['auth_code'],
 			'required' => 1

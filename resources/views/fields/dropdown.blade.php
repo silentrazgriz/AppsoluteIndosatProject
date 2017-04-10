@@ -5,7 +5,7 @@
 	<span class="select">
 		<select id="{{ $field['key'] }}"
 		        class="form-control sumo-select {{ isset($field['class']) ? $field['class'] : 'border-round' }}"
-		        name="{{ $field['key'] }}"
+		        name="{{ $field['key'] }}@if(isset($field['multiple']) && $field['multiple'])[]@endif"
 		        @if(isset($field['multiple']) && $field['multiple']) multiple="multiple" @endif
 		        @if(isset($field['disabled']) && $field['disabled']) disabled @endif>
 			@foreach($field['values'] as $value)

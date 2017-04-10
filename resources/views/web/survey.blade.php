@@ -23,6 +23,7 @@
 @section('content')
 	<form method="POST" action="{{ route('post-survey', ['id' => $event['id']]) }}" enctype="multipart/form-data">
 		{{ csrf_field() }}
+		<input type="hidden" name="area" value="{{ $user['area'] }}"/>
 		@foreach($event['survey'] as $key => $step)
 			<div id="{{ $step['key'] }}" class="survey-step" data-step="{{ $key }}">
 				@foreach($step['questions'] as $question)

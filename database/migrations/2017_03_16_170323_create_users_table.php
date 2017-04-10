@@ -17,6 +17,7 @@ class CreateUsersTable extends Migration
             $table->uuid('id');
             $table->uuid('event_id')->nullable();
             $table->unsignedInteger('sales_area_id')->nullable();
+            $table->string('area')->nullable();
 	        $table->string('email');
 	        $table->string('password');
             $table->string('name');
