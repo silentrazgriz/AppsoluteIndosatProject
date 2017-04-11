@@ -39,7 +39,6 @@
 		<script>
 			$(function() {
 				$('.sumo-select').SumoSelect({placeholder: 'Pilih disini'});
-				$('.sumo-autocomplete').SumoSelect({search: true, searchText: ''});
 			});
 		</script>
 	</body>

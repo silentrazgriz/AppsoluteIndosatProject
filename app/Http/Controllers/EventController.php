@@ -65,8 +65,8 @@ class EventController extends Controller
 		$eventAnswers = EventAnswer::where('event_answers.event_id', $id)
 			->join('users', 'event_answers.user_id', '=', 'users.id')
 			->select('event_answers.id as key', 'users.name as sales', 'users.email as email',
-				'event_answers.is_terminated as terminated', 'event_answers.created_at as time',
-				'event_answers.answer as detail')
+				'event_answers.step', 'event_answers.is_terminated as status',
+				'event_answers.created_at as time', 'event_answers.answer as detail')
 			->orderBy('event_answers.created_at', 'desc')
 			->get()
 			->toArray();
@@ -75,7 +75,7 @@ class EventController extends Controller
 		    'id' => 'answer-table',
 		    'summary' => $event,
 		    'columns' => array(),
-		    'values' => $this->parseSurveyAnswer($eventAnswers, $event['column']),
+		    'values' => $this->surveyAnswerToViewFormat($eventAnswers, $event['column']),
 		    'popup' => true
 	    ];
 
@@ -100,20 +100,26 @@ class EventController extends Controller
 		$isTerminated = $request['is_terminated'];
 		$data = $request->only($this->getSurveyColumns($event, ['terminate']));
 		$area = $request['area'];
+		$step = $request['step'];
 
-	    $this->parseCustomAnswerTypes($event, $userId, $data);
+	    $this->parseSurveyAnswer($event, $userId, $data);
 
-		DB::transaction(function () use ($data, $area, $event, $userId, $isTerminated) {
+		DB::transaction(function () use ($data, $area, $step, $event, $userId, $isTerminated) {
 			EventAnswer::create([
 				'event_id' => $event['id'],
 				'user_id' => $userId,
 				'area' => $area,
+				'step' => $step,
 				'answer' => $data,
 				'is_terminated' => $isTerminated
  			]);
 
+			if (isset($data['sales'])) {
+				$this->removeTakenNumber($data['sales']);
+			}
+
 			if (!$isTerminated && isset($data['voucher'])) {
-				$voucher = $this->getVoucherValue($data['voucher']);
+				$voucher = $this->getVoucherValue($data['sales']);
 
 				$sales = User::find(Auth::id());
 
@@ -164,35 +170,62 @@ class EventController extends Controller
 
     }
 
+    private function removeTakenNumber($data) {
+		foreach ($data as $sales) {
+			$number = NumberList::where('number', $sales['number'])
+				->first();
+
+			if (isset($number)) {
+				$number->is_taken = 1;
+				$number->save();
+			}
+		}
+    }
+
     private function getVoucherValue($data) {
 		$total = 0;
-		foreach ($data as $denom) {
-			$total += $denom;
+		foreach ($data as $sales) {
+			foreach ($sales['voucher'] as $denom) {
+				$total += $denom;
+			}
 		}
 		return $total;
     }
 
-    private function parseSurveyAnswer($answers, $columns) {
+    private function surveyAnswerToViewFormat($answers, $columns) {
 	    $questions = $this->getQuestions($columns, [['key' => 'terminate', 'type' => 'terminate']]);
 
 	    foreach($answers as &$answer) {
+	    	$answer['status'] = ($answer['status'] == 0) ? 'Success' : 'Terminated';
+
 		    foreach ($answer['detail'] as $key => &$detail) {
 			    foreach($questions as $question) {
 				    if ($question['type'] != 'line' && $question['key'] == $key) {
 					    switch ($question['type']) {
 						    case 'checkbox':
-							    $detail = ($detail == 1) ? 'True' : 'False';
+							    $detail = ($detail == 1) ? 'Ya' : 'Tidak';
 							    break;
 						    case 'image':
 							    $detail = (empty($detail)) ? '-' : '<a href="' . asset('storage/' . $detail) . '" target="_blank"><img src="' . asset('storage/' . $detail) . '"/></a>';
 							    break;
+						    case 'number_sales':
+						    	if (isset($detail)) {
+								    $result = '';
+								    foreach ($detail as $row) {
+									    $result .= '<p>Number: ' . $row['number'] . '<br>Package: ' . $row['package'] . '<br>Voucher: ' . implode(', ', $row['voucher']) . '</p>';
+								    }
+								    $detail = str_replace('_', ' ', $result);
+							    } else {
+						    		$detail = '-';
+							    }
+								break;
 						    default:
 							    $detail = ($detail == '') ? '-' : str_replace('_', ' ', $detail);
 					    }
 				    }
 			    }
 			    if (is_array($detail)) {
-			    	$detail = implode(',', $detail);
+			    	$detail = implode(', ', $detail);
 			    }
 		    }
 	    }
@@ -200,19 +233,26 @@ class EventController extends Controller
 	    return $answers;
     }
 
-    private function parseCustomAnswerTypes($event, $userId, &$data) {
+    private function parseSurveyAnswer($event, $userId, &$data) {
 		$questions = $this->getQuestions($event['survey']);
 
 		foreach($questions as $question) {
 			if (isset($question['key'])) {
 				$key = $question['key'];
-				if ($question['type'] == 'checkboxes') {
-					$data[$key] = json_decode($data[$key], TRUE);
-				} else if ($question['type'] == 'image') {
-					if (isset($data[$key])) {
-						$path = $data[$key]->store($event['id'] . '/' . $key . '/' . $userId);
-						$data[$key] = $path;
-					}
+				switch($question['type']) {
+					case 'checkboxes':
+					case 'number_sales':
+						$data[$key] = json_decode($data[$key], TRUE);
+						break;
+					case 'image':
+						if (isset($data[$key])) {
+							$path = $data[$key]->store($event['id'] . '/' . $key . '/' . $userId);
+							$data[$key] = $path;
+						}
+						break;
+					case 'phone':
+						$data[$key] = '+62' . $data[$key];
+						break;
 				}
 			}
 		}
@@ -243,7 +283,9 @@ class EventController extends Controller
 	    foreach ($steps as $step) {
 	    	$questions = array_merge($questions, $step);
 	    }
-	    $result = array_diff(array_column($questions, 'key'), ['balance']);
+
+	    $result = array_column($questions, 'key');
+
 	    if (isset($extra)) {
 		    $result = array_merge($result, $extra);
 	    }

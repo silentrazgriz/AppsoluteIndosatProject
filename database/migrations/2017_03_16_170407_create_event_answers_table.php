@@ -17,6 +17,7 @@ class CreateEventAnswersTable extends Migration
 	        $table->uuid('id');
 	        $table->uuid('event_id');
 	        $table->uuid('user_id');
+	        $table->integer('step');
 	        $table->string('area');
 	        $table->text('answer');
 	        $table->boolean('is_terminated');

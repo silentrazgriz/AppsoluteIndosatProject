@@ -23,8 +23,6 @@
 .SumoSelect:focus > .CaptionCont,.SumoSelect:hover > .CaptionCont, .SumoSelect.open > .CaptionCont {box-shadow: 0 0 2px #fad600;border-color: #fad600;}
 .SumoSelect > .CaptionCont { position: relative; border: 1px solid #ccd0d2; min-height: 14px; background-color: #fff;border-radius:30px;margin:0;}
 .SumoSelect > .CaptionCont > span { display: block; padding-right: 30px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;cursor:default;}
-/*placeholder style*/
-.SumoSelect > .CaptionCont > span.placeholder { color: #ccc; font-style: italic; }
 
 .SumoSelect > .CaptionCont > label { position: absolute; top: 0; right: 0; bottom: 0; width: 10%; height: 100%;}
 .SumoSelect > .CaptionCont > label:after {  content: "\e114";  font-family: 'Glyphicons Halflings';  position: absolute;  right: 0;  top: 0;  padding: 6px;  width: 100%;  height: 100%;  text-align: center;  pointer-events: none;  }

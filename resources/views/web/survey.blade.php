@@ -3,18 +3,14 @@
 @section('navigation')
 	<div class="status-bar small">
 		<div class="title row">
-			<div class="col-xs-6">
-				<h3><i class="fa fa-calendar-plus-o"></i> Report {{ $count }}</h3>
+			<div class="col-xs-4">
+				<h4><i class="fa fa-calendar-plus-o"></i> Report {{ $count }}</h4>
 			</div>
-			<div class="col-xs-6 text-center">
+			<div class="col-xs-8 text-right">
 				<div class="step-indicator">
-					@foreach($event['survey'] as $key => $step)
-					<div id="{{ $step['key'] }}-indicator" class="survey-indicator">
-						<span class="bubble">{{ $key+1 }}</span>
-					</div>
-					@endforeach
+					<span id="step-index">1</span>
+					<span id="step-description" class="text-center"></span>
 				</div>
-				<div id="step-description" class="text-center"></div>
 			</div>
 		</div>
 	</div>
@@ -23,6 +19,7 @@
 @section('content')
 	<form method="POST" action="{{ route('post-survey', ['id' => $event['id']]) }}" enctype="multipart/form-data">
 		{{ csrf_field() }}
+		<input type="hidden" id="step-input" name="step" value="0"/>
 		<input type="hidden" name="area" value="{{ $user['area'] }}"/>
 		@foreach($event['survey'] as $key => $step)
 			<div id="{{ $step['key'] }}" class="survey-step" data-step="{{ $key }}">
@@ -48,13 +45,14 @@
 
 @section('scripts')
 	<script>
-		let surveyData = JSON.parse('{!! json_encode($event['survey']) !!}');
+		let surveyData = {!! json_encode($event['survey']) !!};
 		$(function() {
 			// Set first step as first form
 			showStep(0);
 
 			$('.btn-next').click(function(e) {
 				let next = $(this).data('next-step');
+				$('#step-input').val(next);
 				showStep(next);
 				e.preventDefault();
 			});
@@ -64,13 +62,7 @@
 			let target = surveyData[index];
 			$('.survey-step').hide();
 			$('#' + target.key).show();
-			setIndicator(target);
-		}
-
-		function setIndicator(target) {
-			$('.survey-indicator').removeClass('active');
-			$('#' + target.key + '-indicator').addClass('active');
-
+			$('#step-index').html((index + 1));
 			$('#step-description').html(target.description);
 		}
 	</script>

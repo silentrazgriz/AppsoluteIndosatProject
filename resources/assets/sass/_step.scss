@@ -1,51 +1,23 @@
 @import "variables";
+
 .step-indicator {
-	display: inline-block;
-	margin-bottom: 6px;
-	.survey-indicator {
-		text-transform: uppercase;
-		list-style: none;
-		text-align: center;
-		width: 24px;
-		padding: 0;
-		margin: 0 10px 0 0;
+	margin: 12px 0;
+	span {
 		display: inline-block;
-		.bubble {
-			position: relative;
-			display: block;
+		&#step-index {
 			border-radius: 24px;
 			width: 24px;
 			height: 24px;
 			font-size: 12px;
-			background-color: $brand-primary;
-			margin: 0;
-			border: solid 2px white;
+			background-color: $brand-danger;
 			color: white;
-			&:after {
-				display: block;
-				position: absolute;
-				top: 10px;
-				left: 20px;
-				width: 20px;
-				height: 1px;
-				content: '';
-				border: solid 1px white;
-			}
+			text-align: center;
+			padding: 2px;
 		}
-		&:last-child {
-			width: 24px;
-			margin-right: 0;
-			.bubble:after {
-				display: none;
-				width: 0;
-				height: 0;
-			}
-		}
-		&.active {
-			.bubble {
-				color: $label-color;
-				background: white;
-			}
+		&#step-description {
+			position: relative;
+			top: 2px;
+			margin-left: 5px;
 		}
 	}
 }

@@ -14,9 +14,9 @@
 	</div>
 	<div class="row">
 		<div class="col-xs-2"><span class="icon-red"><i class="fa fa-calendar-check-o" aria-hidden="true"></i></span></div>
-		<div class="col-xs-4">{{ number_format($reports['success']) }} Success report</div>
+		<div class="col-xs-4">{{ number_format($reports['success']) }} Report Finished</div>
 		<div class="col-xs-2"><span class="icon-red"><i class="fa fa-calendar-times-o" aria-hidden="true"></i></span></div>
-		<div class="col-xs-4">{{ number_format($reports['failed']) }} Failed report</div>
+		<div class="col-xs-4">{{ number_format($reports['failed']) }} Report Failed</div>
 	</div>
 	<div class="row">
 		<div class="col-xs-2"><span class="icon-red"><i class="fa fa-map-marker" aria-hidden="true"></i></span></div>
