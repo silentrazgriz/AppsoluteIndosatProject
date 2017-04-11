@@ -3,13 +3,13 @@
 @section('navigation')
 	<div class="status-bar small">
 		<div class="title row">
-			<div class="col-xs-4">
+			<div class="col-xs-5">
 				<h4><i class="fa fa-calendar-plus-o"></i> Report {{ $count }}</h4>
 			</div>
-			<div class="col-xs-8 text-right">
+			<div class="col-xs-7 text-right">
 				<div class="step-indicator">
-					<span id="step-index">1</span>
-					<span id="step-description" class="text-center"></span>
+					<div id="step-index">1</div>
+					<div id="step-description" class="text-center"></div>
 				</div>
 			</div>
 		</div>
