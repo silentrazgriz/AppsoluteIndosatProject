@@ -9,7 +9,6 @@
 	       @if(isset($field['placeholder'])) placeholder="{{ $field['placeholder'] }}" @endif
 	       value="{{ old($field['key']) ?? $field['value'] ?? '' }}"
 	       @if(isset($field['step'])) step="{{ $field['step'] }}" @endif
-	       @if(isset($field['required']) && $field['required']) required @endif
 	       @if(isset($field['disabled']) && $field['disabled']) disabled @endif>
 	@if ($errors->has($field['key']))
 		<span class="help-block"><strong>{{ $errors->first($field['key']) }}</strong></span>

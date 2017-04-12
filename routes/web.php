@@ -17,8 +17,8 @@ Route::post('/logout', 'Auth\LoginController@logout')->name('post-logout');
 Route::get('/logout', 'Auth\LoginController@logout')->name('logout');
 
 Route::group(['middleware' => 'auth'], function() {
-	Route::get('/survey/{id}', 'EventController@survey')->name('survey');
-	Route::post('/survey/{id}', 'EventController@storeAnswer')->name('post-survey');
+	Route::get('/survey/{id}', 'SurveyController@show')->name('survey');
+	Route::post('/survey/{id}', 'SurveyController@store')->name('post-survey');
 
 	Route::post('/balance', 'SalesController@updateSalesBalance')->name('post-balance');
 });

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\SurveyHelpers;
 use App\Helpers\TableHelpers;
 use App\Models\BalanceHistory;
 use App\Models\Event;
@@ -21,19 +22,6 @@ class EventController extends Controller
 			'name' => 'max:255',
 			'date' => 'date'
 		]);
-	}
-
-	public function survey($id) {
-		$event = Event::find($id)->toArray();
-		$user = Auth::user()->toArray();
-		$reportCount = EventAnswer::where('user_id', Auth::id())
-			    ->where('event_id', $event['id'])
-			    ->count();
-		$numbers = NumberList::where('is_taken', 0)
-			->get()
-			->toArray();
-
-		return view('web.survey', ['event' => $event, 'user' => $user, 'count' => $reportCount + 1, 'numbers' => $numbers]);
 	}
 
     public function index() {
@@ -75,7 +63,7 @@ class EventController extends Controller
 		    'id' => 'answer-table',
 		    'summary' => $event,
 		    'columns' => array(),
-		    'values' => $this->surveyAnswerToViewFormat($eventAnswers, $event['column']),
+		    'values' => $this->parseSurveyAnswer($eventAnswers, $event['column']),
 		    'popup' => true
 	    ];
 
@@ -92,51 +80,6 @@ class EventController extends Controller
 
     public function edit($id) {
 
-    }
-
-    public function storeAnswer($id, Request $request) {
-		$event = Event::find($id)->toArray();
-		$userId = Auth::id();
-		$isTerminated = $request['is_terminated'];
-		$data = $request->only($this->getSurveyColumns($event, ['terminate']));
-		$area = $request['area'];
-		$step = $request['step'];
-
-	    $this->parseSurveyAnswer($event, $userId, $data);
-
-		DB::transaction(function () use ($data, $area, $step, $event, $userId, $isTerminated) {
-			EventAnswer::create([
-				'event_id' => $event['id'],
-				'user_id' => $userId,
-				'area' => $area,
-				'step' => $step,
-				'answer' => $data,
-				'is_terminated' => $isTerminated
- 			]);
-
-			if (isset($data['sales'])) {
-				$this->removeTakenNumber($data['sales']);
-			}
-
-			if (!$isTerminated && isset($data['voucher'])) {
-				$voucher = $this->getVoucherValue($data['sales']);
-
-				$sales = User::find(Auth::id());
-
-				$sales->balance -= $voucher;
-				$sales->save();
-
-				if ($data['voucher'] > 0) {
-					BalanceHistory::create([
-						'user_id' => Auth::id(),
-						'balance' => $voucher * -1,
-						'added_by_admin' => false
-					]);
-				}
-			}
-		});
-
-		return redirect()->route('home');
     }
 
 	public function store(Request $request) {
@@ -170,30 +113,8 @@ class EventController extends Controller
 
     }
 
-    private function removeTakenNumber($data) {
-		foreach ($data as $sales) {
-			$number = NumberList::where('number', $sales['number'])
-				->first();
-
-			if (isset($number)) {
-				$number->is_taken = 1;
-				$number->save();
-			}
-		}
-    }
-
-    private function getVoucherValue($data) {
-		$total = 0;
-		foreach ($data as $sales) {
-			foreach ($sales['voucher'] as $denom) {
-				$total += $denom;
-			}
-		}
-		return $total;
-    }
-
-    private function surveyAnswerToViewFormat($answers, $columns) {
-	    $questions = $this->getQuestions($columns, [['key' => 'terminate', 'type' => 'terminate']]);
+    private function parseSurveyAnswer($answers, $columns) {
+	    $questions = SurveyHelpers::getQuestions($columns, [['key' => 'terminate', 'type' => 'terminate']]);
 
 	    foreach($answers as &$answer) {
 	    	$answer['status'] = ($answer['status'] == 0) ? 'Success' : 'Terminated';
@@ -231,65 +152,5 @@ class EventController extends Controller
 	    }
 
 	    return $answers;
-    }
-
-    private function parseSurveyAnswer($event, $userId, &$data) {
-		$questions = $this->getQuestions($event['survey']);
-
-		foreach($questions as $question) {
-			if (isset($question['key'])) {
-				$key = $question['key'];
-				switch($question['type']) {
-					case 'checkboxes':
-					case 'number_sales':
-						$data[$key] = json_decode($data[$key], TRUE);
-						break;
-					case 'image':
-						if (isset($data[$key])) {
-							$path = $data[$key]->store($event['id'] . '/' . $key . '/' . $userId);
-							$data[$key] = $path;
-						}
-						break;
-					case 'phone':
-						$data[$key] = '+62' . $data[$key];
-						break;
-				}
-			}
-		}
-    }
-
-    private function getQuestions($columns, array $extra = null) {
-	    $questions = array();
-
-	    foreach($columns as $column) {
-		    foreach ($column['questions'] as $question) {
-			    if(isset($question['key'])) {
-				    array_push($questions, $question);
-			    }
-		    }
-	    }
-
-	    if (isset($extra)) {
-		    array_merge($questions, $extra);
-	    }
-
-	    return $questions;
-    }
-
-    private function getSurveyColumns($event, array $extra = null) {
-	    $steps = array_column($event['survey'], 'questions');
-	    $questions = array();
-
-	    foreach ($steps as $step) {
-	    	$questions = array_merge($questions, $step);
-	    }
-
-	    $result = array_column($questions, 'key');
-
-	    if (isset($extra)) {
-		    $result = array_merge($result, $extra);
-	    }
-
-	    return $result;
     }
 }
