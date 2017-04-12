@@ -55,7 +55,7 @@ class NumberListController extends Controller
 		}
 
 	    DB::transaction(function () use ($data) {
-			$numbers = explode("\n", $data['number']);
+			$numbers = explode("\r\n", $data['number']);
 			foreach ($numbers as $number) {
 				if (!empty($number)) {
 					NumberList::create(['number' => $number]);

@@ -18,7 +18,7 @@
 		let data = {!! json_encode($field) !!};
 		let dataCount = 0;
 		let balance = {{ $user['balance'] }};
-		let template = '<div class="form-group"><label for="@number-key">@number-text</label><input id="@number-key" list="number-list" type="number" class="form-control border-round" onchange="processData(@index)"><datalist id="number-list"></datalist></div>' +
+		let template = '<div class="form-group"><label for="@number-key">@number-text</label><input id="@number-key" list="@number-list-key" type="number" class="form-control border-round" onchange="processData(@index)"><datalist id="@number-list-key"></datalist></div>' +
 			'<div class="form-group"><label for="@voucher-key">@voucher-text</label><span class="select"><select id="@voucher-key" class="form-control sumo-select border-round" onchange="processData(@index)" multiple></select></span></div>' +
 			'<div class="form-group"><label for="@package-key">@package-text</label><span class="select"><select id="@package-key" class="form-control sumo-select border-round" onchange="processData(@index)"></select></span></div>' +
 			'<hr/>';
@@ -56,7 +56,7 @@
 
 		function addForm() {
 			$('#number-sales').append(parseTemplate());
-			fillNumberData();
+			fillNumberData(dataCount);
 			fillPackageData();
 			fillVoucherData();
 
@@ -87,11 +87,11 @@
 			});
 		}
 
-		function fillNumberData() {
-			$('#number-list').empty();
+		function fillNumberData(index) {
+			$('#number-list-' + index).empty();
 			$.each(numberList, function (i, item) {
 				if (item['is_taken'] == 0) {
-					$('#number-list').append($('<option>', {
+					$('#number-list-' + index).append($('<option>', {
 						value: item['number']
 					}));
 				}
@@ -123,6 +123,7 @@
 		function parseTemplate() {
 			dataCount++;
 			return template.replaceAll('@number-key', 'number-' + dataCount)
+				.replaceAll('@number-list-key', 'number-list-' + dataCount)
 				.replaceAll('@number-text', data['number']['text'])
 				.replaceAll('@number-placeholder', data['number']['placeholder'])
 				.replaceAll('@package-key', 'package-' + dataCount)

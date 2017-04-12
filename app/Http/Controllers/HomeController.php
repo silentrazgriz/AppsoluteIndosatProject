@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
+	private const RESET_HOUR = 3;
+
     /**
      * Show the application dashboard.
      *
@@ -64,8 +66,16 @@ class HomeController extends Controller
     }
 
     private function getReportCount($event) {
+		$date = Carbon::now();
+		if ($date->hour < self::RESET_HOUR) {
+			$date->subDay(1)->setTime(3, 0, 0);
+		} else {
+			$date->setTime(3, 0, 0);
+		}
+
 	    $reports = EventAnswer::where('user_id', Auth::id())
 		    ->where('event_id', $event['id'])
+		    ->where('created_at', '>=', $date->toDateTimeString())
 		    ->get();
 
 	    $results['success'] = $reports->where('is_terminated', 0)->count();

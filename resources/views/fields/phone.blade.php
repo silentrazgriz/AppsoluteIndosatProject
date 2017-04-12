@@ -8,8 +8,9 @@
 		       type="tel"
 		       class="form-control {{ isset($field['class']) ? $field['class'] : 'border-round' }}"
 		       name="{{ $field['key'] }}"
-		       @if(isset($field['placeholder'])) placeholder="{{ $field['placeholder'] }}" @endif
 		       value="{{ old($field['key']) ?? $field['value'] ?? '' }}"
+		       @if(isset($field['placeholder'])) placeholder="{{ $field['placeholder'] }}" @endif
+		       @if(isset($field['required']) && $field['required']) required @endif
 		       @if(isset($field['readonly']) && $field['readonly']) readonly @endif>
 	</div>
 	@if ($errors->has($field['key']))

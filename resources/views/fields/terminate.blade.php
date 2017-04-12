@@ -16,7 +16,7 @@
 </div>
 <div class="form-group text-center">
 	<hr/>
-	<input type="hidden" name="is_terminated" id="is-terminated" value="0">
+	<input type="hidden" name="is_terminated" id="is-terminated" value="1">
 	<button type="button" id="btn-terminate" class="btn btn-danger border-round"
 	        data-toggle="modal" data-target="#terminate-modal" data-backdrop="static" data-keyboard="false">TERMINATE</button>
 </div>
@@ -24,6 +24,18 @@
 @section('scripts')
 	<script>
 		$(function() {
+			$('.terminate-empty').change(function(e) {
+				let terminateEmpty = $('.terminate-empty');
+				let inputCount = terminateEmpty.length;
+				$.each(terminateEmpty, function(i, input) {
+					if (input.value == "") {
+						return false;
+					} else if (i == inputCount - 1) {
+						$('#is-terminated').val(0);
+					}
+				});
+			});
+
 			$('#btn-terminate').click(function(e) {
 				$('#terminate').prop('required', true);
 				$('.required').prop('required', false);

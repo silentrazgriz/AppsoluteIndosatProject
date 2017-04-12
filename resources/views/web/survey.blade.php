@@ -46,17 +46,35 @@
 @section('scripts')
 	<script>
 		let surveyData = {!! json_encode($event['survey']) !!};
+		let step = 0;
+
 		$(function() {
 			// Set first step as first form
-			showStep(0);
+			showStep(step);
 
 			$('.btn-next').click(function(e) {
-				let next = $(this).data('next-step');
-				$('#step-input').val(next);
-				showStep(next);
+				console.log(isRequiredFilled());
+				if (isRequiredFilled()) {
+					let next = $(this).data('next-step');
+					step = next;
+					$('#step-input').val(next);
+					showStep(next);
+				} else {
+					alert(getErrorMessage());
+				}
 				e.preventDefault();
 			});
 		});
+
+		function getErrorMessage() {
+			let selectors = getRequiredSelectors();
+			if ($(selectors.text).length > 0) {
+				return getLabelTextFromInput($(selectors.text).attr('id')) + ' belum diisi';
+			} else if ($(selectors.image).length > 0) {
+				return getLabelTextFromInput($(selectors.image).attr('id')) + ' belum diisi';
+			}
+			return '';
+		}
 
 		function showStep(index) {
 			let target = surveyData[index];
@@ -64,6 +82,24 @@
 			$('#' + target.key).show();
 			$('#step-index').html((index + 1));
 			$('#step-description').html(target.description);
+		}
+
+		function isRequiredFilled() {
+			let selectors = getRequiredSelectors();
+			return ($(selectors.text).length != 0 && $(selectors.text).val().length != 0) ||
+				($(selectors.image).length != 0 && $(selectors.image).val().length != 0) ||
+				($(selectors.text).length == 0 && $(selectors.image).length == 0);
+		}
+
+		function getLabelTextFromInput(id) {
+			return $('label[for=' + id + ']').html();
+		}
+
+		function getRequiredSelectors() {
+			return {
+				text: '#' + surveyData[step]['key'] + ' input[type=text].required',
+				image: '#' + surveyData[step]['key'] + ' input[type=file].required'
+			};
 		}
 	</script>
 @append

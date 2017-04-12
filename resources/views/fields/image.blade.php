@@ -7,7 +7,7 @@
 		       type="file"
 		       accept="image/*"
 		       capture="camera"
-		       name="{{ $field['key'] }}">
+		       name="{{ $field['key'] }}" class="{{ isset($field['class']) ? $field['class'] : '' }}">
 		<label for="{{ $field['key'] }}" class="btn btn-danger border-round">Upload file</label>
 		<img id="{{ $field['key'] }}-preview" src="">
 	</div>
@@ -29,7 +29,7 @@
 				let reader = new FileReader();
 				reader.onload = function(e) {
 					$('#{{ $field['key'] }}-preview').attr('src', e.target.result);
-				}
+				};
 				reader.readAsDataURL(input.files[0]);
 			}
 		}
