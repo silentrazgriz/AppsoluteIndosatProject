@@ -17,23 +17,26 @@ class NumberListController extends Controller
 	}
 
     public function index() {
+		$numbers = NumberList::select('id', 'number', 'is_taken as taken')
+			->orderBy('is_taken', 'asc')
+			->paginate(config('constants.ITEM_PER_PAGE'));
+
 	    $data = [
+	    	'numbers' => $numbers,
 		    'id' => 'number-table',
 		    'columns' => array(),
-		    'values' => NumberList::select('id', 'number', 'is_taken as taken')
-			    ->orderBy('is_taken', 'asc')
-			    ->get()
-			    ->toArray(),
+		    'values' => $numbers->toArray()['data'],
 		    'destroy' => 'delete-number'
 	    ];
-	    if (count($data['numbers']) > 0) {
-			$data['columns'] = TableHelpers::getColumns($data['number'][0], ['id']);
+
+	    if (count($data['values']) > 0) {
+			$data['columns'] = TableHelpers::getColumns($data['values'][0], ['id']);
 			foreach ($data['values'] as &$value) {
 				$value['taken'] = ($value['taken']) ? 'YES' : 'NO';
 			}
 	    }
 
-	    return view('admin.number.list', ['page' => 'number', 'data' => $data]);
+	    return view('admin.number.list', ['page' => 'number', 'data' => $data, 'paginate' => true]);
     }
 
     public function create() {
