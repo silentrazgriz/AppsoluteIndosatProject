@@ -21,11 +21,11 @@ class Event extends UuidModel
     /**
      * @var array
      */
-    protected $fillable = ['name', 'date', 'auth_code', 'survey', 'created_at', 'updated_at', 'deleted_at'];
+    protected $fillable = ['name', 'date', 'auth_code', 'survey', 'kpi', 'created_at', 'updated_at', 'deleted_at'];
 
     protected $hidden = ['created_at', 'updated_at', 'deleted_at'];
 
-	protected $casts = ['survey' => 'array', 'column' => 'array'];
+	protected $casts = ['survey' => 'array', 'kpi' => 'array'];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany

@@ -11,12 +11,16 @@ $panel-inner-border: $laravel-border-color;
 
 // Brands
 $brand-primary: #fad600;
-$brand-info: #8eb4cb;
-$brand-success: #98ca50;
-$brand-warning: #cbb956;
+$brand-info: #43cbf5;
+$brand-success: #a3cf53;
+$brand-warning: #feea73;
 $brand-danger: #ed3835;
 
 $label-color: #ed3835;
+$state-danger-text: $brand-danger !default;
+$state-warning-text: $brand-warning !default;
+$state-success-text: $brand-success !default;
+$state-info-text: $brand-info !default;
 
 // Typography
 $icon-font-path: "~bootstrap-sass/assets/fonts/bootstrap/";

@@ -23,6 +23,7 @@
 		<div class="col-xs-10">{{ $location }}</div>
 	</div>
 </div>
+@include('web.component.kpi')
 <div class="row text-center user-action">
 	<div>
 		<a href="{{ route('survey', ['id' => $event['id']]) }}" class="btn btn-primary border-round"><i class="fa fa-plus-circle" aria-hidden="true"></i> REPORT</a>

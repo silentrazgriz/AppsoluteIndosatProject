@@ -32,8 +32,8 @@ class SurveyController extends Controller
 	public function store($id, Request $request) {
 		$event = Event::find($id)->toArray();
 		$userId = Auth::id();
-		$isTerminated = $request['is_terminated'];
 		$data = $request->only($this->getSurveyColumns($event, ['terminate']));
+		$isTerminated = $request['is_terminated'];
 		$area = $request['area'];
 		$step = $request['step'];
 
@@ -53,7 +53,7 @@ class SurveyController extends Controller
 				$this->removeTakenNumber($data['sales']);
 			}
 
-			if (!$isTerminated && isset($data['voucher'])) {
+			if (!$isTerminated && isset($data['sales'])) {
 				$voucher = $this->getVoucherValue($data['sales']);
 
 				$sales = User::find(Auth::id());
@@ -61,7 +61,7 @@ class SurveyController extends Controller
 				$sales->balance -= $voucher;
 				$sales->save();
 
-				if ($data['voucher'] > 0) {
+				if ($voucher > 0) {
 					BalanceHistory::create([
 						'user_id' => Auth::id(),
 						'balance' => $voucher * -1,

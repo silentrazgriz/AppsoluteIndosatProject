@@ -2,7 +2,7 @@
 	<input type="hidden" id="{{ $field['key'] }}-input" name="{{ $field['key'] }}" value="">
 </div>
 <div class="form-group text-center">
-	<button type="button" class="btn btn-primary border-round" onclick="addForm()">Tambah Pembelian</button>
+	<button type="button" class="btn btn-primary border-round" onclick="addForm()">TAMBAH PEMBELIAN</button>
 </div>
 <div class="form-group">
 	<label>Saldo kamu</label>
@@ -65,7 +65,7 @@
 
 		function setBalance(values) {
 			$('#user-balance').html(
-				'Rp. ' + numberFormat(balance - getAllVoucherValue(values))
+				'Rp. ' + (balance - getAllVoucherValue(values)).toLocaleString()
 			);
 		}
 
@@ -114,10 +114,6 @@
 					text: item['text']
 				}));
 			});
-		}
-
-		function numberFormat(number) {
-			return number.toString().replace(/(\d)(?=(\d{3})+\.)/g, '$1,');
 		}
 
 		function parseTemplate() {

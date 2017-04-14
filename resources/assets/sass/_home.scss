@@ -37,3 +37,12 @@
 .user-action a:last-child {
 	margin-top: 10px;
 }
+
+ul {
+	color: $label-color;
+	li {
+		span {
+			color: $text-color;
+		}
+	}
+}

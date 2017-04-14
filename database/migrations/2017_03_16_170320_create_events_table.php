@@ -19,6 +19,7 @@ class CreateEventsTable extends Migration
 	        $table->date('date');
 	        $table->string('auth_code');
 	        $table->text('survey'); // json
+	        $table->text('kpi'); // json
             $table->timestamps();
             $table->softDeletes();
 

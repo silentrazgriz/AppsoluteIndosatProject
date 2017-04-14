@@ -1,9 +1,11 @@
 @import "variables";
 
 .step-indicator {
-	margin: 5px 0;
+	display: inline-block;
+	margin: 12px 0;
 	#step-index {
 		position: relative;
+		display: inline-block;
 		margin: auto;
 		border-radius: 24px;
 		width: 24px;
@@ -14,4 +16,11 @@
 		text-align: center;
 		padding: 3px;
 	}
+	#step-description {
+		margin-left: 3px;
+	}
+}
+
+h4.inline-block {
+	display: inline-block;
 }
