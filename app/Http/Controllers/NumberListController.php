@@ -17,18 +17,17 @@ class NumberListController extends Controller
 	}
 
     public function index() {
-		$numbers = NumberList::select('id', 'number', 'is_taken as taken')
-			->orderBy('is_taken', 'asc')
-			->get()
-			->toArray();
 	    $data = [
 		    'id' => 'number-table',
 		    'columns' => array(),
-		    'values' => $numbers,
+		    'values' => NumberList::select('id', 'number', 'is_taken as taken')
+			    ->orderBy('is_taken', 'asc')
+			    ->get()
+			    ->toArray(),
 		    'destroy' => 'delete-number'
 	    ];
-	    if (count($numbers) > 0) {
-			$data['columns'] = TableHelpers::getColumns($numbers[0], ['id']);
+	    if (count($data['numbers']) > 0) {
+			$data['columns'] = TableHelpers::getColumns($data['number'][0], ['id']);
 			foreach ($data['values'] as &$value) {
 				$value['taken'] = ($value['taken']) ? 'YES' : 'NO';
 			}
