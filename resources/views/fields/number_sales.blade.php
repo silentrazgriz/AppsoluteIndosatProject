@@ -33,20 +33,32 @@
 			let voucherData = $('#voucher-' + index).val();
 
 			setInputValue(index, {
-				"number": numberData,
-				"package": packageData,
-				"voucher": voucherData
+				'number': numberData,
+				'package': packageData,
+				'voucher': voucherData
 			});
 		}
 
 		function setInputValue(index, data) {
 			let fieldValue = $('#{{ $field['key'] }}-input').val();
 			let values = (fieldValue == '') ? [] : JSON.parse(fieldValue);
+			let errorMessage = '';
 
 			if (index <= values.length) {
 				values[index - 1] = data;
 			} else {
 				values.push(data);
+			}
+
+			if (data['number'] != '' && !isNumberExists(data['number'])) {
+				errorMessage = 'Nomor SP tidak terdaftar';
+			} else if (getAllVoucherValue(values) > balance) {
+				errorMessage = 'Saldo anda tidak cukup';
+			}
+			if (errorMessage != '') {
+				alert(errorMessage);
+				values.splice(index - 1, 1);
+				resetField(index);
 			}
 
 			setBalance(values);
@@ -67,6 +79,18 @@
 			$('#user-balance').html(
 				'Rp. ' + (balance - getAllVoucherValue(values)).toLocaleString()
 			);
+		}
+
+		function isNumberExists(number) {
+			result = false;
+
+			$.each(numberList, function(key, data) {
+				if (data['number'] == number) {
+					result = true;
+					return false;
+				}
+			});
+			return result;
 		}
 
 		function getAllVoucherValue(values) {
@@ -114,6 +138,22 @@
 					text: item['text']
 				}));
 			});
+		}
+
+		function resetField(index) {
+			$('#number-' + index).val('');
+			resetSumoSelect('#voucher-' + index + '.sumo-select', -1);
+			resetSumoSelect('#package-' + index + '.sumo-select', 0);
+		}
+
+		function resetSumoSelect(selector, value) {
+			let sumoSelect = $(selector)[0].sumo;
+			if (value == -1) {
+				sumoSelect.unSelectAll();
+			} else {
+				sumoSelect.selectItem(value);
+			}
+			sumoSelect.reload();
 		}
 
 		function parseTemplate() {

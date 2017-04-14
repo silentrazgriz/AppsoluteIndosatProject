@@ -51,7 +51,6 @@
 	<script>
 		$(function() {
 			let location = $.get("https://maps.googleapis.com/maps/api/geocode/json?latlng=-6.1992129,106.7842264&key=AIzaSyCNuAicyuHAcSTDb7fZVeJH-pU9Qns0KBk");
-			console.log(location);
 		});
 	</script>
 @append

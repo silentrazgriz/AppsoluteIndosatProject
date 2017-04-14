@@ -21,6 +21,7 @@ class SurveyController extends Controller
 			'event' => Event::find($id)->toArray(),
 			'user' => Auth::user()->toArray(),
 			'numbers' => NumberList::where('is_taken', 0)
+				->orderBy('number', 'asc')
 				->get()
 				->toArray()
 		];
@@ -84,8 +85,15 @@ class SurveyController extends Controller
 				$key = $question['key'];
 				switch($question['type']) {
 					case 'checkboxes':
+						$data[$key] = json_decode($data[$key], TRUE);
+						break;
 					case 'number_sales':
 						$data[$key] = json_decode($data[$key], TRUE);
+						foreach ($data[$key] as $index => $item) {
+							if (empty($item['number'])) {
+								unset($data[$key][$index]);
+							}
+						}
 						break;
 					case 'image':
 						if (isset($data[$key])) {
@@ -116,8 +124,10 @@ class SurveyController extends Controller
 	private function getVoucherValue($data) {
 		$total = 0;
 		foreach ($data as $sales) {
-			foreach ($sales['voucher'] as $denom) {
-				$total += $denom;
+			if (!empty($sales['number'])) {
+				foreach ($sales['voucher'] as $denom) {
+					$total += $denom;
+				}
 			}
 		}
 		return $total;

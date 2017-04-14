@@ -4,7 +4,7 @@
 	<div class="status-bar small">
 		<div class="title">
 			<a href="{{ route('home') }}" class="btn-back"><i class="fa fa-arrow-circle-left fa-2x"></i></a>
-			<h4>Leaderboard</h4>
+			<h4>Performance Board</h4>
 			<span class="date pull-right">{{ $date }}</span>
 		</div>
 	</div>

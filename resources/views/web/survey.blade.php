@@ -51,7 +51,6 @@
 			showStep(step);
 
 			$('.btn-next').click(function(e) {
-				console.log(isRequiredFilled());
 				if (isRequiredFilled()) {
 					let next = $(this).data('next-step');
 					step = next;

@@ -95,6 +95,10 @@ class KpiHelpers
 
 	private static function getRecursiveArray($arr, array $keys)
 	{
+		if (!isset($arr)) {
+			return [];
+		}
+
 		if (count($keys) > 0) {
 			$key = array_shift($keys);
 			if (array_key_exists($key, $arr)) {
@@ -102,7 +106,9 @@ class KpiHelpers
 			} else {
 				$temp = [];
 				foreach ($arr as $item) {
-					array_push($temp, $item[$key]);
+					if (!empty($item[$key])) {
+						array_push($temp, $item[$key]);
+					}
 				}
 				return self::getRecursiveArray($temp, $keys);
 			}
