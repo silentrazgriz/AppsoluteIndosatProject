@@ -7,7 +7,7 @@
 		<li>
 			<span>{{ $kpi['text'] }}</span>
 			<div class="pull-right">
-				<span class="{{ ($kpi['result'] < $kpi['goal']) ? 'text-danger' : 'text-success' }}">{{ number_format($kpi['result']) }}</span>
+				<span class="{{ ($kpi['result'] < $kpi['goal']) ? 'text-danger' : (($kpi['result'] > $kpi['goal']) ? 'text-info' : 'text-success') }}">{{ number_format($kpi['result']) }}</span>
 				<span>/ {{ number_format($kpi['goal']) }} {{ $kpi['unit'] }}</span>
 			</div>
 		</li>

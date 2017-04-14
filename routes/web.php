@@ -12,6 +12,7 @@
 */
 
 Route::get('/', 'HomeController@index')->name('home');
+Route::get('/performance', 'HomeController@leaderboard')->name('leaderboard');
 Route::post('/login', 'Auth\LoginController@login')->name('post-login');
 Route::post('/logout', 'Auth\LoginController@logout')->name('post-logout');
 Route::get('/logout', 'Auth\LoginController@logout')->name('logout');

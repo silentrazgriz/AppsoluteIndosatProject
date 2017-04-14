@@ -17,25 +17,27 @@ use Illuminate\Support\Facades\DB;
 class SurveyController extends Controller
 {
 	public function show($id) {
-		$event = Event::find($id)->toArray();
-		$user = Auth::user()->toArray();
-		$reportCount = EventAnswer::where('user_id', Auth::id())
-			->where('event_id', $event['id'])
+		$data = [
+			'event' => Event::find($id)->toArray(),
+			'user' => Auth::user()->toArray(),
+			'numbers' => NumberList::where('is_taken', 0)
+				->get()
+				->toArray()
+		];
+		$data['count'] = EventAnswer::where('user_id', Auth::id())
+			->where('event_id', $data['event']['id'])
 			->count();
-		$numbers = NumberList::where('is_taken', 0)
-			->get()
-			->toArray();
 
-		return view('web.survey', ['event' => $event, 'user' => $user, 'count' => $reportCount + 1, 'numbers' => $numbers]);
+		return view('web.survey', $data);
 	}
 
 	public function store($id, Request $request) {
 		$event = Event::find($id)->toArray();
 		$userId = Auth::id();
-		$data = $request->only($this->getSurveyColumns($event, ['terminate']));
 		$isTerminated = $request['is_terminated'];
 		$area = $request['area'];
 		$step = $request['step'];
+		$data = $request->only($this->getSurveyColumns($event, ['terminate']));
 
 		$this->parseSurveyAnswer($event, $userId, $data);
 

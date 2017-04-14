@@ -1,9 +1,5 @@
 @import "variables";
 
-h2 {
-	font-weight: bold;
-}
-
 .status-bar {
 	display: block;
 	background-color: $brand-primary;
@@ -32,7 +28,17 @@ h2 {
 		.title {
 			font-size: 16px;
 			h3, h4 {
+				display: inline-block;
 				margin: 15px auto;
+			}
+			.btn-back {
+				position: relative;
+				top: 4px;
+				margin-right: 5px;
+				color: white;
+			}
+			.date {
+				margin: 14px auto;
 			}
 		}
 	}

@@ -28,6 +28,9 @@
 	<div>
 		<a href="{{ route('survey', ['id' => $event['id']]) }}" class="btn btn-primary border-round"><i class="fa fa-plus-circle" aria-hidden="true"></i> REPORT</a>
 	</div>
+	<div>
+		<a href="{{ route('leaderboard') }}" class="btn btn-primary border-round">PERFORMANCE BOARD</a>
+	</div>
 	@if(Auth::user()->is_admin)
 		<div>
 			<a href="{{ route('dashboard') }}" class="btn btn-primary border-round">CMS</a>
