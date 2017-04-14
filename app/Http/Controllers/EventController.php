@@ -34,7 +34,7 @@ class EventController extends Controller
 			'columns' => array(),
 			'values' => $events,
 			//'edit' => 'edit-event',
-			//'destroy' => 'delete-event',
+			'destroy' => 'delete-event',
 			'detail' => 'show-event'
 		];
 	    if (count($events) > 0) {
@@ -110,7 +110,11 @@ class EventController extends Controller
 	}
 
     public function destroy($id) {
+	    DB::transaction(function () use ($id) {
+		    Event::destroy($id);
+	    });
 
+	    return redirect()->route('event');
     }
 
     private function parseSurveyAnswer($answers, $columns) {

@@ -49,20 +49,19 @@ class SalesController extends Controller
 	}
 
 	public function index() {
-		$sales = User::orderBy('email', 'asc')
-			->leftJoin('sales_areas', 'sales_areas.id', '=', 'sales_area_id')
-			->select('users.id', 'email', 'name', 'gender', 'description as area', 'phone', 'balance')
-			->get()
-			->toArray();
 		$data = [
 			'id' => 'sales-table',
 			'columns' => array(),
-			'values' => $sales,
+			'values' => User::orderBy('email', 'asc')
+				->leftJoin('sales_areas', 'sales_areas.id', '=', 'sales_area_id')
+				->select('users.id', 'email', 'name', 'gender', 'description as area', 'phone', 'balance')
+				->get()
+				->toArray(),
 			'edit' => 'edit-sales',
 			'destroy' => 'delete-sales'
 		];
-		if (count($sales) > 0) {
-			$data['columns'] = TableHelpers::getColumns($sales[0], ['id']);
+		if (count($data['sales']) > 0) {
+			$data['columns'] = TableHelpers::getColumns($data['sales'][0], ['id']);
 			foreach ($data['values'] as &$value) {
 				$value['gender'] = ucfirst($value['gender']);
 				$value['balance'] = 'Rp. ' . number_format($value['balance']);
@@ -70,10 +69,6 @@ class SalesController extends Controller
 		}
 
 		return view('admin.sales.list', ['page' => 'sales', 'data' => $data]);
-	}
-
-	public function show($id) {
-
 	}
 
 	public function create() {
