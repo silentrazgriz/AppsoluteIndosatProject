@@ -58,13 +58,11 @@ class NumberListController extends Controller
 
 	    DB::transaction(function () use ($data) {
 			$numbers = explode("\r\n", $data['number']);
-			$temp = [];
 			foreach ($numbers as $number) {
 				if (!empty($number)) {
-					array_push($temp, ['number' => $data['number']]);
+					NumberList::create(['number' => $number]);
 				}
 			}
-		    NumberList::create($temp);
 	    });
 
 	    return redirect()->route('number');
