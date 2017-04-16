@@ -86,7 +86,7 @@ class KpiHelpers
 	public static function getUserEventAnswers($event, $userId, $date = -1)
 	{
 		// format for $date "Y-m-d" ex: "1975-05-21"
-		$cDate = ($date == -1) ? Carbon::now() : Carbon::createFromFormat("Y-m-d", $date);
+		$cDate = ($date == -1) ? Carbon::now() : Carbon::createFromFormat("Y-m-d", $date)->setTime(12, 0, 0);
 		if ($cDate->hour < config('constants.RESET_HOUR')) {
 			$cDate->subDay(1)->setTime(3, 0, 0);
 		} else {
