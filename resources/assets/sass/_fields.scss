@@ -45,12 +45,12 @@ textarea:focus {
 }
 
 .border-round {
-	min-width: 100px;
-	border-radius: 30px;
-	padding: 6px 20px;
+	min-width: 100px !important;
+	border-radius: 30px !important;
+	padding: 6px 20px !important;
 	&.input-group-addon {
-		min-width: 0;
-		padding: 6px 12px 6px 16px;
+		min-width: 0 !important;
+		padding: 6px 12px 6px 16px !important;
 	}
 }
 

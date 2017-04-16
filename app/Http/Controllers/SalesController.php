@@ -60,8 +60,8 @@ class SalesController extends Controller
 			'edit' => 'edit-sales',
 			'destroy' => 'delete-sales'
 		];
-		if (count($data['sales']) > 0) {
-			$data['columns'] = TableHelpers::getColumns($data['sales'][0], ['id']);
+		if (count($data['values']) > 0) {
+			$data['columns'] = TableHelpers::getColumns($data['values'][0], ['id']);
 			foreach ($data['values'] as &$value) {
 				$value['gender'] = ucfirst($value['gender']);
 				$value['balance'] = 'Rp. ' . number_format($value['balance']);
