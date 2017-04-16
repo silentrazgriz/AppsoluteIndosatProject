@@ -93,7 +93,7 @@ class KpiHelpers
 		}
 
 		return EventAnswer::where('event_id', $event['id'])
-			//->where('created_at', '>=', $date->toDateTimeString())
+			->where('created_at', '>=', $date->toDateTimeString())
 			->where('user_id', $userId);
 	}
 
