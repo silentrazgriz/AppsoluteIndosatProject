@@ -34,6 +34,7 @@ class NumberListController extends Controller
 			foreach ($data['values'] as &$value) {
 				$value['taken'] = ($value['taken']) ? 'YES' : 'NO';
 			}
+			unset($value);
 	    }
 
 	    return view('admin.number.list', ['page' => 'number', 'data' => $data, 'paginate' => true]);

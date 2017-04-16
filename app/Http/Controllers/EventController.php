@@ -153,7 +153,9 @@ class EventController extends Controller
 			    	$detail = implode(', ', $detail);
 			    }
 		    }
+		    unset($detail);
 	    }
+	    unset($answer);
 
 	    return $answers;
     }

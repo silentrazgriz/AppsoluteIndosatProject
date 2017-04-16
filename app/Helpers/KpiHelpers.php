@@ -10,6 +10,7 @@ use Carbon\Carbon;
 
 class KpiHelpers
 {
+
 	public static function getLeaderboardKpi($event)
 	{
 		$kpis = $event['kpi'];
@@ -40,43 +41,46 @@ class KpiHelpers
 
 		$results = [];
 		foreach ($kpis as &$kpi) {
-			$tempResult = 0;
+			foreach ($eventAnswers as $key => $eventAnswer) {
+				$result = 0;
+				if (in_array($kpi['type'], config('constants.FIELD_REQUIRED_TYPES'))) {
+					foreach ($kpi['values'] as $field) {
+						$data = self::getRecursiveArray($eventAnswer['answer'], explode('.', $field));
+						$result += max($result, self::getKpiResult($data, $kpi));
+					}
 
-			foreach ($eventAnswers as $eventAnswer) {
-				$data = self::getRecursiveArray($eventAnswer['answer'], explode('.', $kpi['field']));
-				$result = null;
-				switch ($kpi['type']) {
-					case 'count':
-						$result = count($data);
-						break;
-					case 'require':
-						$result = isset($data) ? 1 : 0;
-						break;
-					case 'require_multiple':
-						$result = (count(array_diff($kpi['values'], $data)) == 0) ? 1 : 0;
-						break;
-					case 'price':
-						$result = 0;
-						foreach ($data as $package) {
-							$packageSplit = explode('_', $package);
-							$result += array_pop($packageSplit);
-						}
-						break;
-					default:
-						$result = 0;
+					$result = self::getFieldKpiResult($result, $kpi);
+				} else {
+					$data = self::getRecursiveArray($eventAnswer['answer'], explode('.', $kpi['field']));
+					$result = self::getKpiResult($data, $kpi);
 				}
-				$tempResult += $result;
+				$results[$key][$kpi['field']] = [
+					'required' => $kpi['required'],
+					'data' => $result
+				];
 			}
-
-			array_push($results, [
-				'text' => $kpi['text'],
-				'goal' => $kpi['goal'],
-				'unit' => $kpi['unit'],
-				'result' => $tempResult
-			]);
 		}
+		unset($kpi);
 
-		return $results;
+		foreach ($results as &$result) {
+			foreach ($result as &$detail) {
+				if (!empty($detail['required']) && $result[$detail['required']]['data'] == 0) {
+					$detail['data'] = 0;
+				}
+			}
+			unset($detail);
+		}
+		unset($result);
+
+		foreach ($kpis as &$kpi) {
+			$kpi['result'] = 0;
+			foreach ($results as $result) {
+				$kpi['result'] += $result[$kpi['field']]['data'];
+			}
+		}
+		unset($kpi);
+
+		return $kpis;
 	}
 
 	public static function getUserEventAnswers($event, $userId)
@@ -89,8 +93,50 @@ class KpiHelpers
 		}
 
 		return EventAnswer::where('event_id', $event['id'])
-			->where('created_at', '>=', $date->toDateTimeString())
+			//->where('created_at', '>=', $date->toDateTimeString())
 			->where('user_id', $userId);
+	}
+
+	private static function getFieldKpiResult($result, $kpi) {
+		switch ($kpi['type']) {
+			case 'require_one_field':
+				return ($result > 0) ? 1 : 0;
+				break;
+			case 'require_multiple_field':
+				return ($result == count($kpi['field'])) ? 1 : 0;
+				break;
+			default:
+				return 0;
+		}
+	}
+
+	private static function getKpiResult($data, $kpi) {
+		switch ($kpi['type']) {
+			case 'count':
+				return count($data);
+				break;
+			case 'require_multiple_field':
+			case 'require_one_field':
+			case 'require':
+				return !empty($data) ? 1 : 0;
+				break;
+			case 'require_one':
+				return (count(array_diff($kpi['values'], $data)) < count($kpi['values'])) ? 1 : 0;
+				break;
+			case 'require_multiple':
+				return (count(array_diff($kpi['values'], $data)) == 0) ? 1 : 0;
+				break;
+			case 'price':
+				$result = 0;
+				foreach ($data as $package) {
+					$packageSplit = explode('_', $package);
+					$result += array_pop($packageSplit);
+				}
+				return $result;
+				break;
+			default:
+				return 0;
+		}
 	}
 
 	private static function getRecursiveArray($arr, array $keys)

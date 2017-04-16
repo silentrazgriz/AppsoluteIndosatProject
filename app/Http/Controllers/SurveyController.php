@@ -89,9 +89,11 @@ class SurveyController extends Controller
 						break;
 					case 'number_sales':
 						$data[$key] = json_decode($data[$key], TRUE);
-						foreach ($data[$key] as $index => $item) {
-							if (empty($item['number'])) {
-								unset($data[$key][$index]);
+						if (isset($data[$key])) {
+							foreach ($data[$key] as $index => $item) {
+								if (empty($item['number'])) {
+									unset($data[$key][$index]);
+								}
 							}
 						}
 						break;

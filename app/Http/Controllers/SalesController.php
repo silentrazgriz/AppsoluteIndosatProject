@@ -66,6 +66,7 @@ class SalesController extends Controller
 				$value['gender'] = ucfirst($value['gender']);
 				$value['balance'] = 'Rp. ' . number_format($value['balance']);
 			}
+			unset($value);
 		}
 
 		return view('admin.sales.list', ['page' => 'sales', 'data' => $data]);

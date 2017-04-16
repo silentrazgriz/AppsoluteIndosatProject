@@ -27,6 +27,7 @@ class HomeController extends Controller
 			'event' => Event::first()->toArray(),
 			'user' => null
 		];
+
 		if (!Auth::guest()) {
 			$data['event'] = Auth::user()->event->toArray();
 			$data['user'] = Auth::user()->toArray();
