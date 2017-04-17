@@ -11,6 +11,7 @@
 
 @section('scripts')
 	<script type="text/javascript" src="{{ asset('plugins/adminlte/js/app.min.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('plugins/chartjs/chart.min.js') }}"></script>
 	<script type="text/javascript" src="{{ asset('plugins/datatables.net/js/jquery.dataTables.js') }}"></script>
 	<script type="text/javascript" src="{{ asset('plugins/datatables.net/js/dataTables.bootstrap.min.js') }}"></script>
 	<script type="text/javascript" src="{{ asset('plugins/datatables.net/js/dataTables.responsive.min.js') }}"></script>

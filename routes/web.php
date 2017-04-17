@@ -26,6 +26,9 @@ Route::group(['middleware' => 'auth'], function() {
 
 Route::group(['middleware' => 'admin', 'prefix' => 'cms'], function() {
 	Route::get('/', 'DashboardController@index')->name('dashboard');
+	Route::get('/tes', function() {
+		\App\Helpers\KpiHelpers::getReportPerSalesArea(\App\Models\Event::first()->toArray());
+	});
 
 	Route::get('/sales', 'SalesController@index')->name('sales');
 	Route::get('/sales/new', 'SalesController@create')->name('create-sales');

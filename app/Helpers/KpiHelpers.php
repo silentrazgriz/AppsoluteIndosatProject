@@ -5,11 +5,47 @@ namespace App\Helpers;
 
 
 use App\Models\EventAnswer;
+use App\Models\SalesArea;
 use App\Models\User;
 use Carbon\Carbon;
 
 class KpiHelpers
 {
+	public static function getReportPerSalesArea($event, $from, $to)
+	{
+		$results = [
+			'type' => 'bar',
+			'data' => [
+				'labels' => [],
+				'datasets' => []
+			]
+		];
+
+		// Get dates which report needed to be generated
+		$from = Carbon::createFromFormat("Y-m-d", $from);
+		$to = Carbon::createFromFormat("Y-m-d", $to);
+
+		while ($from->diffInDays($to) < 0) {
+			array_push($results['data']['labels'], $from->format('d-F'));
+			$from = $from->addDay(1);
+		}
+
+		// Get all users from designated sales area
+		$salesAreas = SalesArea::with('users')
+			->get()
+			->toArray();
+
+		foreach ($salesAreas as $salesArea) {
+
+		}
+
+		echo '<pre>';
+		print_r($salesAreas);
+	}
+
+	public static function getReportPerSalesAgent($event)
+	{
+	}
 
 	public static function getLeaderboardKpi($event)
 	{
@@ -31,10 +67,10 @@ class KpiHelpers
 		return $results;
 	}
 
-	public static function getUserKpi($event, $userId)
+	public static function getUserKpi($event, $userId, $date = -1)
 	{
 		$kpis = $event['kpi'];
-		$eventAnswers = self::getUserEventAnswers($event, $userId)
+		$eventAnswers = self::getUserEventAnswers($event, $userId, $date)
 			->where('is_terminated', 0)
 			->get()
 			->toArray();
