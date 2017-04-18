@@ -27,7 +27,7 @@ Route::group(['middleware' => 'auth'], function() {
 Route::group(['middleware' => 'admin', 'prefix' => 'cms'], function() {
 	Route::get('/', 'DashboardController@index')->name('dashboard');
 	Route::get('/tes', function() {
-		\App\Helpers\KpiHelpers::getReportPerSalesArea(\App\Models\Event::first()->toArray());
+		\App\Helpers\KpiHelpers::getReportPerSalesArea(\App\Models\Event::first()->toArray(), "2017-01-01", "2017-05-05");
 	});
 
 	Route::get('/sales', 'SalesController@index')->name('sales');

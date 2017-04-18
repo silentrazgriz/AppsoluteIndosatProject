@@ -14,33 +14,61 @@ class KpiHelpers
 	public static function getReportPerSalesArea($event, $from, $to)
 	{
 		$results = [
-			'type' => 'bar',
+			'type' => 'horizontalBar',
 			'data' => [
 				'labels' => [],
 				'datasets' => []
 			]
 		];
 
-		// Get dates which report needed to be generated
-		$from = Carbon::createFromFormat("Y-m-d", $from);
-		$to = Carbon::createFromFormat("Y-m-d", $to);
-
-		while ($from->diffInDays($to) < 0) {
-			array_push($results['data']['labels'], $from->format('d-F'));
-			$from = $from->addDay(1);
-		}
-
 		// Get all users from designated sales area
 		$salesAreas = SalesArea::with('users')
 			->get()
 			->toArray();
 
-		foreach ($salesAreas as $salesArea) {
+		$results['data']['labels'] = array_column($salesAreas, 'description');
 
+		foreach ($event['kpi'] as $key => $kpi) {
+			array_push($results['data']['datasets'], [
+				'type' => 'horizontalBar',
+				'label' => '',
+				'data' => [],
+				'backgroundColor' => config('constants.CHART_COLORS')[$key]
+			]);
 		}
 
-		echo '<pre>';
-		print_r($salesAreas);
+		foreach ($salesAreas as $salesArea) {
+			$kpis = [];
+
+			foreach ($salesArea['users'] as $user) {
+				$userKpis = self::getUserKpi($event, $user['id'], $from, $to);
+
+				foreach($userKpis as $key => $userKpi) {
+					$result = $userKpi['result'] / $userKpi['reportUnit'];
+
+					$kpis[$key]['text'] = $userKpi['text'];
+					$kpis[$key]['text'] .=  ($userKpi['reportUnit'] > 1) ? ' x' . number_format($userKpi['reportUnit']) : '';
+
+					if (isset($kpis[$key]['result'])) {
+						$kpis[$key]['result'] += $result;
+					} else {
+						$kpis[$key]['result'] = $result;
+					}
+				}
+			}
+
+			foreach ($kpis as $key => $kpi) {
+				$results['data']['datasets'][$key]['label'] = $kpi['text'];
+
+				if (isset($results['data']['datasets'][$key]['data'])) {
+					array_push($results['data']['datasets'][$key]['data'], round($kpi['result'], 2));
+				} else {
+					$results['data']['datasets'][$key]['data'] = [round($kpi['result'], 2)];
+				}
+			}
+		}
+
+		return json_encode($results);
 	}
 
 	public static function getReportPerSalesAgent($event)
@@ -67,10 +95,10 @@ class KpiHelpers
 		return $results;
 	}
 
-	public static function getUserKpi($event, $userId, $date = -1)
+	public static function getUserKpi($event, $userId, $from = null, $to = null)
 	{
 		$kpis = $event['kpi'];
-		$eventAnswers = self::getUserEventAnswers($event, $userId, $date)
+		$eventAnswers = self::getUserEventAnswers($event, $userId, $from, $to)
 			->where('is_terminated', 0)
 			->get()
 			->toArray();
@@ -119,18 +147,15 @@ class KpiHelpers
 		return $kpis;
 	}
 
-	public static function getUserEventAnswers($event, $userId, $date = -1)
+	public static function getUserEventAnswers($event, $userId, $from = null, $to = null)
 	{
 		// format for $date "Y-m-d" ex: "1975-05-21"
-		$cDate = ($date == -1) ? Carbon::now() : Carbon::createFromFormat("Y-m-d", $date)->setTime(12, 0, 0);
-		if ($cDate->hour < config('constants.RESET_HOUR')) {
-			$cDate->subDay(1)->setTime(3, 0, 0);
-		} else {
-			$cDate->setTime(3, 0, 0);
-		}
+		$fromDate = (isset($from)) ? Carbon::createFromFormat("Y-m-d", $from)->setTime(config('constants.RESET_HOUR'), 0, 0) : Carbon::now()->setTime(config('constants.RESET_HOUR'), 0, 0);
+		$toDate = (isset($to)) ? Carbon::createFromFormat("Y-m-d", $to)->addDay(1)->setTime(config('constants.RESET_HOUR'), 0, 0) : Carbon::now()->addDay(1)->setTime(config('constants.RESET_HOUR'), 0, 0);
 
 		return EventAnswer::where('event_id', $event['id'])
-			->where('created_at', '>=', $cDate->toDateTimeString())
+			->where('created_at', '>=', $fromDate->toDateTimeString())
+			->where('created_at', '<=', $toDate->toDateTimeString())
 			->where('user_id', $userId);
 	}
 
