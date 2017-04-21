@@ -7,10 +7,21 @@
 				<div class="col-xs-3">
 					@include('fields.dropdown', [
 						'field' => [
-							'key' => 'event',
+							'key' => 'event_id',
 							'text' => 'Event',
-							'values' => $data['events'],
+							'values' => $data['eventLists'],
 							'placeholder' => 'Event',
+							'class' => 'right-10'
+						]
+					])
+				</div>
+				<div class="col-xs-3">
+					@include('fields.dropdown', [
+						'field' => [
+							'key' => 'sales_area_id',
+							'text' => 'Sales Area',
+							'values' => $data['salesAreaLists'],
+							'placeholder' => 'Sales Area',
 							'class' => 'right-10'
 						]
 					])
@@ -35,11 +46,12 @@
 						]
 					])
 				</div>
-				<div class="col-xs-3">
+			</div>
+			<div class="row">
+				<div class="col-xs-12">
 					@include('fields.submit', [
 						'field' => [
-							'text' => 'Buat Laporan',
-							'class' => 'margin-top-30 border-round'
+							'text' => 'Kirim'
 						]
 					])
 				</div>

@@ -40,6 +40,12 @@
 						<li @if($page == 'dashboard') class="active" @endif>
 							<a href="{{ route('dashboard') }}"><span><i class="fa fa-dashboard"></i> Dashboard</span></a>
 						</li>
+						<li @if($page == 'dashboard-area') class="active" @endif>
+							<a href="{{ route('dashboard-area') }}"><span><i class="fa fa-map-o"></i> Dashboard Per Area</span></a>
+						</li>
+						<li @if($page == 'dashboard-agent') class="active" @endif>
+							<a href="{{ route('dashboard-agent') }}"><span><i class="fa fa-user"></i> Dashboard Per Agent</span></a>
+						</li>
 						<li class="header">SALES</li>
 						<li @if($page == 'create-sales') class="active" @endif>
 							<a href="{{ route('create-sales') }}"><span><i class="fa fa-user-plus"></i> Buat Buddies Baru</span></a>

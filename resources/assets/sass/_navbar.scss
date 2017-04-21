@@ -3,7 +3,6 @@
 .status-bar {
 	display: block;
 	background-color: $brand-primary;
-	height: 160px;
 	padding: 10px;
 	margin-bottom: 30px;
 	.title {
@@ -24,7 +23,6 @@
 		}
 	}
 	&.small {
-		height: 75px;
 		.title {
 			font-size: 16px;
 			h3, h4 {
