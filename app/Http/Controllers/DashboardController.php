@@ -37,7 +37,8 @@ class DashboardController extends Controller
             'eventLists' => $this->eventLists,
             'salesAreaLists' => $this->salesAreaLists,
             'date' => $date,
-            'chartData' => KpiHelpers::getReportPerSalesArea($event, $date['from'], $date['to'])
+            'chartData' => KpiHelpers::getAnswerReport($event, null, [], $date['from'], $date['to'])
+	        //'chartData' => KpiHelpers::getReportPerSalesArea($event, $date['from'], $date['to'])
         );
 
         return view('admin.dashboard', ['page' => 'dashboard', 'data' => $data]);

@@ -4,7 +4,7 @@
 	<div class="container">
 		<form action="{{ route('dashboard') }}" method="GET">
 			<div class="row">
-				<div class="col-xs-4">
+				<div class="col-xs-3">
 					@include('fields.dropdown', [
 						'field' => [
 							'key' => 'event_id',
@@ -15,7 +15,18 @@
 						]
 					])
 				</div>
-				<div class="col-xs-4">
+				<div class="col-xs-3">
+					@include('fields.dropdown', [
+						'field' => [
+							'key' => 'sales_area_id',
+							'text' => 'Sales Area',
+							'values' => $data['salesAreaLists'],
+							'placeholder' => 'Sales Area',
+							'class' => 'right-10'
+						]
+					])
+				</div>
+				<div class="col-xs-3">
 					@include('fields.date', [
 						'field' => [
 							'key' => 'from',
@@ -25,7 +36,7 @@
 						]
 					])
 				</div>
-				<div class="col-xs-4">
+				<div class="col-xs-3">
 					@include('fields.date', [
 						'field' => [
 							'key' => 'to',

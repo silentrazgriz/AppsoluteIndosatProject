@@ -35,6 +35,7 @@
 		<script type="text/javascript" src="{{ asset('js/jquery.min.js') }}"></script>
 		<script type="text/javascript" src="{{ asset('js/bootstrap.min.js') }}"></script>
 		<script type="text/javascript" src="{{ asset('plugins/sumoselect/js/jquery.sumoselect.min.js') }}"></script>
+		@yield('before_scripts')
 		@yield('scripts')
 		<script>
 			$(function() {

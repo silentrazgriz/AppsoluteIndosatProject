@@ -9,7 +9,7 @@
 	<link rel="stylesheet" href="{{ asset('css/admin.css') }}"/>
 @append
 
-@section('scripts')
+@section('before_scripts')
 	<script type="text/javascript" src="{{ asset('plugins/adminlte/js/app.min.js') }}"></script>
 	<script type="text/javascript" src="{{ asset('plugins/chartjs/chart.min.js') }}"></script>
 	<script type="text/javascript" src="{{ asset('plugins/datatables.net/js/jquery.dataTables.js') }}"></script>
@@ -17,6 +17,11 @@
 	<script type="text/javascript" src="{{ asset('plugins/datatables.net/js/dataTables.responsive.min.js') }}"></script>
 	<script type="text/javascript" src="{{ asset('plugins/datatables.net/js/dataTables.scroller.min.js') }}"></script>
 	<script type="text/javascript" src="{{ asset('plugins/bootstrap-datepicker/js/bootstrap-datepicker.js') }}"></script>
+	<script>
+		Chart.defaults.global.hover.animationDuration = 0;
+		Chart.defaults.global.responsive = true;
+		Chart.defaults.global.maintainAspectRatio = false;
+	</script>
 @append
 
 @section('body')
