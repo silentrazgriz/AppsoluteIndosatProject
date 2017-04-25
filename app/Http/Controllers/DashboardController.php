@@ -13,18 +13,18 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
-    private $eventLists, $salesAreaLists;
+    private $eventLists, $salesAreaLists, $userLists;
 
     public function __construct()
     {
         $this->eventLists = $this->getEventLists();
         $this->salesAreaLists = $this->getSalesAreaLists();
+		$this->userLists = $this->getUserLists();
     }
 
     public function index(Request $request)
     {
         $eventId = $request['event_id'] ?? $this->eventLists[0]['key'];
-        $salesAreaId = $request['sales_area_id'] ?? 0;
 
         $date = [
             'from' => $request['from'] ?? Carbon::now()->subWeek(1)->toDateString(),
@@ -37,11 +37,70 @@ class DashboardController extends Controller
             'eventLists' => $this->eventLists,
             'salesAreaLists' => $this->salesAreaLists,
             'date' => $date,
-            'chartData' => KpiHelpers::getAnswerReport($event, null, [], $date['from'], $date['to'])
-	        //'chartData' => KpiHelpers::getReportPerSalesArea($event, $date['from'], $date['to'])
+	        'form' => $request->all(),
+            'chartData' => KpiHelpers::getAnswerReport($event, null, null, $date['from'], $date['to'])
         );
 
         return view('admin.dashboard', ['page' => 'dashboard', 'data' => $data]);
+    }
+
+    public function dashboardPerArea(Request $request)
+    {
+	    $eventId = $request['event_id'] ?? $this->eventLists[0]['key'];
+	    $areaId1 = $request['sales_area_id_1'] ?? 1;
+	    $areaId2 = $request['sales_area_id_2'] ?? 0;
+
+	    $date = [
+		    'from' => $request['from'] ?? Carbon::now()->subWeek(1)->toDateString(),
+		    'to' => $request['to'] ?? Carbon::now()->subDay(1)->toDateString()
+	    ];
+
+	    $event = Event::find($eventId);
+
+	    $data = array(
+		    'eventLists' => $this->eventLists,
+		    'salesAreaLists' => $this->salesAreaLists,
+		    'date' => $date,
+		    'form' => $request->all(),
+		    'chartData' => [
+		    	'area1' => KpiHelpers::getAnswerReport($event, null, $areaId1, $date['from'], $date['to']),
+			    'area2' => ($areaId2 != 0) ? KpiHelpers::getAnswerReport($event, null, $areaId2, $date['from'], $date['to']) : []
+		    ]
+	    );
+
+	    return view('admin.dashboard_area', ['page' => 'dashboard-area', 'data' => $data]);
+    }
+
+    public function dashboardPerAgent(Request $request)
+    {
+	    $eventId = $request['event_id'] ?? $this->eventLists[0]['key'];
+	    $userId = $request['user_id'] ?? 1;
+
+	    $date = [
+		    'from' => $request['from'] ?? Carbon::now()->subWeek(1)->toDateString(),
+		    'to' => $request['to'] ?? Carbon::now()->subDay(1)->toDateString()
+	    ];
+
+	    $event = Event::find($eventId);
+
+	    $data = array(
+		    'eventLists' => $this->eventLists,
+		    'userLists' => $this->userLists,
+		    'date' => $date,
+		    'form' => $request->all(),
+		    'chartData' => KpiHelpers::getAnswerReport($event, $userId, null, $date['from'], $date['to'])
+	    );
+
+	    return view('admin.dashboard_agent', ['page' => 'dashboard-agent', 'data' => $data]);
+    }
+
+    private function getUserLists()
+    {
+    	return User::select('id as key', 'email as text')
+		    ->where('is_admin', 0)
+		    ->orderBy('text', 'asc')
+		    ->get()
+		    ->toArray();
     }
 
     private function getEventLists()
@@ -53,8 +112,10 @@ class DashboardController extends Controller
 
     private function getSalesAreaLists()
     {
-        return SalesArea::select('id as key', 'description as text')
+        $salesArea = SalesArea::select('id as key', 'description as text')
             ->get()
             ->toArray();
+
+        return array_merge([['key' => 0, 'text' => 'Pilih Area']], $salesArea);
     }
 }

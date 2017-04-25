@@ -19,8 +19,11 @@
 	<script type="text/javascript" src="{{ asset('plugins/bootstrap-datepicker/js/bootstrap-datepicker.js') }}"></script>
 	<script>
 		Chart.defaults.global.hover.animationDuration = 0;
-		Chart.defaults.global.responsive = true;
-		Chart.defaults.global.maintainAspectRatio = false;
+		//Chart.defaults.global.responsive = true;
+		//Chart.defaults.global.maintainAspectRatio = false;
+		Chart.defaults.global.elements.line.tension = 0.4;
+		Chart.defaults.global.legend.position = 'bottom';
+		Chart.defaults.global.legend.labels.usePointStyle = true;
 	</script>
 @append
 

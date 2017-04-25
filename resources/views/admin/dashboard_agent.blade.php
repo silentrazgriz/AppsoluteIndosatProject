@@ -2,20 +2,33 @@
 
 @section('content')
 	<div class="container">
-		<form action="{{ route('dashboard') }}" method="GET">
+		<form action="{{ route('dashboard-agent') }}" method="GET">
 			<div class="row">
-				<div class="col-xs-4">
+				<div class="col-xs-3">
 					@include('fields.dropdown', [
 						'field' => [
 							'key' => 'event_id',
 							'text' => 'Event',
 							'values' => $data['eventLists'],
 							'value' => $data['form']['event_id'] ?? $data['eventLists'][0]['key'],
-							'placeholder' => 'Event'
+							'placeholder' => 'Event',
+							'class' => 'right-5'
 						]
 					])
 				</div>
-				<div class="col-xs-4">
+				<div class="col-xs-3">
+					@include('fields.dropdown', [
+						'field' => [
+							'key' => 'user_id',
+							'text' => 'Agent',
+							'values' => $data['userLists'],
+							'value' => $data['form']['user_id'] ?? $data['userLists'][0]['key'],
+							'placeholder' => 'Agent',
+							'class' => 'right-5'
+						]
+					])
+				</div>
+				<div class="col-xs-3">
 					@include('fields.date', [
 						'field' => [
 							'key' => 'from',
@@ -25,7 +38,7 @@
 						]
 					])
 				</div>
-				<div class="col-xs-4">
+				<div class="col-xs-3">
 					@include('fields.date', [
 						'field' => [
 							'key' => 'to',

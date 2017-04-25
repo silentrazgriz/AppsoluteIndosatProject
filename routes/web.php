@@ -26,8 +26,8 @@ Route::group(['middleware' => 'auth'], function() {
 
 Route::group(['middleware' => 'admin', 'prefix' => 'cms'], function() {
 	Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
-	Route::get('/dashboad/area', 'DashboardController@index')->name('dashboard-area');
-    Route::get('/dashboad/agent', 'DashboardController@index')->name('dashboard-agent');
+	Route::get('/dashboad/area', 'DashboardController@dashboardPerArea')->name('dashboard-area');
+    Route::get('/dashboad/agent', 'DashboardController@dashboardPerAgent')->name('dashboard-agent');
 
 	Route::get('/sales', 'SalesController@index')->name('sales');
 	Route::get('/sales/new', 'SalesController@create')->name('create-sales');
