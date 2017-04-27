@@ -85,17 +85,8 @@ class SurveyController extends Controller
 				$key = $question['key'];
 				switch($question['type']) {
 					case 'checkboxes':
-						$data[$key] = json_decode($data[$key], TRUE);
-						break;
 					case 'number_sales':
 						$data[$key] = json_decode($data[$key], TRUE);
-						if (isset($data[$key])) {
-							foreach ($data[$key] as $index => $item) {
-								if (empty($item['number'])) {
-									unset($data[$key][$index]);
-								}
-							}
-						}
 						break;
 					case 'image':
 						if (isset($data[$key])) {

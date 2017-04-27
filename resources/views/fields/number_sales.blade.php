@@ -14,11 +14,20 @@
 
 @section('scripts')
 	<script>
+		let elementId = {
+			'newNumber': '#new-number-',
+			'newNumberList': '#new-number-list-',
+			'oldNumber': '#old-number-',
+			'package': '#package-',
+			'voucher': '#voucher-'
+		};
+
 		let numberList = {!! json_encode($numbers) !!};
-		let data = {!! json_encode($field) !!};
+		let fieldData = {!! json_encode($field) !!};
 		let dataCount = 0;
 		let balance = {{ $user['balance'] }};
-		let template = '<div class="form-group"><label for="@number-key">@number-text</label><input id="@number-key" list="@number-list-key" type="number" class="form-control border-round" onchange="processData(@index)"><datalist id="@number-list-key"></datalist></div>' +
+		let template = '<div class="form-group"><label for="@new-number-key">@new-number-text</label><input id="@new-number-key" list="@new-number-list-key" type="number" class="form-control border-round" onchange="processData(@index)"><datalist id="@new-number-list-key"></datalist></div>' +
+			'<div class="form-group"><label for="@old-number-key">@old-number-text</label><input id="@old-number-key" type="number" class="form-control border-round" onchange="processData(@index)"></div>' +
 			'<div class="form-group"><label for="@voucher-key">@voucher-text</label><span class="select"><select id="@voucher-key" class="form-control sumo-select border-round" onchange="processData(@index)" multiple></select></span></div>' +
 			'<div class="form-group"><label for="@package-key">@package-text</label><span class="select"><select id="@package-key" class="form-control sumo-select border-round" onchange="processData(@index)"></select></span></div>' +
 			'<hr/>';
@@ -28,12 +37,14 @@
 		});
 
 		function processData(index) {
-			let numberData = $('#number-' + index).val();
-			let packageData = $('#package-' + index).val();
-			let voucherData = $('#voucher-' + index).val();
+			let newNumberData = $(elementId.newNumber + index).val();
+			let oldNumberData = $(elementId.oldNumber + index).val();
+			let packageData = $(elementId.package + index).val();
+			let voucherData = $(elementId.voucher + index).val();
 
 			setInputValue(index, {
-				'number': numberData,
+				'new_number': newNumberData,
+				'old_number': oldNumberData,
 				'package': packageData,
 				'voucher': voucherData
 			});
@@ -50,7 +61,7 @@
 				values.push(data);
 			}
 
-			if (data['number'] != '' && !isNumberExists(data['number'])) {
+			if (data['new_number'] != '' && !isNumberExists(data['new_number'])) {
 				errorMessage = 'Nomor SP tidak terdaftar';
 			} else if (getAllVoucherValue(values) > balance) {
 				errorMessage = 'Saldo anda tidak cukup';
@@ -106,16 +117,16 @@
 		function flagTakenNumber(values) {
 			$.each(numberList, function(key, data) {
 				$.each(values, function(i, value) {
-					data['is_taken'] = (value['number'] == data['number']) ? 1 : 0;
+					data['is_taken'] = (value['new_number'] == data['number']) ? 1 : 0;
 				});
 			});
 		}
 
 		function fillNumberData(index) {
-			$('#number-list-' + index).empty();
+			$(elementId.newNumberList + index).empty();
 			$.each(numberList, function (i, item) {
 				if (item['is_taken'] == 0) {
-					$('#number-list-' + index).append($('<option>', {
+					$(elementId.newNumberList + index).append($('<option>', {
 						value: item['number']
 					}));
 				}
@@ -123,8 +134,8 @@
 		}
 
 		function fillPackageData() {
-			$.each(data['package']['values'], function (i, item) {
-				$('#package-' + dataCount).append($('<option>', {
+			$.each(fieldData['package']['values'], function (i, item) {
+				$(elementId.package + dataCount).append($('<option>', {
 					value: item['key'],
 					text: item['text']
 				}));
@@ -132,8 +143,8 @@
 		}
 
 		function fillVoucherData() {
-			$.each(data['voucher']['values'], function (i, item) {
-				$('#voucher-' + dataCount).append($('<option>', {
+			$.each(fieldData['voucher']['values'], function (i, item) {
+				$(elementId.voucher + dataCount).append($('<option>', {
 					value: item['key'],
 					text: item['text']
 				}));
@@ -141,9 +152,10 @@
 		}
 
 		function resetField(index) {
-			$('#number-' + index).val('');
-			resetSumoSelect('#voucher-' + index + '.sumo-select', -1);
-			resetSumoSelect('#package-' + index + '.sumo-select', 0);
+			$(elementId.newNumber + index).val('');
+			$(elementId.oldNumber + index).val('');
+			resetSumoSelect(elementId.package + index + '.sumo-select', 0);
+			resetSumoSelect(elementId.voucher + index + '.sumo-select', -1);
 		}
 
 		function resetSumoSelect(selector, value) {
@@ -158,14 +170,15 @@
 
 		function parseTemplate() {
 			dataCount++;
-			return template.replaceAll('@number-key', 'number-' + dataCount)
-				.replaceAll('@number-list-key', 'number-list-' + dataCount)
-				.replaceAll('@number-text', data['number']['text'])
-				.replaceAll('@number-placeholder', data['number']['placeholder'])
+			return template.replaceAll('@new-number-key', 'new-number-' + dataCount)
+				.replaceAll('@new-number-list-key', 'new-number-list-' + dataCount)
+				.replaceAll('@new-number-text', fieldData['number']['new']['text'])
+				.replaceAll('@old-number-key', 'old-number-' + dataCount)
+				.replaceAll('@old-number-text', fieldData['number']['old']['text'])
 				.replaceAll('@package-key', 'package-' + dataCount)
-				.replaceAll('@package-text', data['package']['text'])
+				.replaceAll('@package-text', fieldData['package']['text'])
 				.replaceAll('@voucher-key', 'voucher-' + dataCount)
-				.replaceAll('@voucher-text', data['voucher']['text'])
+				.replaceAll('@voucher-text', fieldData['voucher']['text'])
 				.replaceAll('@index', dataCount);
 		}
 

@@ -178,7 +178,8 @@ return [
         App\Providers\RouteServiceProvider::class,
 
 	    // Krlove
-	    Krlove\EloquentModelGenerator\Provider\GeneratorServiceProvider::class
+	    Krlove\EloquentModelGenerator\Provider\GeneratorServiceProvider::class,
+	    Maatwebsite\Excel\ExcelServiceProvider::class,
     ],
 
     /*
@@ -228,6 +229,7 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
 
+	    'Excel' => \Maatwebsite\Excel\Facades\Excel::class,
     ],
 
 ];

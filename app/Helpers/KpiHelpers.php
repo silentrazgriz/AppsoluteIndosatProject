@@ -32,10 +32,11 @@ class KpiHelpers
 		return $results;
 	}
 
-	public static function getLeaderboardKpi($event)
+	public static function getLeaderboardKpi($event, $date = null)
 	{
 		$kpis = $event['kpi'];
-		$users = User::where('is_admin', false)
+		$users = User::with('salesArea')
+			->where('is_admin', false)
 			->orderBy('name', 'asc')
 			->get()
 			->toArray();
@@ -46,7 +47,7 @@ class KpiHelpers
 		];
 
 		foreach ($users as $user) {
-			array_push($results['data'], ['user' => $user, 'kpis' => self::getUserKpi($event, $user['id'])]);
+			array_push($results['data'], ['user' => $user, 'kpis' => self::getUserKpi($event, $user['id'], $date)]);
 		}
 
 		return $results;
@@ -108,8 +109,8 @@ class KpiHelpers
 	public static function getUserEventAnswers($event, $userId = null, $areaId = null, $from = null, $to = null)
 	{
 		// format for $date "Y-m-d" ex: "1975-05-21"
-		$fromDate = self::getDateFromFormat($from);
-		$toDate = isset($to) ? self::getDateFromFormat($to) : self::getDateFromFormat($from)->addDay(1);
+		$fromDate = DateHelpers::getDateFromFormat($from);
+		$toDate = isset($to) ? DateHelpers::getDateFromFormat($to) : DateHelpers::getDateFromFormat($from)->addDay(1);
 
 		$eventAnswer = EventAnswer::where('event_id', $event['id'])
 			->where('created_at', '>=', $fromDate->toDateTimeString())
@@ -174,8 +175,8 @@ class KpiHelpers
 			$vouchers[$value['key']] = [];
 		}
 
-		$startDate = self::getDateFromFormat($from);
-		$endDate = self::getDateFromFormat($to);
+		$startDate = DateHelpers::getDateFromFormat($from);
+		$endDate = DateHelpers::getDateFromFormat($to);
 
 		$dates = [];
 		while ($startDate->diffInDays($endDate) != 0) {
@@ -199,9 +200,9 @@ class KpiHelpers
 		foreach ($answers as $answer) {
 			if (isset($answer['answer']['sales'])) {
 				foreach ($answer['answer']['sales'] as $sale) {
-					$answerDate = self::getDateFromFormat($answer['created_at'], $mysqlDateFormat);
+					$answerDate = DateHelpers::getDateFromFormat($answer['created_at'], $mysqlDateFormat);
 
-					if (isset($sale['number'])) {
+					if (isset($sale['number']['new'])) {
 						$numbers[$answerDate->format($chartDateFormat)]++;
 					}
 
@@ -217,8 +218,8 @@ class KpiHelpers
 		}
 
 		array_push($results, [
-			'key' => $question['number']['key'] . (isset($areaId) ? $areaId : ''),
-			'text' => $question['number']['text'],
+			'key' => $question['number']['new']['key'] . (isset($areaId) ? $areaId : ''),
+			'text' => $question['number']['new']['text'],
 			'chartData' => self::createChartData('line', $numbers, 'NO_LEGEND_OPTIONS'),
 			'drawDataInside' => false,
 			'hiddenLabel' => false,
@@ -255,8 +256,8 @@ class KpiHelpers
 		$data = [];
 
 		if (isset($areaId) || isset($userId)) {
-			$startDate = self::getDateFromFormat($from);
-			$endDate = self::getDateFromFormat($to);
+			$startDate = DateHelpers::getDateFromFormat($from);
+			$endDate = DateHelpers::getDateFromFormat($to);
 
 			while ($startDate->diffInDays($endDate) != 0) {
 				$description = $startDate->format($chartDateFormat);
@@ -267,14 +268,14 @@ class KpiHelpers
 						->toArray();
 
 					foreach ($salesArea['users'] as $user) {
-						$userKpis = self::getUserKpi($event, $user['id'], $startDate->format('Y-m-d'), null);
-
-						self::kpiToChartFormat($data, $userKpis, $description);
+						if ($user['is_admin'] == false) {
+							$userKpis = self::getUserKpi($event, $user['id'], $startDate->format('Y-m-d'), null);
+							self::kpiToChartFormat($data, $userKpis, $description);
+						}
 					}
 				}
 				else if (isset($userId)) {
 					$userKpis = self::getUserKpi($event, $userId, $startDate->format('Y-m-d'), null);
-
 					self::kpiToChartFormat($data, $userKpis, $description);
 				}
 
@@ -291,9 +292,10 @@ class KpiHelpers
 				$description = str_replace(' ', '_', $salesArea['description']);
 
 				foreach ($salesArea['users'] as $user) {
-					$userKpis = self::getUserKpi($event, $user['id'], $from, $to);
-
-					self::kpiToChartFormat($data, $userKpis, $description);
+					if ($user['is_admin'] == false) {
+						$userKpis = self::getUserKpi($event, $user['id'], $from, $to);
+						self::kpiToChartFormat($data, $userKpis, $description);
+					}
 				}
 			}
 		}
@@ -343,11 +345,6 @@ class KpiHelpers
 		}
 
 		return $results;
-	}
-
-	private static function getDateFromFormat($date = null, $format = 'Y-m-d')
-	{
-		return (isset($date)) ? Carbon::createFromFormat($format, $date)->setTime(config('constants.RESET_HOUR'), 0, 0) : Carbon::now()->setTime(config('constants.RESET_HOUR'), 0, 0);
 	}
 
 	private static function getFieldKpiResult($result, $kpi)

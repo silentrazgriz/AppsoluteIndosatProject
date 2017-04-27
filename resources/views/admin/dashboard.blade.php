@@ -38,11 +38,9 @@
 			</div>
 			<div class="row">
 				<div class="col-xs-12">
-					@include('fields.submit', [
-						'field' => [
-							'text' => 'Kirim'
-						]
-					])
+					<div class="form-group text-center">
+						<button type="submit" class="btn btn-primary border-round">Kirim</button>
+					</div>
 				</div>
 			</div>
 		</form>

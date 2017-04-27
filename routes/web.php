@@ -16,6 +16,8 @@ Route::post('/login', 'Auth\LoginController@login')->name('post-login');
 Route::post('/logout', 'Auth\LoginController@logout')->name('post-logout');
 Route::get('/logout', 'Auth\LoginController@logout')->name('logout');
 
+Route::get('/reset-balance', 'HomeController@resetBalance')->name('resetBalance');
+
 Route::group(['middleware' => 'auth'], function() {
 	Route::get('/survey/{id}', 'SurveyController@show')->name('survey');
 	Route::post('/survey/{id}', 'SurveyController@store')->name('post-survey');
@@ -29,6 +31,12 @@ Route::group(['middleware' => 'admin', 'prefix' => 'cms'], function() {
 	Route::get('/dashboad/area', 'DashboardController@dashboardPerArea')->name('dashboard-area');
     Route::get('/dashboad/agent', 'DashboardController@dashboardPerAgent')->name('dashboard-agent');
 
+    Route::get('/report', 'DashboardController@report')->name('report');
+
+    Route::get('/export/kpi', 'ExcelController@kpiToExcel')->name('export-kpi');
+	Route::get('/export/answer', 'ExcelController@answerToExcel')->name('export-answer');
+	Route::get('/export/sales', 'ExcelController@salesToExcel')->name('export-sales');
+
 	Route::get('/sales', 'SalesController@index')->name('sales');
 	Route::get('/sales/new', 'SalesController@create')->name('create-sales');
 	Route::get('/sales/edit/balance', 'SalesController@editBalance')->name('sales-balance');
@@ -37,6 +45,13 @@ Route::group(['middleware' => 'admin', 'prefix' => 'cms'], function() {
 	Route::put('/sales/{id}', 'SalesController@update')->name('put-sales');
 	Route::patch('/sales/balance', 'SalesController@updateBalance')->name('post-sales-balance');
 	Route::delete('/sales/{id}', 'SalesController@destroy')->name('delete-sales');
+
+	Route::get('/sales-area', 'SalesAreaController@index')->name('area');
+	Route::get('/sales-area/new', 'SalesAreaController@create')->name('create-area');
+	Route::get('/sales-area/{id}/edit', 'SalesAreaController@edit')->name('edit-area');
+	Route::post('/sales-area', 'SalesAreaController@store')->name('post-area');
+	Route::put('/sales-area/{id}', 'SalesAreaController@update')->name('put-area');
+	Route::delete('/sales-area/{id}', 'SalesAreaController@destroy')->name('delete-area');
 
 	Route::get('/event', 'EventController@index')->name('event');
 	Route::get('/event/new', 'EventController@create')->name('create-event');

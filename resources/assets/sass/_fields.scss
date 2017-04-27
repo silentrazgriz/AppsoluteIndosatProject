@@ -54,6 +54,16 @@ textarea:focus {
 	}
 }
 
+.input-group .form-control:last-child {
+	border-bottom-left-radius: 0 !important;
+	border-top-left-radius: 0 !important;
+}
+
+.input-group-addon:first-child {
+	border-bottom-right-radius: 0 !important;
+	border-top-right-radius: 0 !important;
+}
+
 .has-error .form-control {
 	box-shadow: none !important;
 }

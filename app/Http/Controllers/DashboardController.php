@@ -94,6 +94,23 @@ class DashboardController extends Controller
 	    return view('admin.dashboard_agent', ['page' => 'dashboard-agent', 'data' => $data]);
     }
 
+    public function report(Request $request)
+    {
+	    $eventId = $request['event_id'] ?? $this->eventLists[0]['key'];
+	    $date = [
+		    'from' => $request['from'] ?? Carbon::now()->subWeek(1)->toDateString(),
+		    'to' => $request['to'] ?? Carbon::now()->subDay(1)->toDateString()
+	    ];
+
+	    $data = array(
+		    'eventLists' => $this->eventLists,
+		    'date' => $date,
+		    'form' => $request->all()
+	    );
+
+    	return view('admin.report', ['page' => 'report', 'data' => $data]);
+    }
+
     private function getUserLists()
     {
     	return User::select('id as key', 'email as text')
@@ -106,6 +123,7 @@ class DashboardController extends Controller
     private function getEventLists()
     {
         return Event::select('id as key', 'name as text')
+	        ->orderBy('created_at', 'asc')
             ->get()
             ->toArray();
     }

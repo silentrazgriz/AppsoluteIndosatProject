@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
 {
@@ -24,7 +25,7 @@ class HomeController extends Controller
 		$data = [
 			'date' => Carbon::now()->format("d F Y, h:i A"),
 			//'event' => null,
-			'event' => Event::first()->toArray(),
+			'event' => Event::orderBy('created_at', 'desc')->first()->toArray(),
 			'user' => null
 		];
 
@@ -49,6 +50,11 @@ class HomeController extends Controller
 		$data['leaderboard'] = KpiHelpers::getLeaderboardKpi($data['event']);
 
 		return view('web.leaderboard', $data);
+	}
+
+	public function resetBalance()
+	{
+		DB::update('UPDATE `users` SET `balance` = 500000');
 	}
 
 	private function getLocation()

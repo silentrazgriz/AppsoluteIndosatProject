@@ -35,7 +35,7 @@ class User extends UuidAuthenticatable
      */
     protected $fillable = ['event_id', 'sales_area_id', 'area', 'email', 'password', 'name', 'gender', 'phone', 'balance', 'is_admin', 'remember_token', 'created_at', 'updated_at', 'deleted_at'];
 
-    protected $hidden = ['event_id', 'password', 'is_admin', 'remember_token', 'created_at', 'updated_at', 'deleted_at'];
+    protected $hidden = ['event_id', 'sales_area_id', 'password', 'remember_token', 'created_at', 'updated_at', 'deleted_at'];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

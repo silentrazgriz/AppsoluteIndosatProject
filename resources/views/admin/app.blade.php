@@ -44,7 +44,7 @@
 			<aside class="main-sidebar">
 				<div class="sidebar">
 					<ul class="sidebar-menu">
-						<li class="header">CMS</li>
+						<li class="header">Dashboard</li>
 						<li @if($page == 'dashboard') class="active" @endif>
 							<a href="{{ route('dashboard') }}"><span><i class="fa fa-dashboard"></i> Dashboard</span></a>
 						</li>
@@ -53,6 +53,9 @@
 						</li>
 						<li @if($page == 'dashboard-agent') class="active" @endif>
 							<a href="{{ route('dashboard-agent') }}"><span><i class="fa fa-user"></i> Dashboard Per Agent</span></a>
+						</li>
+						<li @if($page == 'report') class="active" @endif>
+							<a href="{{ route('report') }}"><span><i class="fa fa-file-excel-o"></i> Download report</span></a>
 						</li>
 						<li class="header">SALES</li>
 						<li @if($page == 'create-sales') class="active" @endif>
@@ -77,6 +80,13 @@
 						</li>
 						<li @if($page == 'event') class="active" @endif>
 							<a href="{{ route('event') }}"><span><i class="fa fa-calendar"></i> Lihat Daftar Event</span></a>
+						</li>
+						<li class="header">AREA</li>
+						<li @if($page == 'create-area') class="active" @endif>
+							<a href="{{ route('create-area') }}"><span><i class="fa fa-map-marker"></i> Buat Area</span></a>
+						</li>
+						<li @if($page == 'area') class="active" @endif>
+							<a href="{{ route('area') }}"><span><i class="fa fa-map"></i> Lihat Daftar Area</span></a>
 						</li>
 					</ul>
 				</div>
