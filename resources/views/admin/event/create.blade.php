@@ -1,7 +1,7 @@
 @extends('admin.app')
 
 @section('content')
-	<div class="container">
+	<div class="container default">
 		<form role="form" method="POST" action="{{ route('post-sales') }}">
 			{{ csrf_field() }}
 			<h3>Tambah Event</h3>
@@ -9,6 +9,7 @@
 				'field' => [
 					'key' => 'name',
 					'text' => 'Nama Event',
+					'placeholder' => 'Tulis nama event disini',
 					'required' => true
 				]
 			])
@@ -16,6 +17,7 @@
 				'field' => [
 					'key' => 'date',
 					'text' => 'Tanggal Event',
+					'placeholder' => 'Pilih tanggal event',
 					'required' => true
 				]
 			])

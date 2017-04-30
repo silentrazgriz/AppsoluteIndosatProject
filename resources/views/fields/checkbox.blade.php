@@ -1,7 +1,7 @@
 <div class="form-group {{ $errors->has($field['key']) ? 'has-error' : '' }}">
 	<input type="hidden" name="{{ $field['key'] }}" value="0">
 	<label class="checkbox">
-		<input type="checkbox" name="{{ $field['key'] }}" value="1">
+		<input type="checkbox" name="{{ $field['key'] }}" value="1" @if (isset($field['value']) && $field['value']) checked @endif>
 		<span class="indicator"><span></span></span>
 		{{ $field['text'] }}
 	</label>

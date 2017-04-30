@@ -17,14 +17,16 @@ use Ramsey\Uuid\Uuid;
 
 class EventController extends Controller
 {
-	public function storeValidator($data) {
+	public function storeValidator($data)
+	{
 		return Validator::make($data, [
 			'name' => 'max:255',
 			'date' => 'date'
 		]);
 	}
 
-    public function index() {
+	public function index()
+	{
 		$events = Event::select('id', 'name', 'date', 'auth_code as code')
 			->orderBy('date', 'desc')
 			->get()
@@ -33,18 +35,19 @@ class EventController extends Controller
 			'id' => 'event-table',
 			'columns' => array(),
 			'values' => $events,
-			//'edit' => 'edit-event',
+			'edit' => 'edit-event',
 			'destroy' => 'delete-event',
 			'detail' => 'show-event'
 		];
-	    if (count($events) > 0) {
-		    $data['columns'] = TableHelpers::getColumns($events[0], ['id']);
-	    }
+		if (count($events) > 0) {
+			$data['columns'] = TableHelpers::getColumns($events[0], ['id']);
+		}
 
 		return view('admin.event.list', ['page' => 'event', 'data' => $data]);
-    }
+	}
 
-    public function show($id) {
+	public function show($id)
+	{
 		$event = Event::find($id)
 			->select('id', 'name', 'date', 'survey as column')
 			->first()
@@ -52,37 +55,42 @@ class EventController extends Controller
 
 		$eventAnswers = EventAnswer::where('event_answers.event_id', $id)
 			->join('users', 'event_answers.user_id', '=', 'users.id')
-			->select('event_answers.id as key', 'users.name as sales', 'users.email as email',
+			->select('event_answers.id', 'users.name as sales', 'users.email as email',
 				'event_answers.step', 'event_answers.is_terminated as status',
-				'event_answers.created_at as time', 'event_answers.answer as detail')
+				'event_answers.created_at as time')
 			->orderBy('event_answers.created_at', 'desc')
-			->get()
-			->toArray();
+			->paginate(config('constants.ITEM_PER_PAGE'));
 
-	    $data = [
-		    'id' => 'answer-table',
-		    'summary' => $event,
-		    'columns' => array(),
-		    'values' => $this->parseSurveyAnswer($eventAnswers, $event['column']),
-		    'popup' => true
-	    ];
+		$answerValues = $this->parseSurveyAnswer($eventAnswers->toArray()['data']);
 
-	    if (count($eventAnswers) > 0) {
-		    $data['columns'] = TableHelpers::getColumns($eventAnswers[0], ['id', 'detail', 'key']);
-	    }
+		$data = [
+			'pages' => $eventAnswers,
+			'id' => 'answer-table',
+			'summary' => $event,
+			'columns' => array(),
+			'values' => $answerValues,
+			'detail' => 'edit-survey'
+		];
+
+		if (count($eventAnswers) > 0) {
+			$data['columns'] = TableHelpers::getColumns($answerValues[0], ['id', 'detail', 'key']);
+		}
 
 		return view('admin.answer.list', ['page' => 'event', 'data' => $data]);
-    }
+	}
 
-    public function create() {
+	public function create()
+	{
 		return view('admin.event.create', ['page' => 'create-event']);
-    }
+	}
 
-    public function edit($id) {
+	public function edit($id)
+	{
+		return view('admin.event.edit', ['page' => 'event']);
+	}
 
-    }
-
-	public function store(Request $request) {
+	public function store(Request $request)
+	{
 		$data = $request->only([
 			'name', 'date', 'auth_code', 'survey'
 		]);
@@ -105,58 +113,27 @@ class EventController extends Controller
 		return redirect()->route('event');
 	}
 
-	public function update($id, Request $request) {
+	public function update($id, Request $request)
+	{
 
 	}
 
-    public function destroy($id) {
-	    DB::transaction(function () use ($id) {
-		    Event::destroy($id);
-	    });
+	public function destroy($id)
+	{
+		DB::transaction(function () use ($id) {
+			Event::destroy($id);
+		});
 
-	    return redirect()->route('event');
-    }
+		return redirect()->route('event');
+	}
 
-    private function parseSurveyAnswer($answers, $columns) {
-	    $questions = SurveyHelpers::getQuestions($columns, [['key' => 'terminate', 'type' => 'terminate']]);
+	private function parseSurveyAnswer($answers)
+	{
+		foreach ($answers as &$answer) {
+			$answer['status'] = ($answer['status'] == 0) ? 'Success' : 'Terminated';
+		}
+		unset($answer);
 
-	    foreach($answers as &$answer) {
-	    	$answer['status'] = ($answer['status'] == 0) ? 'Success' : 'Terminated';
-
-		    foreach ($answer['detail'] as $key => &$detail) {
-			    foreach($questions as $question) {
-				    if ($question['type'] != 'line' && $question['key'] == $key) {
-					    switch ($question['type']) {
-						    case 'checkbox':
-							    $detail = ($detail == 1) ? 'Ya' : 'Tidak';
-							    break;
-						    case 'image':
-							    $detail = (empty($detail)) ? '-' : '<a href="' . asset('storage/' . $detail) . '" target="_blank"><img src="' . asset('storage/' . $detail) . '"/></a>';
-							    break;
-						    case 'number_sales':
-						    	if (isset($detail)) {
-								    $result = '';
-								    foreach ($detail as $row) {
-									    $result .= '<p>Number: ' . $row['number'] . '<br>Package: ' . $row['package'] . '<br>Voucher: ' . implode(', ', $row['voucher']) . '</p>';
-								    }
-								    $detail = str_replace('_', ' ', $result);
-							    } else {
-						    		$detail = '-';
-							    }
-								break;
-						    default:
-							    $detail = ($detail == '') ? '-' : str_replace('_', ' ', $detail);
-					    }
-				    }
-			    }
-			    if (is_array($detail)) {
-			    	$detail = implode(', ', $detail);
-			    }
-		    }
-		    unset($detail);
-	    }
-	    unset($answer);
-
-	    return $answers;
-    }
+		return $answers;
+	}
 }

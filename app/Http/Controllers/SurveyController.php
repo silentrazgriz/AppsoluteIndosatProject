@@ -16,15 +16,42 @@ use Illuminate\Support\Facades\DB;
 
 class SurveyController extends Controller
 {
-	public function show($id) {
+	public function edit($id)
+	{
+		$eventAnswer = EventAnswer::with('event')
+			->with('user')
+			->find($id)
+			->toArray();
+
+		$eventAnswer = $this->parseSurveyAnswerForEdit($eventAnswer);
+
 		$data = [
-			'event' => Event::find($id)->toArray(),
+			'survey' => $eventAnswer,
+			'event' => $eventAnswer['event'],
+			'user' => $eventAnswer['user'],
+			'numbers' => NumberList::where('is_taken', 0)
+				->orderBy('number', 'asc')
+				->get()
+				->toArray()
+		];
+
+		unset($data['survey']['event']);
+		unset($data['survey']['user']);
+
+		return view('admin.answer.edit', ['page' => 'event', 'data' => $data]);
+	}
+
+	public function show($eventId)
+	{
+		$data = [
+			'event' => Event::find($eventId)->toArray(),
 			'user' => Auth::user()->toArray(),
 			'numbers' => NumberList::where('is_taken', 0)
 				->orderBy('number', 'asc')
 				->get()
 				->toArray()
 		];
+
 		$data['count'] = EventAnswer::where('user_id', Auth::id())
 			->where('event_id', $data['event']['id'])
 			->count();
@@ -32,15 +59,16 @@ class SurveyController extends Controller
 		return view('web.survey', $data);
 	}
 
-	public function store($id, Request $request) {
-		$event = Event::find($id)->toArray();
+	public function store($eventId, Request $request)
+	{
+		$event = Event::find($eventId)->toArray();
 		$userId = Auth::id();
 		$isTerminated = $request['is_terminated'];
 		$area = $request['area'];
 		$step = $request['step'];
 		$data = $request->only($this->getSurveyColumns($event, ['terminate']));
 
-		$this->parseSurveyAnswer($event, $userId, $data);
+		$data = $this->parseSurveyAnswer($event, $userId, $data);
 
 		DB::transaction(function () use ($data, $area, $step, $event, $userId, $isTerminated) {
 			EventAnswer::create([
@@ -52,7 +80,7 @@ class SurveyController extends Controller
 				'is_terminated' => $isTerminated
 			]);
 
-			if (isset($data['sales'])) {
+			if (isset($data['sales']) && !empty($data['sales']['new_number'])) {
 				$this->removeTakenNumber($data['sales']);
 			}
 
@@ -77,13 +105,66 @@ class SurveyController extends Controller
 		return redirect()->route('home');
 	}
 
-	private function parseSurveyAnswer($event, $userId, &$data) {
-		$questions = SurveyHelpers::getQuestions($event['survey']);
+	public function update($id, Request $request)
+	{
+		$eventAnswer = EventAnswer::with('event')
+			->with('user')
+			->find($id)
+			->toArray();
 
-		foreach($questions as $question) {
+		$event = $eventAnswer['event'];
+		$userId = $eventAnswer['user'];
+
+		$data = $request->only($this->getSurveyColumns($event, ['terminate']));
+
+		$data = $this->parseSurveyAnswer($event, $userId, $data);
+
+		DB::transaction(function () use ($data, $id) {
+			$survey = EventAnswer::find($id);
+
+			$current = $survey->answer;
+			foreach ($data as $key => $value) {
+				$current[$key] = $value ?? $current[$key];
+			}
+			$survey->answer = $current;
+			$survey->save();
+		});
+
+		return redirect()->route('edit-survey', ['id' => $id]);
+	}
+
+	private function parseSurveyAnswerForEdit($eventAnswer)
+	{
+		$questions = SurveyHelpers::getQuestions($eventAnswer['event']['survey']);
+
+		foreach ($questions as $question) {
 			if (isset($question['key'])) {
 				$key = $question['key'];
-				switch($question['type']) {
+				switch ($question['type']) {
+					case 'image':
+						$isExist = file_exists(storage_path('app/public/' . $eventAnswer['answer'][$key]));
+						$filePath = asset('storage/' . $eventAnswer['answer'][$key]);
+
+						$eventAnswer['answer'][$key] = $isExist ? $filePath : asset('images/no-image.png');
+						break;
+					case 'phone':
+						$eventAnswer['answer'][$key] = str_replace('+62', '', $eventAnswer['answer'][$key]);
+						break;
+				}
+			}
+		}
+
+		return $eventAnswer;
+	}
+
+	private function parseSurveyAnswer($event, $userId, $data)
+	{
+		$questions = SurveyHelpers::getQuestions($event['survey']);
+
+		foreach ($questions as $question) {
+			if (isset($question['key'])) {
+				$key = $question['key'];
+				switch ($question['type']) {
 					case 'checkboxes':
 					case 'number_sales':
 						$data[$key] = json_decode($data[$key], TRUE);
@@ -100,11 +181,14 @@ class SurveyController extends Controller
 				}
 			}
 		}
+
+		return $data;
 	}
 
-	private function removeTakenNumber($data) {
+	private function removeTakenNumber($data)
+	{
 		foreach ($data as $sales) {
-			$number = NumberList::where('number', $sales['number'])
+			$number = NumberList::where('number', $sales['new_number'])
 				->first();
 
 			if (isset($number)) {
@@ -114,7 +198,8 @@ class SurveyController extends Controller
 		}
 	}
 
-	private function getVoucherValue($data) {
+	private function getVoucherValue($data)
+	{
 		$total = 0;
 		foreach ($data as $sales) {
 			if (!empty($sales['number'])) {
@@ -126,7 +211,8 @@ class SurveyController extends Controller
 		return $total;
 	}
 
-	private function getSurveyColumns($event, array $extra = null) {
+	private function getSurveyColumns($event, array $extra = null)
+	{
 		$steps = array_column($event['survey'], 'questions');
 		$questions = array();
 

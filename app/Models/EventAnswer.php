@@ -23,7 +23,7 @@ class EventAnswer extends UuidModel
      */
     protected $fillable = ['event_id', 'user_id', 'step', 'area', 'answer', 'is_terminated', 'created_at', 'updated_at', 'deleted_at'];
 
-    protected $hidden = ['event_id', 'updated_at', 'deleted_at'];
+    protected $hidden = ['event_id', 'user_id', 'updated_at', 'deleted_at'];
 
 	protected $casts = ['answer' => 'array', 'detail' => 'array'];
     /**
@@ -31,7 +31,7 @@ class EventAnswer extends UuidModel
      */
     public function event()
     {
-        return $this->belongsTo('App\Models\Event');
+        return $this->belongsTo('App\Models\Event', 'event_id');
     }
 
     /**

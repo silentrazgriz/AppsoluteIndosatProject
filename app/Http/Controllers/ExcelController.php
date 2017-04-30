@@ -36,7 +36,8 @@ class ExcelController
 					array_push($result, [
 						'date' => $answer['date'],
 						'area' => $answer['area'],
-						'number' => $sale['number'],
+						'new_number' => $sale['new_number'],
+						'old_number' => $sale['old_number'],
 						'package' => $sale['package'],
 						'voucher' => implode(";", $sale['voucher'])
 					]);
@@ -81,7 +82,8 @@ class ExcelController
 			$answer = array_merge($answer, $answer['answer']);
 			unset($answer['answer']);
 
-			$answer['number'] = strval($this->splitColumnArray($answer['sales'], 'number', "|"));
+			$answer['new_number'] = strval($this->splitColumnArray($answer['sales'], 'new_number', "|"));
+			$answer['old_number'] = strval($this->splitColumnArray($answer['sales'], 'old_number', "|"));
 			$answer['package'] = $this->splitColumnArray($answer['sales'], 'package', "|");
 			$answer['voucher'] = $this->splitVoucherData($answer['sales']);
 			unset($answer['sales']);

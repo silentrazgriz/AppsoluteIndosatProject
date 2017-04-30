@@ -22,7 +22,7 @@ class NumberListController extends Controller
 			->paginate(config('constants.ITEM_PER_PAGE'));
 
 	    $data = [
-	    	'numbers' => $numbers,
+	    	'pages' => $numbers,
 		    'id' => 'number-table',
 		    'columns' => array(),
 		    'values' => $numbers->toArray()['data'],
@@ -37,7 +37,7 @@ class NumberListController extends Controller
 			unset($value);
 	    }
 
-	    return view('admin.number.list', ['page' => 'number', 'data' => $data, 'paginate' => true]);
+	    return view('admin.number.list', ['page' => 'number', 'data' => $data]);
     }
 
     public function create() {

@@ -22,7 +22,7 @@
 		@foreach($event['survey'] as $key => $step)
 			<div id="{{ $step['key'] }}" class="survey-step" data-step="{{ $key }}">
 				@foreach($step['questions'] as $question)
-					@if ($question['type'] != 'balance')
+					@if ($question['type'] != 'number_sales')
 						@include('fields.' . $question['type'], ['field' => $question])
 					@else
 						@include('fields.' . $question['type'], ['field' => $question, 'user' => $user])

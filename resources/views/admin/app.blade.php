@@ -54,9 +54,6 @@
 						<li @if($page == 'dashboard-agent') class="active" @endif>
 							<a href="{{ route('dashboard-agent') }}"><span><i class="fa fa-user"></i> Dashboard Per Agent</span></a>
 						</li>
-						<li @if($page == 'report') class="active" @endif>
-							<a href="{{ route('report') }}"><span><i class="fa fa-file-excel-o"></i> Download report</span></a>
-						</li>
 						<li class="header">SALES</li>
 						<li @if($page == 'create-sales') class="active" @endif>
 							<a href="{{ route('create-sales') }}"><span><i class="fa fa-user-plus"></i> Buat Buddies Baru</span></a>
@@ -87,6 +84,13 @@
 						</li>
 						<li @if($page == 'area') class="active" @endif>
 							<a href="{{ route('area') }}"><span><i class="fa fa-map"></i> Lihat Daftar Area</span></a>
+						</li>
+						<li class="header">MEDIA</li>
+						<li @if($page == 'report') class="active" @endif>
+							<a href="{{ route('report') }}"><span><i class="fa fa-file-excel-o"></i> Download laporan</span></a>
+						</li>
+						<li @if($page == 'gallery') class="active" @endif>
+							<a href="{{ route('gallery') }}"><span><i class="fa fa-file-image-o"></i> Gallery</span></a>
 						</li>
 					</ul>
 				</div>

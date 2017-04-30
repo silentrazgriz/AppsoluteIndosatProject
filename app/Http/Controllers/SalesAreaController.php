@@ -30,7 +30,7 @@ class SalesAreaController
 			->paginate(config('constants.ITEM_PER_PAGE'));
 
 		$data = [
-			'salesAreas' => $salesArea,
+			'pages' => $salesArea,
 			'id' => 'area-table',
 			'columns' => array(),
 			'values' => $salesArea->toArray()['data'],
@@ -42,7 +42,7 @@ class SalesAreaController
 			$data['columns'] = TableHelpers::getColumns($data['values'][0], ['id']);
 		}
 
-		return view('admin.area.list', ['page' => 'area', 'data' => $data, 'paginate' => true]);
+		return view('admin.area.list', ['page' => 'area', 'data' => $data]);
 	}
 
 	public function create()

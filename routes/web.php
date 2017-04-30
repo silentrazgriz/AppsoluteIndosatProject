@@ -19,8 +19,8 @@ Route::get('/logout', 'Auth\LoginController@logout')->name('logout');
 Route::get('/reset-balance', 'HomeController@resetBalance')->name('resetBalance');
 
 Route::group(['middleware' => 'auth'], function() {
-	Route::get('/survey/{id}', 'SurveyController@show')->name('survey');
-	Route::post('/survey/{id}', 'SurveyController@store')->name('post-survey');
+	Route::get('/survey/{eventId}', 'SurveyController@show')->name('survey');
+	Route::post('/survey/{eventId}', 'SurveyController@store')->name('post-survey');
     Route::get('/performance', 'HomeController@leaderboard')->name('leaderboard');
 
 	Route::post('/balance', 'SalesController@updateSalesBalance')->name('post-balance');
@@ -31,7 +31,11 @@ Route::group(['middleware' => 'admin', 'prefix' => 'cms'], function() {
 	Route::get('/dashboad/area', 'DashboardController@dashboardPerArea')->name('dashboard-area');
     Route::get('/dashboad/agent', 'DashboardController@dashboardPerAgent')->name('dashboard-agent');
 
+	Route::get('/survey/{id}/edit', 'SurveyController@edit')->name('edit-survey');
+	Route::put('/survey/{id}', 'SurveyController@update')->name('put-survey');
+
     Route::get('/report', 'DashboardController@report')->name('report');
+	Route::get('/gallery', 'DashboardController@gallery')->name('gallery');
 
     Route::get('/export/kpi', 'ExcelController@kpiToExcel')->name('export-kpi');
 	Route::get('/export/answer', 'ExcelController@answerToExcel')->name('export-answer');

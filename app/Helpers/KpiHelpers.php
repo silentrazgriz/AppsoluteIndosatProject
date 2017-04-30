@@ -270,13 +270,13 @@ class KpiHelpers
 					foreach ($salesArea['users'] as $user) {
 						if ($user['is_admin'] == false) {
 							$userKpis = self::getUserKpi($event, $user['id'], $startDate->format('Y-m-d'), null);
-							self::kpiToChartFormat($data, $userKpis, $description);
+							$data = self::kpiToChartFormat($data, $userKpis, $description);
 						}
 					}
 				}
 				else if (isset($userId)) {
 					$userKpis = self::getUserKpi($event, $userId, $startDate->format('Y-m-d'), null);
-					self::kpiToChartFormat($data, $userKpis, $description);
+					$data = self::kpiToChartFormat($data, $userKpis, $description);
 				}
 
 				array_push($labels, $startDate->format($chartDateFormat));
@@ -294,7 +294,7 @@ class KpiHelpers
 				foreach ($salesArea['users'] as $user) {
 					if ($user['is_admin'] == false) {
 						$userKpis = self::getUserKpi($event, $user['id'], $from, $to);
-						self::kpiToChartFormat($data, $userKpis, $description);
+						$data = self::kpiToChartFormat($data, $userKpis, $description);
 					}
 				}
 			}
@@ -312,7 +312,7 @@ class KpiHelpers
 		];
 	}
 
-	private static function kpiToChartFormat(&$data, $userKpis, $description) {
+	private static function kpiToChartFormat($data, $userKpis, $description) {
 		foreach ($userKpis as $key => $userKpi) {
 			$result = $userKpi['result'] / $userKpi['reportUnit'];
 
@@ -326,6 +326,8 @@ class KpiHelpers
 			}
 			$data[$label][$description] = round($data[$label][$description], 2);
 		}
+
+		return $data;
 	}
 
 	private static function getResultsFromAnswer($areaId, $surveys, $reportQuestionType, $answers, $from, $to, $chartDateFormat, $mysqlDateFormat)

@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\DateHelpers;
 use App\Helpers\KpiHelpers;
+use App\Helpers\SurveyHelpers;
 use App\Models\Event;
 use App\Models\EventAnswer;
 use App\Models\SalesArea;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -41,7 +42,7 @@ class DashboardController extends Controller
             'chartData' => KpiHelpers::getAnswerReport($event, null, null, $date['from'], $date['to'])
         );
 
-        return view('admin.dashboard', ['page' => 'dashboard', 'data' => $data]);
+        return view('admin.dashboard.summary', ['page' => 'dashboard', 'data' => $data]);
     }
 
     public function dashboardPerArea(Request $request)
@@ -68,7 +69,7 @@ class DashboardController extends Controller
 		    ]
 	    );
 
-	    return view('admin.dashboard_area', ['page' => 'dashboard-area', 'data' => $data]);
+	    return view('admin.dashboard.area', ['page' => 'dashboard-area', 'data' => $data]);
     }
 
     public function dashboardPerAgent(Request $request)
@@ -91,12 +92,11 @@ class DashboardController extends Controller
 		    'chartData' => KpiHelpers::getAnswerReport($event, $userId, null, $date['from'], $date['to'])
 	    );
 
-	    return view('admin.dashboard_agent', ['page' => 'dashboard-agent', 'data' => $data]);
+	    return view('admin.dashboard.agent', ['page' => 'dashboard-agent', 'data' => $data]);
     }
 
     public function report(Request $request)
     {
-	    $eventId = $request['event_id'] ?? $this->eventLists[0]['key'];
 	    $date = [
 		    'from' => $request['from'] ?? Carbon::now()->subWeek(1)->toDateString(),
 		    'to' => $request['to'] ?? Carbon::now()->subDay(1)->toDateString()
@@ -109,6 +109,89 @@ class DashboardController extends Controller
 	    );
 
     	return view('admin.report', ['page' => 'report', 'data' => $data]);
+    }
+
+    public function gallery(Request $request)
+    {
+	    $eventId = $request['event_id'] ?? $this->eventLists[0]['key'];
+
+	    $date = [
+		    'from' => $request['from'] ?? Carbon::now()->subWeek(1)->toDateString(),
+		    'to' => $request['to'] ?? Carbon::now()->subDay(1)->toDateString()
+	    ];
+
+	    $imageKeys = $this->getImageKeys($eventId);
+	    $gallery = $this->getGalleryAnswers($eventId, $date, $imageKeys);
+
+	    $data = array(
+		    'eventLists' => $this->eventLists,
+		    'date' => $date,
+		    'pages' => $gallery,
+		    'images' => $this->getGalleries($gallery->toArray()['data'], $imageKeys),
+		    'form' => $request->all()
+	    );
+
+	    return view('admin.gallery', ['page' => 'gallery', 'data' => $data]);
+    }
+
+    private function getGalleryAnswers($eventId, $date, $imageKeys)
+    {
+    	$startDate = DateHelpers::getDateFromFormat($date['from']);
+    	$endDate = DateHelpers::getDateFromFormat($date['to']);
+
+		$eventAnswers = EventAnswer::with('user')
+			->where('event_id', $eventId)
+			->where('created_at', '>=', $startDate->format(config('constants.DATE_FORMAT.MYSQL')))
+			->where('created_at', '<=', $endDate->format(config('constants.DATE_FORMAT.MYSQL')))
+			->orderBy('created_at', 'desc');
+
+		foreach ($imageKeys as $imageKey) {
+			$eventAnswers = $eventAnswers->where('answer', 'NOT LIKE', '%"' . $imageKey . '":null%');
+		}
+
+		$eventAnswers = $eventAnswers->paginate(config('constants.IMAGE_PER_PAGE'));
+
+		return $eventAnswers;
+    }
+
+    private function getGalleries($data, $imageKeys)
+    {
+    	$results = [];
+
+		foreach ($data as $row) {
+	    	foreach ($row['answer'] as $key => $answer) {
+				if (in_array($key, $imageKeys)) {
+					$isExist = file_exists(storage_path('app/public/' . $answer));
+					if (!empty($answer)) {
+						$filePath = asset('storage/' . $answer);
+						array_push($results, [
+							'name' => $row['user']['name'],
+							'area' => $row['area'],
+							'image' => $isExist ? $filePath : asset('images/no-image.png'),
+							'date' => $row['created_at']
+						]);
+					}
+				}
+		    }
+		}
+
+		return $results;
+    }
+
+    private function getImageKeys($eventId)
+    {
+	    $imageKeys = [];
+	    $event = Event::find($eventId)
+		    ->toArray();
+
+	    $questions = SurveyHelpers::getQuestions($event['survey']);
+	    foreach ($questions as $question) {
+		    if (isset($question['key']) && $question['type'] == 'image') {
+			    array_push($imageKeys, $question['key']);
+		    }
+	    }
+
+	    return $imageKeys;
     }
 
     private function getUserLists()

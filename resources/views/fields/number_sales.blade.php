@@ -1,9 +1,11 @@
 <div id="number-sales">
-	<input type="hidden" id="{{ $field['key'] }}-input" name="{{ $field['key'] }}" value="">
+	<input type="hidden" id="{{ $field['key'] }}-input" name="{{ $field['key'] }}" value="@if(isset($field['value'])) {{ json_encode($field['value']) }} @endif">
 </div>
-<div class="form-group text-center">
-	<button type="button" class="btn btn-primary border-round" onclick="addForm()">TAMBAH PEMBELIAN</button>
-</div>
+@if (!isset($edit))
+	<div class="form-group text-center">
+		<button type="button" class="btn btn-primary border-round" onclick="addForm()">TAMBAH PEMBELIAN</button>
+	</div>
+@endif
 <div class="form-group">
 	<label>Saldo kamu</label>
 	<div>
@@ -26,15 +28,28 @@
 		let fieldData = {!! json_encode($field) !!};
 		let dataCount = 0;
 		let balance = {{ $user['balance'] }};
-		let template = '<div class="form-group"><label for="@new-number-key">@new-number-text</label><input id="@new-number-key" list="@new-number-list-key" type="number" class="form-control border-round" onchange="processData(@index)"><datalist id="@new-number-list-key"></datalist></div>' +
-			'<div class="form-group"><label for="@old-number-key">@old-number-text</label><input id="@old-number-key" type="number" class="form-control border-round" onchange="processData(@index)"></div>' +
+		let template = '<div class="form-group"><label for="@new-number-key">@new-number-text</label><input id="@new-number-key" list="@new-number-list-key" type="number" class="form-control border-round" value="@new-number-value" onchange="processData(@index)"><datalist id="@new-number-list-key"></datalist></div>' +
+			'<div class="form-group"><label for="@old-number-key">@old-number-text</label><input id="@old-number-key" type="number" class="form-control border-round" value="@old-number-value" onchange="processData(@index)"></div>' +
 			'<div class="form-group"><label for="@voucher-key">@voucher-text</label><span class="select"><select id="@voucher-key" class="form-control sumo-select border-round" onchange="processData(@index)" multiple></select></span></div>' +
 			'<div class="form-group"><label for="@package-key">@package-text</label><span class="select"><select id="@package-key" class="form-control sumo-select border-round" onchange="processData(@index)"></select></span></div>' +
 			'<hr/>';
 
-		$(function() {
-			addForm();
+		$(function () {
+			@if (!isset($edit))
+				addForm();
+			@else
+				processCurrentData();
+			@endif
 		});
+
+		function processCurrentData() {
+			let fieldValue = $('#{{ $field['key'] }}-input').val();
+			let values = (fieldValue == '') ? [] : JSON.parse(fieldValue);
+
+			$.each(values, function(i, item) {
+				addForm(item.new_number, item.old_number, item.package, item.voucher);
+			});
+		}
 
 		function processData(index) {
 			let newNumberData = $(elementId.newNumber + index).val();
@@ -61,29 +76,38 @@
 				values.push(data);
 			}
 
-			if (data['new_number'] != '' && !isNumberExists(data['new_number'])) {
-				errorMessage = 'Nomor SP tidak terdaftar';
-			} else if (getAllVoucherValue(values) > balance) {
-				errorMessage = 'Saldo anda tidak cukup';
-			}
-			if (errorMessage != '') {
-				alert(errorMessage);
-				values.splice(index - 1, 1);
-				resetField(index);
-			}
+			@if (!isset($edit))
+				if (data['new_number'] != '' && !isNumberExists(data['new_number'])) {
+					errorMessage = 'Nomor SP tidak terdaftar';
+				} else if (getAllVoucherValue(values) > balance) {
+					errorMessage = 'Saldo anda tidak cukup';
+				}
+				if (errorMessage != '') {
+					alert(errorMessage);
+					values.splice(index - 1, 1);
+					resetField(index);
+				}
 
+				flagTakenNumber(values);
+			@endif
 			setBalance(values);
-			flagTakenNumber(values);
 			$('#{{ $field['key'] }}-input').val(JSON.stringify(values));
 		}
 
-		function addForm() {
-			$('#number-sales').append(parseTemplate());
-			fillNumberData(dataCount);
+		function addForm(newNumber = '', oldNumber = '', packageIndex = 0, voucherValues = []) {
+			$('#number-sales').append(parseTemplate(newNumber, oldNumber));
+			@if (!isset($edit))
+				fillNumberData(dataCount);
+			@endif
 			fillPackageData();
 			fillVoucherData();
 
 			$('.sumo-select').SumoSelect({placeholder: 'Pilih disini'});
+
+			$(elementId.package + dataCount + '.sumo-select')[0].sumo.selectItem(packageIndex);
+			$.each(voucherValues, function (i, item) {
+				$(elementId.voucher + dataCount + '.sumo-select')[0].sumo.selectItem(item);
+			});
 		}
 
 		function setBalance(values) {
@@ -95,7 +119,7 @@
 		function isNumberExists(number) {
 			result = false;
 
-			$.each(numberList, function(key, data) {
+			$.each(numberList, function (key, data) {
 				if (data['number'] == number) {
 					result = true;
 					return false;
@@ -106,8 +130,8 @@
 
 		function getAllVoucherValue(values) {
 			let total = 0;
-			$.each(values, function(key, value) {
-				$.each(value['voucher'], function(i, voucher) {
+			$.each(values, function (key, value) {
+				$.each(value['voucher'], function (i, voucher) {
 					total += parseInt(voucher);
 				});
 			});
@@ -115,8 +139,8 @@
 		}
 
 		function flagTakenNumber(values) {
-			$.each(numberList, function(key, data) {
-				$.each(values, function(i, value) {
+			$.each(numberList, function (key, data) {
+				$.each(values, function (i, value) {
 					data['is_taken'] = (value['new_number'] == data['number']) ? 1 : 0;
 				});
 			});
@@ -168,13 +192,15 @@
 			sumoSelect.reload();
 		}
 
-		function parseTemplate() {
+		function parseTemplate(newNumber = '', oldNumber = '') {
 			dataCount++;
 			return template.replaceAll('@new-number-key', 'new-number-' + dataCount)
 				.replaceAll('@new-number-list-key', 'new-number-list-' + dataCount)
 				.replaceAll('@new-number-text', fieldData['number']['new']['text'])
+				.replaceAll('@new-number-value', newNumber)
 				.replaceAll('@old-number-key', 'old-number-' + dataCount)
 				.replaceAll('@old-number-text', fieldData['number']['old']['text'])
+				.replaceAll('@old-number-value', oldNumber)
 				.replaceAll('@package-key', 'package-' + dataCount)
 				.replaceAll('@package-text', fieldData['package']['text'])
 				.replaceAll('@voucher-key', 'voucher-' + dataCount)
@@ -182,7 +208,7 @@
 				.replaceAll('@index', dataCount);
 		}
 
-		String.prototype.replaceAll = function(search, replacement) {
+		String.prototype.replaceAll = function (search, replacement) {
 			return this.split(search).join(replacement);
 		}
 	</script>
