@@ -16,7 +16,8 @@ class CreateEventsTable extends Migration
         Schema::create('events', function (Blueprint $table) {
 	        $table->uuid('id');
 	        $table->string('name');
-	        $table->date('date');
+	        $table->date('start_date');
+	        $table->date('end_date');
 	        $table->string('auth_code');
 	        $table->text('survey'); // json
 	        $table->text('kpi'); // json

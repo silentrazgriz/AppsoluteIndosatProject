@@ -21,7 +21,7 @@ class Event extends UuidModel
     /**
      * @var array
      */
-    protected $fillable = ['name', 'date', 'auth_code', 'survey', 'kpi', 'created_at', 'updated_at', 'deleted_at'];
+    protected $fillable = ['name', 'start_date', 'end_date', 'auth_code', 'survey', 'kpi', 'created_at', 'updated_at', 'deleted_at'];
 
     protected $hidden = ['created_at', 'updated_at', 'deleted_at'];
 

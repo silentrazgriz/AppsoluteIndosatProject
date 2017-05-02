@@ -54,7 +54,7 @@ class SurveyController extends Controller
 
 		$data['count'] = EventAnswer::where('user_id', Auth::id())
 			->where('event_id', $data['event']['id'])
-			->count();
+			->count() + 1;
 
 		return view('web.survey', $data);
 	}

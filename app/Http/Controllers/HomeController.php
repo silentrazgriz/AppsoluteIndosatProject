@@ -24,8 +24,6 @@ class HomeController extends Controller
 	{
 		$data = [
 			'date' => Carbon::now()->format("d F Y, h:i A"),
-			//'event' => null,
-			'event' => Event::orderBy('created_at', 'desc')->first()->toArray(),
 			'user' => null
 		];
 

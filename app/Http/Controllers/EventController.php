@@ -21,14 +21,15 @@ class EventController extends Controller
 	{
 		return Validator::make($data, [
 			'name' => 'max:255',
-			'date' => 'date'
+			'start_date' => 'date',
+			'end_date' => 'date'
 		]);
 	}
 
 	public function index()
 	{
-		$events = Event::select('id', 'name', 'date', 'auth_code as code')
-			->orderBy('date', 'desc')
+		$events = Event::select('id', 'name', 'start_date as mulai', 'end_date as selesai', 'auth_code as code')
+			->orderBy('start_date', 'desc')
 			->get()
 			->toArray();
 		$data = [
@@ -49,7 +50,7 @@ class EventController extends Controller
 	public function show($id)
 	{
 		$event = Event::find($id)
-			->select('id', 'name', 'date', 'survey as column')
+			->select('id', 'name', 'start_date as mulai', 'end_date as selesai', 'survey as column')
 			->first()
 			->toArray();
 
@@ -86,13 +87,16 @@ class EventController extends Controller
 
 	public function edit($id)
 	{
-		return view('admin.event.edit', ['page' => 'event']);
+		$event = Event::find($id)
+			->toArray();
+
+		return view('admin.event.edit', ['page' => 'event', 'event' => $event]);
 	}
 
 	public function store(Request $request)
 	{
 		$data = $request->only([
-			'name', 'date', 'auth_code', 'survey'
+			'name', 'start_date', 'end_date', 'auth_code', 'survey', 'kpi'
 		]);
 
 		$validator = $this->storeValidator($data);
@@ -104,6 +108,7 @@ class EventController extends Controller
 		}
 
 		$data['survey'] = json_decode($data['survey']);
+		$data['kpi'] = json_decode($data['kpi']);
 		$data['auth_code'] = substr(Uuid::uuid4(), 0, 5);
 
 		DB::transaction(function () use ($data) {
@@ -115,7 +120,31 @@ class EventController extends Controller
 
 	public function update($id, Request $request)
 	{
+		$data = $request->only([
+			'name', 'start_date', 'end_date', 'auth_code', 'survey', 'kpi'
+		]);
 
+		$validator = $this->storeValidator($data);
+
+		if ($validator->fails()) {
+			return redirect()->back()
+				->withErrors($validator)
+				->withInput();
+		}
+
+		DB::transaction(function () use ($id, $data) {
+			$event = Event::find($id);
+
+			$event->name = $data['name'] ?? $event->name;
+			$event->start_date = $data['start_date'] ?? $event->start_date;
+			$event->end_date = $data['end_date'] ?? $event->end_date;
+			$event->survey = json_decode($data['survey']) ?? $event->survey;
+			$event->kpi = json_decode($data['kpi']) ?? $event->kpi;
+
+			$event->save();
+		});
+
+		return redirect()->route('event');
 	}
 
 	public function destroy($id)

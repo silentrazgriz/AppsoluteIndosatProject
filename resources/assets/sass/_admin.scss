@@ -53,6 +53,10 @@
 	right: 10px;
 }
 
+.right-min-15~.SelectBox label {
+	right: -15px;
+}
+
 .gallery {
 	.item {
 		margin-bottom: 15px;
@@ -88,6 +92,10 @@
 		padding-top: 0;
 		border-top: none;
 	}
+	.btn-delete-survey {
+		position: relative;
+		top: -2px;
+	}
 	.step-questions {
 		padding-left: 20px;
 		.question-group {
@@ -101,6 +109,9 @@
 					margin-top: 15px;
 					padding-top: 15px;
 					border-top: solid 1px $brand-danger;
+					.btn-delete-survey {
+						top: 3px;
+					}
 				}
 			}
 		}

@@ -27,9 +27,8 @@
 	@include('fields.text', [
 		'field' => [
 			'key' => 'auth_code',
-			'class' => 'border-bottom-only no-border-radius collapse',
+			'class' => 'border-bottom-only no-border-radius',
 			'placeholder' => 'Kode otentikasi',
-			'value' => $event['auth_code'],
 			'required' => 1
 		]
 	])
