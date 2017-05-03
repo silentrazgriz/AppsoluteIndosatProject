@@ -166,6 +166,13 @@ class KpiHelpers
 		$numbers = [];
 		$packages = [];
 		$vouchers = [];
+		$summaries = [
+			'hanya_new_sp' => [],
+			'new_sp_+_voucher' => [],
+			'new_sp_+_voucher_+_paket' => [],
+			'existing_sp_+_voucher' => [],
+			'existing_sp_+_voucher_+_paket' => []
+		];
 
 		foreach ($question['package']['values'] as $value) {
 			$packages[$value['key']] = [];
@@ -180,19 +187,26 @@ class KpiHelpers
 
 		$dates = [];
 		while ($startDate->diffInDays($endDate) != 0) {
-			$numbers[$startDate->format($chartDateFormat)] = 0;
+			$date = $startDate->format($chartDateFormat);
+
+			$numbers[$date] = 0;
 
 			foreach ($packages as &$package) {
-				$package[$startDate->format($chartDateFormat)] = 0;
+				$package[$date] = 0;
 			}
 			unset($package);
 
 			foreach ($vouchers as &$voucher) {
-				$voucher[$startDate->format($chartDateFormat)] = 0;
+				$voucher[$date] = 0;
 			}
 			unset($voucher);
 
-			array_push($dates, $startDate->format($chartDateFormat));
+			foreach ($summaries as &$summary) {
+				$summary[$date] = 0;
+			}
+			unset($voucher);
+
+			array_push($dates, $date);
 
 			$startDate->addDay(1);
 		}
@@ -200,17 +214,40 @@ class KpiHelpers
 		foreach ($answers as $answer) {
 			if (isset($answer['answer']['sales'])) {
 				foreach ($answer['answer']['sales'] as $sale) {
-					$answerDate = DateHelpers::getDateFromFormat($answer['created_at'], $mysqlDateFormat);
+					$date = DateHelpers::getDateFromFormat($answer['created_at'], $mysqlDateFormat)->format($chartDateFormat);
 
-					if (isset($sale['new_number'])) {
-						$numbers[$answerDate->format($chartDateFormat)]++;
+					$buyPackage = true;
+					$buyVoucher = false;
+
+					$packageValue = explode('_', $sale['package']);
+					if (array_pop($packageValue) == 0) {
+						$buyPackage = false;
 					}
 
-					$packages[$sale['package']][$answerDate->format($chartDateFormat)]++;
+					$packages[$sale['package']][$date]++;
 
 					if (isset($sale['voucher'])) {
+						$buyVoucher = true;
 						foreach ($sale['voucher'] as $voucher) {
-							$vouchers[$voucher][$answerDate->format($chartDateFormat)]++;
+							$vouchers[$voucher][$date]++;
+						}
+					}
+
+					if (isset($sale['new_number'])) {
+						$numbers[$date]++;
+
+						if (!$buyPackage && !$buyVoucher) {
+							$summaries['hanya_new_sp'][$date]++;
+						} else if (!$buyPackage && $buyVoucher) {
+							$summaries['new_sp_+_voucher'][$date]++;
+						} else if ($buyPackage && $buyVoucher) {
+							$summaries['new_sp_+_voucher_+_paket'][$date]++;
+						}
+					} else if (isset($sale['existing_number'])) {
+						if (!$buyPackage && $buyVoucher) {
+							$summaries['existing_sp_+_voucher'][$date]++;
+						} else if ($buyPackage && $buyVoucher) {
+							$summaries['existing_sp_+_voucher_+_paket'][$date]++;
 						}
 					}
 				}
@@ -239,6 +276,15 @@ class KpiHelpers
 			'key' => $question['voucher']['key'] . (isset($areaId) ? $areaId : ''),
 			'text' => $question['voucher']['text'],
 			'chartData' => self::createChartData('line', $vouchers, 'POINT_STYLE_LEGEND_OPTIONS', $dates),
+			'drawDataInside' => false,
+			'hiddenLabel' => false,
+			'dataCount' => 6
+		]);
+
+		array_push($results, [
+			'key' => 'summary' . (isset($areaId) ? $areaId : ''),
+			'text' => 'Rekap Penjualan Nomor',
+			'chartData' => self::createChartData('line', $summaries, 'POINT_STYLE_LEGEND_OPTIONS', $dates),
 			'drawDataInside' => false,
 			'hiddenLabel' => false,
 			'dataCount' => 6

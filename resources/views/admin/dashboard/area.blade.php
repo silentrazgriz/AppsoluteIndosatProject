@@ -72,7 +72,7 @@
 			</div>
 		</form>
 		<div class="row">
-			@if (isset($data['form']['sales_area_id_1']) && $data['form']['sales_area_id_2'] != -1 && $data['form']['sales_area_id_1'] != $data['form']['sales_area_id_2'])
+			@if (isset($data['form']['sales_area_id_1']) && $data['form']['sales_area_id_2'] != 0 && $data['form']['sales_area_id_1'] != $data['form']['sales_area_id_2'])
 				<div class="col-xs-6">
 					<h3>AREA 1</h3>
 					@foreach ($data['chartData']['area1'] as $report)
