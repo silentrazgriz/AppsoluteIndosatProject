@@ -314,10 +314,10 @@ class KpiHelpers
 
 	private static function kpiToChartFormat($data, $userKpis, $description) {
 		foreach ($userKpis as $key => $userKpi) {
-			$result = $userKpi['result'] / $userKpi['reportUnit'];
+			$result = $userKpi['result'] / $userKpi['report_unit'];
 
 			$label = str_replace(' ', '_', $userKpi['text']);
-			$label .= ($userKpi['reportUnit'] > 1) ? '_x' . number_format($userKpi['reportUnit']) : '';
+			$label .= ($userKpi['report_unit'] > 1) ? '_x' . number_format($userKpi['report_unit']) : '';
 
 			if (isset($data[$label][$description])) {
 				$data[$label][$description] += $result;
@@ -371,7 +371,6 @@ class KpiHelpers
 				break;
 			case 'require_multiple_field':
 			case 'require_one_field':
-			case 'require':
 				return !empty($data) ? 1 : 0;
 				break;
 			case 'require_one':
@@ -380,7 +379,7 @@ class KpiHelpers
 			case 'require_multiple':
 				return (count(array_diff($kpi['values'], $data)) == 0) ? 1 : 0;
 				break;
-			case 'price':
+			case 'sum':
 				$result = 0;
 				foreach ($data as $package) {
 					$packageSplit = explode('_', $package);

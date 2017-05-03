@@ -6,11 +6,7 @@ let elementId = {
 	'voucher': '#voucher-'
 };
 let dataCount = 0;
-let template = '<div class="form-group"><label for="@new-number-key">@new-number-text</label><input id="@new-number-key" list="@new-number-list-key" type="number" class="form-control border-round" value="@new-number-value" onchange="processData(@index)"><datalist id="@new-number-list-key"></datalist></div>' +
-	'<div class="form-group"><label for="@old-number-key">@old-number-text</label><input id="@old-number-key" type="number" class="form-control border-round" value="@old-number-value" onchange="processData(@index)"></div>' +
-	'<div class="form-group"><label for="@voucher-key">@voucher-text</label><span class="select"><select id="@voucher-key" class="form-control sumo-select border-round" onchange="processData(@index)" multiple></select></span></div>' +
-	'<div class="form-group"><label for="@package-key">@package-text</label><span class="select"><select id="@package-key" class="form-control sumo-select border-round" onchange="processData(@index)"></select></span></div>' +
-	'<hr/>';
+let template = '<div class="form-group"><label for="@new-number-key">@new-number-text</label><input id="@new-number-key" list="@new-number-list-key" type="number" class="form-control border-round" value="@new-number-value" onchange="processData(@index)"><datalist id="@new-number-list-key"></datalist></div><div class="form-group"><label for="@old-number-key">@old-number-text</label><input id="@old-number-key" type="number" class="form-control border-round" value="@old-number-value" onchange="processData(@index)"></div><div class="form-group"><label for="@voucher-key">@voucher-text</label><span class="select"><select id="@voucher-key" class="form-control sumo-select border-round" onchange="processData(@index)" multiple></select></span></div><div class="form-group"><label for="@package-key">@package-text</label><span class="select"><select id="@package-key" class="form-control sumo-select border-round" onchange="processData(@index)"></select></span></div><hr/>';
 
 function processCurrentData() {
 	let fieldValue = $(fieldKey).val();

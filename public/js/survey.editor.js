@@ -2,7 +2,7 @@ let stepCount = 0;
 let questionCount = 0;
 let answerCount = 0;
 
-let elementId = {
+let surveyElementId = {
 	'stepKey': '#step-',
 	'stepQuestions': '#step-questions-',
 	'stepKeyName' : 'step-key',
@@ -34,24 +34,26 @@ let elementId = {
 	'answerKeyName': 'answer-key',
 	'answerDescriptionName': 'answer-description',
 };
-let dataSelector = {
-	'stepKey': '*[data-name*=' + elementId.stepKeyName + ']',
-	'stepDescription': '*[data-name*=' + elementId.stepDescriptionName + ']',
 
-	'questionType': '*[data-name*=' + elementId.questionTypeName + ']',
-	'questionKey': '*[data-name*=' + elementId.questionKeyName + ']',
-	'questionDescription': '*[data-name*=' + elementId.questionDescriptionName + ']',
-	'questionRequired': '*[data-name*=' + elementId.questionRequiredName + ']',
-	'questionTerminate': '*[data-name*=' + elementId.questionTerminateName + ']',
+let surveyDataSelector = {
+	'stepKey': '*[data-name*=' + surveyElementId.stepKeyName + ']',
+	'stepDescription': '*[data-name*=' + surveyElementId.stepDescriptionName + ']',
 
-	'answerKey': '*[data-name*=' + elementId.answerKeyName + ']',
-	'answerDescription': '*[data-name*=' + elementId.answerDescriptionName + ']',
+	'questionType': '*[data-name*=' + surveyElementId.questionTypeName + ']',
+	'questionKey': '*[data-name*=' + surveyElementId.questionKeyName + ']',
+	'questionDescription': '*[data-name*=' + surveyElementId.questionDescriptionName + ']',
+	'questionRequired': '*[data-name*=' + surveyElementId.questionRequiredName + ']',
+	'questionTerminate': '*[data-name*=' + surveyElementId.questionTerminateName + ']',
 
-	'newNumberDescription': '*[data-name*=' + elementId.newNumberDescriptionName + ']',
-	'oldNumberDescription': '*[data-name*=' + elementId.oldNumberDescriptionName + ']',
-	'packageDescription': '*[data-name*=' + elementId.packageDescriptionName + ']',
-	'voucherDescription': '*[data-name*=' + elementId.voucherDescriptionName + ']',
+	'answerKey': '*[data-name*=' + surveyElementId.answerKeyName + ']',
+	'answerDescription': '*[data-name*=' + surveyElementId.answerDescriptionName + ']',
+
+	'newNumberDescription': '*[data-name*=' + surveyElementId.newNumberDescriptionName + ']',
+	'oldNumberDescription': '*[data-name*=' + surveyElementId.oldNumberDescriptionName + ']',
+	'packageDescription': '*[data-name*=' + surveyElementId.packageDescriptionName + ']',
+	'voucherDescription': '*[data-name*=' + surveyElementId.voucherDescriptionName + ']',
 };
+
 let questionTypes = [
 	{ 'key': 'text', 'description': 'Text' },
 	{ 'key': 'email', 'description': 'Email' },
@@ -64,59 +66,25 @@ let questionTypes = [
 	{ 'key': 'image', 'description': 'Image Upload' },
 	{ 'key': 'number_sales', 'description': 'Sales' },
 ];
+
 let questionTypeWithAnswers = [
 	'dropdown',
 	'checkboxes',
 	'radio'
 ];
 
-let stepTemplate = '<div id="@step-key" class="step-group">' +
-	'<h5>@step-description <button class="btn btn-xs btn-danger btn-delete-survey" onclick="removeSurveyElement(\'@step-key\')">Hapus</button></h5>' +
-	'<div class="form-group"><input type="text" class="form-control border-round" data-name="@step-key-name" placeholder="@step-key-placeholder" value="@step-key-value" required></div>' +
-	'<div class="form-group"><input type="text" class="form-control border-round" data-name="@step-description-name" placeholder="@step-description-placeholder" value="@step-description-value" required></div>' +
-	'<div id="@step-question-id" class="step-questions"></div>' +
-	'<div class="form-group"><button type="button" class="btn btn-primary border-round" onclick="addQuestion(@step-index)">Tambah Pertanyaan</button></div>' +
-	'</div>';
+let stepTemplate = '<div id="@step-key" class="step-group"><h5>@step-description <button class="btn btn-xs btn-danger btn-delete-element" onclick="removeSurveyElement(\'@step-key\')">Hapus</button></h5><div class="form-group"><label class="col-xs-2 control-label">Kode Bagian</label><div class="col-xs-10"><input type="text" class="form-control border-round" data-name="@step-key-name" placeholder="@step-key-placeholder" value="@step-key-value" required></div></div><div class="form-group"><label class="col-xs-2 control-label">Deskripsi</label><div class="col-xs-10"><input type="text" class="form-control border-round" data-name="@step-description-name" placeholder="@step-description-placeholder" value="@step-description-value" required></div></div><div id="@step-question-id" class="step-questions"></div><div class="form-group"><button type="button" class="btn btn-primary border-round" onclick="addQuestion(@step-index)">Tambah Pertanyaan</button></div></div>';
 
-let questionTemplate = '<div id="@question-key" class="question-group">' +
-	'<h5>@question-description <button class="btn btn-xs btn-danger btn-delete-survey" onclick="removeSurveyElement(\'@question-key\')">Hapus</button></h5>' +
-	'<div class="form-group"><label>Tipe pertanyaan</label><select id="@question-type-id" class="form-control sumo-select border-round right-min-15" data-name="@question-type-name" data-step="@step-index" data-index="@question-index"></select></div>' +
-	'<div class="non-sales-group">' +
-	'<div class="form-group"><input type="text" class="form-control border-round" data-name="@question-key-name" data-step="@step-index" data-question="@question-index" placeholder="@question-key-placeholder" value="@question-key-value"></div>' +
-	'<div class="form-group"><input type="text" class="form-control border-round" data-name="@question-description-name" data-step="@step-index" placeholder="@question-description-placeholder" value="@question-description-value"></div>' +
-	'<div class="form-group">' +
-	'<label class="checkbox"><input type="checkbox" data-name="@question-required-name" data-step="@step-index" value="1" @question-required-checked><span class="indicator"><span></span></span> Required</label>' +
-	'<label class="checkbox"><input type="checkbox" data-name="@question-terminate-name" data-step="@step-index" value="1" @question-terminate-checked><span class="indicator"><span></span></span> Terminate if empty</label>' +
-	'</div>' +
-	'<div id="@question-answer-id" class="question-answers"></div>' +
-	'<div class="form-group add-answer-button"><button type="button" class="btn btn-default border-round" onclick="addAnswer(@question-index)">Tambah Pilihan Jawaban</button></div>' +
-	'</div>' +
-	'<div class="sales-group">' +
-	'<div class="form-group"><input type="text" class="form-control border-round" data-name="@new-number-description-name" data-step="@step-index" placeholder="@new-number-description-placeholder" value="@new-number-description-value"></div>' +
-	'<div class="form-group"><input type="text" class="form-control border-round" data-name="@old-number-description-name" data-step="@step-index" placeholder="@old-number-description-placeholder" value="@old-number-description-value"></div>' +
-	'<div class="form-group"><input type="text" class="form-control border-round" data-name="@package-description-name" data-step="@step-index" placeholder="@package-description-placeholder" value="@package-description-value"></div>' +
-	'<div id="@package-list-id" class="package-lists"></div>' +
-	'<div class="form-group"><button type="button" class="btn btn-default border-round" onclick="addPackage(@question-index)">Tambah Paket</button></div>' +
-	'<div class="form-group"><input type="text" class="form-control border-round" data-name="@voucher-description-name" data-step="@step-index" placeholder="@voucher-description-placeholder" value="@voucher-description-value"></div>' +
-	'<div id="@voucher-list-id" class="voucher-lists"></div>' +
-	'<div class="form-group"><button type="button" class="btn btn-default border-round" onclick="addVoucher(@question-index)">Tambah Voucher</button></div>' +
-	'</div>' +
-	'</div>';
+let questionTemplate = '<div id="@question-key" class="question-group"><h5>@question-description <button class="btn btn-xs btn-danger btn-delete-element" onclick="removeSurveyElement(\'@question-key\')">Hapus</button></h5><div class="form-group"><label class="col-xs-3 control-label">Tipe pertanyaan</label><div class="col-xs-9"><select id="@question-type-id" class="form-control sumo-select border-round right-min-15" data-name="@question-type-name" data-step="@step-index" data-index="@question-index"></select></div></div><div class="non-sales-group"><div class="form-group"><label class="col-xs-3 control-label">Kode pertanyaan</label><div class="col-xs-9"><input type="text" class="form-control border-round" data-name="@question-key-name" data-step="@step-index" data-question="@question-index" placeholder="@question-key-placeholder" value="@question-key-value"></div></div><div class="form-group"><label class="col-xs-3 control-label">Deskripsi</label><div class="col-xs-9"><input type="text" class="form-control border-round" data-name="@question-description-name" data-step="@step-index" placeholder="@question-description-placeholder" value="@question-description-value"></div></div><div class="form-group"><div class="col-xs-9 col-xs-offset-3"><label class="checkbox"><input type="checkbox" data-name="@question-required-name" data-step="@step-index" value="1" @question-required-checked><span class="indicator"><span></span></span> Required</label><label class="checkbox"><input type="checkbox" data-name="@question-terminate-name" data-step="@step-index" value="1" @question-terminate-checked><span class="indicator"><span></span></span> Terminate if empty</label></div></div><div id="@question-answer-id" class="question-answers"></div><div class="form-group add-answer-button"><button type="button" class="btn btn-default border-round" onclick="addAnswer(@question-index)">Tambah Pilihan Jawaban</button></div></div><div class="sales-group"><div class="form-group"><label class="col-xs-3 control-label">Deskripsi Nomor Baru</label><div class="col-xs-9"><input type="text" class="form-control border-round" data-name="@new-number-description-name" data-step="@step-index" placeholder="@new-number-description-placeholder" value="@new-number-description-value"></div></div><div class="form-group"><label class="col-xs-3 control-label">Deskripsi Nomor Lama</label><div class="col-xs-9"><input type="text" class="form-control border-round" data-name="@old-number-description-name" data-step="@step-index" placeholder="@old-number-description-placeholder" value="@old-number-description-value"></div></div><div class="form-group"><label class="col-xs-3 control-label">Deskripsi Paket</label><div class="col-xs-9"><input type="text" class="form-control border-round" data-name="@package-description-name" data-step="@step-index" placeholder="@package-description-placeholder" value="@package-description-value"></div></div><div id="@package-list-id" class="package-lists"></div><div class="form-group"><button type="button" class="btn btn-default border-round" onclick="addPackage(@question-index)">Tambah Paket</button></div><div class="form-group"><label class="col-xs-3 control-label">Deskripsi Voucher</label><div class="col-xs-9"><input type="text" class="form-control border-round" data-name="@voucher-description-name" data-step="@step-index" placeholder="@voucher-description-placeholder" value="@voucher-description-value"></div></div><div id="@voucher-list-id" class="voucher-lists"></div><div class="form-group"><button type="button" class="btn btn-default border-round" onclick="addVoucher(@question-index)">Tambah Voucher</button></div></div></div>';
 
-let answerTemplate = '<div id="@answer-key" class="answer-group">' +
-	'<div class="form-group row">' +
-	'<div class="col-xs-11"><input type="text" class="form-control border-round" data-name="@answer-key-name" data-question="@question-index" placeholder="@answer-key-placeholder" value="@answer-key-value"></div>' +
-	'<div class="col-xs-1"><button class="btn btn-xs btn-danger btn-delete-survey" onclick="removeSurveyElement(\'@answer-key\')">Hapus</button></div>' +
-	'</div>' +
-	'<div class="form-group"><input type="text" class="form-control border-round" data-name="@answer-description-name" data-question="@question-index" placeholder="@answer-description-placeholder" value="@answer-description-value"></div>' +
-	'</div>';
+let answerTemplate = '<div id="@answer-key" class="answer-group"><div class="form-group row"><label class="col-xs-3 control-label">Kode Pertanyaan</label><div class="col-xs-8"><input type="text" class="form-control border-round" data-name="@answer-key-name" data-question="@question-index" placeholder="@answer-key-placeholder" value="@answer-key-value"></div><div class="col-xs-1"><button class="btn btn-xs btn-danger btn-delete-element" onclick="removeSurveyElement(\'@answer-key\')">Hapus</button></div></div><div class="form-group"><label class="col-xs-3 control-label">Deskripsi</label><div class="col-xs-9"><input type="text" class="form-control border-round" data-name="@answer-description-name" data-question="@question-index" placeholder="@answer-description-placeholder" value="@answer-description-value"></div></div></div>';
 
 function removeSurveyElement(selector) {
 	$('#' + selector).remove();
-	processChange();
+	processSurveyChange();
 }
 
-function processCurrentData() {
+function processSurveyCurrentData() {
 	let fieldValue = $('input[name="survey"]').val();
 	let surveys = (fieldValue == '') ? [] : JSON.parse(fieldValue);
 
@@ -150,32 +118,32 @@ function processQuestionType() {
 	let questionIndex = $(this).data('index');
 	let questionType = $(this).val();
 
-	$(elementId.questionAnswers + questionIndex + ', ' + elementId.packageListId + questionIndex + ', ' + elementId.voucherListId + questionIndex).html('');
+	$(surveyElementId.questionAnswers + questionIndex + ', ' + surveyElementId.packageListId + questionIndex + ', ' + surveyElementId.voucherListId + questionIndex).html('');
 	if (questionType == 'number_sales') {
-		$(elementId.questionKey + questionIndex + ' .sales-group').show();
-		$(elementId.questionKey + questionIndex + ' .non-sales-group').hide();
+		$(surveyElementId.questionKey + questionIndex + ' .sales-group').show();
+		$(surveyElementId.questionKey + questionIndex + ' .non-sales-group').hide();
 		addPackage(questionIndex);
 		addVoucher(questionIndex);
 	} else {
-		$(elementId.questionKey + questionIndex + ' .sales-group').hide();
-		$(elementId.questionKey + questionIndex + ' .non-sales-group').show();
+		$(surveyElementId.questionKey + questionIndex + ' .sales-group').hide();
+		$(surveyElementId.questionKey + questionIndex + ' .non-sales-group').show();
 		if (questionTypeWithAnswers.indexOf(questionType) != -1) {
 			$('#question-' + questionIndex + ' .add-answer-button').show();
 			addAnswer(questionIndex);
 		}
 	}
-	$(elementId.questionTypeId + questionIndex + '.sumo-select')[0].sumo.reload();
+	$(surveyElementId.questionTypeId + questionIndex + '.sumo-select')[0].sumo.reload();
 }
 
-function processChange() {
+function processSurveyChange() {
 	// change all " " to "_" in key
 	$('*[data-name*="-key"]').each(function() {
 		$(this).val($(this).val().replaceAll(' ', '_').toLowerCase());
 	});
 
 	let data = [];
-	let stepKeys = $(dataSelector.stepKey);
-	let stepDescriptions = $(dataSelector.stepDescription);
+	let stepKeys = $(surveyDataSelector.stepKey);
+	let stepDescriptions = $(surveyDataSelector.stepDescription);
 
 	for (let i = 0; i < stepKeys.length; i++) {
 		let stepKey = stepKeys[i].value;
@@ -183,11 +151,11 @@ function processChange() {
 
 		let stepIndex = i + 1;
 		let stepSelector = '*[data-step=' + stepIndex + ']';
-		let questionKeys = $(dataSelector.questionKey + stepSelector);
-		let questionDescriptions = $(dataSelector.questionDescription + stepSelector);
-		let questionTypes = $(dataSelector.questionType + stepSelector);
-		let questionRequires = $(dataSelector.questionRequired + stepSelector);
-		let questionTerminates = $(dataSelector.questionTerminate + stepSelector);
+		let questionKeys = $(surveyDataSelector.questionKey + stepSelector);
+		let questionDescriptions = $(surveyDataSelector.questionDescription + stepSelector);
+		let questionTypes = $(surveyDataSelector.questionType + stepSelector);
+		let questionRequires = $(surveyDataSelector.questionRequired + stepSelector);
+		let questionTerminates = $(surveyDataSelector.questionTerminate + stepSelector);
 
 		let questions = [];
 		for (let j = 0; j < questionKeys.length; j++) {
@@ -205,13 +173,13 @@ function processChange() {
 					'values': getAnswers(questionIndex)
 				};
 			} else if (questionType == 'number_sales') {
-				let newNumberDescription = $(dataSelector.newNumberDescription + stepSelector)[0].value;
-				let oldNumberDescription = $(dataSelector.oldNumberDescription + stepSelector)[0].value;
-				let packageDescription = $(dataSelector.packageDescription + stepSelector)[0].value;
-				let voucherDescription = $(dataSelector.voucherDescription + stepSelector)[0].value;
+				let newNumberDescription = $(surveyDataSelector.newNumberDescription + stepSelector)[0].value;
+				let oldNumberDescription = $(surveyDataSelector.oldNumberDescription + stepSelector)[0].value;
+				let packageDescription = $(surveyDataSelector.packageDescription + stepSelector)[0].value;
+				let voucherDescription = $(surveyDataSelector.voucherDescription + stepSelector)[0].value;
 
 				question = {
-					'key': questionKey,
+					'key': 'sales',
 					'type': questionType,
 					'number': {
 						'new': {
@@ -226,12 +194,12 @@ function processChange() {
 					'package': {
 						'key': 'package',
 						'text': packageDescription,
-						'values': getAnswers(questionIndex, elementId.packageListId + questionIndex + ' ')
+						'values': getAnswers(questionIndex, surveyElementId.packageListId + questionIndex + ' ')
 					},
 					'voucher': {
 						'key': 'voucher',
 						'text': voucherDescription,
-						'values': getAnswers(questionIndex, elementId.voucherListId + questionIndex + ' ')
+						'values': getAnswers(questionIndex, surveyElementId.voucherListId + questionIndex + ' ')
 					}
 				};
 			} else {
@@ -266,11 +234,11 @@ function processChange() {
 
 function addStep(stepKeyValue = '', stepDescriptionValue = '') {
 	$('#survey-data').append(parseStepTemplate(stepKeyValue, stepDescriptionValue));
-	bindListener();
+	bindSurveyListener();
 }
 
 function addQuestion(stepIndex, questionTypeValue = '', questionKeyValue = '', questionDescriptionValue = '', questionRequiredValue = false, questionTerminateValue = false, salesValue = undefined) {
-	$(elementId.stepQuestions + stepIndex).append(parseQuestionTemplate(stepIndex, questionKeyValue, questionDescriptionValue, questionRequiredValue, questionTerminateValue, salesValue));
+	$(surveyElementId.stepQuestions + stepIndex).append(parseQuestionTemplate(stepIndex, questionKeyValue, questionDescriptionValue, questionRequiredValue, questionTerminateValue, salesValue));
 	fillQuestionTypes(questionTypeValue);
 
 	if (questionTypeWithAnswers.indexOf(questionTypeValue) != -1) {
@@ -281,27 +249,27 @@ function addQuestion(stepIndex, questionTypeValue = '', questionKeyValue = '', q
 		$('#question-' + questionCount + ' .add-answer-button, #question-' + questionCount + ' .sales-group').hide();
 	}
 
-	bindListener();
+	bindSurveyListener();
 }
 
 function addAnswer(questionIndex, answerKeyValue = '', answerDescriptionValue = '') {
-	$(elementId.questionAnswers + questionIndex).append(parseAnswerTemplate(questionIndex, 'Kode jawaban (berupa gabungan huruf dan angka)', 'Deskripsi jawaban', answerKeyValue, answerDescriptionValue));
-	bindListener();
+	$(surveyElementId.questionAnswers + questionIndex).append(parseAnswerTemplate(questionIndex, 'Kode jawaban (berupa gabungan huruf dan angka)', 'Deskripsi jawaban', answerKeyValue, answerDescriptionValue));
+	bindSurveyListener();
 }
 
 function addPackage(questionIndex, packageKeyValue = '', packageDescriptionValue = '') {
-	$(elementId.packageListId + questionIndex).append(parseAnswerTemplate(questionIndex, 'Kode paket (diakhiri harga paket, contoh: paket_a_19000)', 'Deskripsi paket', packageKeyValue, packageDescriptionValue));
-	bindListener();
+	$(surveyElementId.packageListId + questionIndex).append(parseAnswerTemplate(questionIndex, 'Kode paket (diakhiri harga paket, cth: paket_a_19000)', 'Deskripsi paket', packageKeyValue, packageDescriptionValue));
+	bindSurveyListener();
 }
 
 function addVoucher(questionIndex, voucherKeyValue = '', voucherDescriptionValue = '') {
-	$(elementId.voucherListId + questionIndex).append(parseAnswerTemplate(questionIndex, 'Kode voucher (harga voucher tanpa singkatan, contoh: 10000)', 'Deskripsi voucher', voucherKeyValue, voucherDescriptionValue));
-	bindListener();
+	$(surveyElementId.voucherListId + questionIndex).append(parseAnswerTemplate(questionIndex, 'Kode voucher (harga voucher, cth: 10000)', 'Deskripsi voucher', voucherKeyValue, voucherDescriptionValue));
+	bindSurveyListener();
 }
 
 function getAnswers(questionIndex, prefixSelector = '') {
-	let answerKeys = $(prefixSelector + dataSelector.answerKey + '*[data-question=' + questionIndex + ']');
-	let answerDescriptions = $(prefixSelector + dataSelector.answerDescription + '*[data-question=' + questionIndex + ']');
+	let answerKeys = $(prefixSelector + surveyDataSelector.answerKey + '*[data-question=' + questionIndex + ']');
+	let answerDescriptions = $(prefixSelector + surveyDataSelector.answerDescription + '*[data-question=' + questionIndex + ']');
 
 	let values = [];
 	for (let k = 0; k < answerKeys.length; k++) {
@@ -314,29 +282,29 @@ function getAnswers(questionIndex, prefixSelector = '') {
 	return values;
 }
 
-function bindListener() {
+function bindSurveyListener() {
 	$('*[data-name="question-type"]').unbind('change', processQuestionType).bind('change', processQuestionType);
-	$('*[data-name*="step-"]').unbind('change', processChange).bind('change', processChange);
-	$('*[data-name*="question-"]').unbind('change', processChange).bind('change', processChange);
-	$('*[data-name*="answer-"]').unbind('change', processChange).bind('change', processChange);
-	$('*[data-name*="new-number-"]').unbind('change', processChange).bind('change', processChange);
-	$('*[data-name*="old-number-"]').unbind('change', processChange).bind('change', processChange);
-	$('*[data-name*="package-"]').unbind('change', processChange).bind('change', processChange);
-	$('*[data-name*="voucher-"]').unbind('change', processChange).bind('change', processChange);
+	$('*[data-name*="step-"]').unbind('change', processSurveyChange).bind('change', processSurveyChange);
+	$('*[data-name*="question-"]').unbind('change', processSurveyChange).bind('change', processSurveyChange);
+	$('*[data-name*="answer-"]').unbind('change', processSurveyChange).bind('change', processSurveyChange);
+	$('*[data-name*="new-number-"]').unbind('change', processSurveyChange).bind('change', processSurveyChange);
+	$('*[data-name*="old-number-"]').unbind('change', processSurveyChange).bind('change', processSurveyChange);
+	$('*[data-name*="package-"]').unbind('change', processSurveyChange).bind('change', processSurveyChange);
+	$('*[data-name*="voucher-"]').unbind('change', processSurveyChange).bind('change', processSurveyChange);
 
-	processChange();
+	processSurveyChange();
 }
 
 function fillQuestionTypes(questionTypeValue = '') {
 	$.each(questionTypes, function(i, item) {
 		if (item.key == questionTypeValue) {
-			$(elementId.questionTypeId + questionCount).append($('<option>', {
+			$(surveyElementId.questionTypeId + questionCount).append($('<option>', {
 				value: item.key,
 				text: item.description,
 				selected: true
 			}));
 		} else {
-			$(elementId.questionTypeId + questionCount).append($('<option>', {
+			$(surveyElementId.questionTypeId + questionCount).append($('<option>', {
 				value: item.key,
 				text: item.description
 			}));
@@ -351,8 +319,8 @@ function parseAnswerTemplate(questionIndex, keyPlaceholder = 'Kode jawaban (beru
 		.replaceAll('@answer-description-value', answerDescriptionValue)
 		.replaceAll('@answer-key-placeholder', keyPlaceholder)
 		.replaceAll('@answer-description-placeholder', descriptionPlaceholder)
-		.replaceAll('@answer-key-name', elementId.answerKeyName)
-		.replaceAll('@answer-description-name', elementId.answerDescriptionName)
+		.replaceAll('@answer-key-name', surveyElementId.answerKeyName)
+		.replaceAll('@answer-description-name', surveyElementId.answerDescriptionName)
 		.replaceAll('@answer-key', 'answer-' + answerCount)
 		.replaceAll('@answer-index', answerCount)
 		.replaceAll('@question-index', questionIndex);
@@ -370,19 +338,19 @@ function parseQuestionTemplate(stepIndex, questionKeyValue = '', questionDescrip
 		.replaceAll('@voucher-description-value', (salesValue != undefined) ? salesValue['voucher']['text'] : '')
 		.replaceAll('@question-key-placeholder', 'Kode pertanyaan (berupa gabungan huruf dan angka)')
 		.replaceAll('@question-description-placeholder', 'Deskripsi pertanyaan')
-		.replaceAll('@new-number-description-placeholder', elementId.newNumberPlaceholder)
-		.replaceAll('@old-number-description-placeholder', elementId.oldNumberPlaceholder)
-		.replaceAll('@package-description-placeholder', elementId.packagePlaceholder)
-		.replaceAll('@voucher-description-placeholder', elementId.voucherPlaceholder)
-		.replaceAll('@question-required-name', elementId.questionRequiredName)
-		.replaceAll('@question-terminate-name', elementId.questionTerminateName)
-		.replaceAll('@question-type-name', elementId.questionTypeName)
-		.replaceAll('@question-key-name', elementId.questionKeyName)
-		.replaceAll('@question-description-name', elementId.questionDescriptionName)
-		.replaceAll('@new-number-description-name', elementId.newNumberDescriptionName)
-		.replaceAll('@old-number-description-name', elementId.oldNumberDescriptionName)
-		.replaceAll('@package-description-name', elementId.packageDescriptionName)
-		.replaceAll('@voucher-description-name', elementId.voucherDescriptionName)
+		.replaceAll('@new-number-description-placeholder', surveyElementId.newNumberPlaceholder)
+		.replaceAll('@old-number-description-placeholder', surveyElementId.oldNumberPlaceholder)
+		.replaceAll('@package-description-placeholder', surveyElementId.packagePlaceholder)
+		.replaceAll('@voucher-description-placeholder', surveyElementId.voucherPlaceholder)
+		.replaceAll('@question-required-name', surveyElementId.questionRequiredName)
+		.replaceAll('@question-terminate-name', surveyElementId.questionTerminateName)
+		.replaceAll('@question-type-name', surveyElementId.questionTypeName)
+		.replaceAll('@question-key-name', surveyElementId.questionKeyName)
+		.replaceAll('@question-description-name', surveyElementId.questionDescriptionName)
+		.replaceAll('@new-number-description-name', surveyElementId.newNumberDescriptionName)
+		.replaceAll('@old-number-description-name', surveyElementId.oldNumberDescriptionName)
+		.replaceAll('@package-description-name', surveyElementId.packageDescriptionName)
+		.replaceAll('@voucher-description-name', surveyElementId.voucherDescriptionName)
 		.replaceAll('@question-type-id', 'question-type-' + questionCount)
 		.replaceAll('@question-answer-id', 'question-answers-' + questionCount)
 		.replaceAll('@package-list-id', 'package-list-' + questionCount)

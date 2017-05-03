@@ -57,6 +57,10 @@
 	right: -15px;
 }
 
+.right-min-10~.SelectBox label {
+	right: -10px;
+}
+
 .gallery {
 	.item {
 		margin-bottom: 15px;
@@ -84,7 +88,7 @@
 	line-height: 1.2em;
 }
 
-.step-group {
+.step-group, .kpi-group {
 	margin-top: 30px;
 	padding-top: 10px;
 	border-top: solid 1px $brand-primary;
@@ -92,28 +96,44 @@
 		padding-top: 0;
 		border-top: none;
 	}
-	.btn-delete-survey {
+	.btn-delete-element {
 		position: relative;
 		top: -2px;
 	}
 	.step-questions {
-		padding-left: 20px;
+		padding-left: 40px;
 		.question-group {
 			margin-top: 30px;
 			padding-top: 10px;
 			border-top: solid 1px $brand-info;
 			.question-answers, .package-lists, .voucher-lists {
-				padding-left: 20px;
+				padding-left: 40px;
 				margin-bottom: 20px;
 				.answer-group {
 					margin-top: 15px;
 					padding-top: 15px;
 					border-top: solid 1px $brand-danger;
-					.btn-delete-survey {
-						top: 3px;
-					}
+				}
+				.btn-delete-element {
+					top: 3px;
 				}
 			}
 		}
+	}
+	.kpi-values, .kpi-values-label {
+		margin-left: 120px;
+	}
+	.kpi-values-label {
+		border-top: solid 1px $brand-info;
+		margin-bottom: 0;
+		padding-top: 20px;
+		margin-top: 20px;
+	}
+}
+
+.btn-switch-group {
+	&.active {
+		background-color: #fee240;
+		border-color: #d6b802;
 	}
 }

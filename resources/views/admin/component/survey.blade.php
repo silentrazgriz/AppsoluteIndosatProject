@@ -1,11 +1,12 @@
-<hr/>
-<h4>Survey</h4>
-<div id="survey-data">
+<div id="survey-group">
+	<h4>Survey</h4>
+	<div id="survey-data" class="form-horizontal">
+	</div>
+	<div class="form-group">
+		<button type="button" class="btn btn-info border-round" onclick="addStep()">Tambah Langkah</button>
+	</div>
+	<input type="hidden" name="survey" value="@if(isset($field['value'])){{ json_encode($field['value']) }}@endif">
 </div>
-<div class="form-group">
-	<button type="button" class="btn btn-info border-round" onclick="addStep()">Tambah Langkah</button>
-</div>
-<input type="hidden" name="survey" value="@if(isset($field['value'])){{ json_encode($field['value']) }}@endif">
 
 @section('scripts')
 	<script>
@@ -15,7 +16,7 @@
 	<script>
 		$(function () {
 			if (surveyEdit) {
-				processCurrentData();
+				processSurveyCurrentData();
 			} else {
 				addStep();
 			}
