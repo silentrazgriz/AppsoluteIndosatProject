@@ -202,7 +202,7 @@ class KpiHelpers
 				foreach ($answer['answer']['sales'] as $sale) {
 					$answerDate = DateHelpers::getDateFromFormat($answer['created_at'], $mysqlDateFormat);
 
-					if (isset($sale['number']['new'])) {
+					if (isset($sale['new_number'])) {
 						$numbers[$answerDate->format($chartDateFormat)]++;
 					}
 
