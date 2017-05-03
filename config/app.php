@@ -180,6 +180,7 @@ return [
 	    // Krlove
 	    Krlove\EloquentModelGenerator\Provider\GeneratorServiceProvider::class,
 	    Maatwebsite\Excel\ExcelServiceProvider::class,
+	    Thujohn\Twitter\TwitterServiceProvider::class,
     ],
 
     /*
@@ -230,6 +231,7 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
 
 	    'Excel' => \Maatwebsite\Excel\Facades\Excel::class,
+	    'Twitter' => \Thujohn\Twitter\Facades\Twitter::class,
     ],
 
 ];

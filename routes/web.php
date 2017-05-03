@@ -36,6 +36,7 @@ Route::group(['middleware' => 'admin', 'prefix' => 'cms'], function() {
 
     Route::get('/report', 'DashboardController@report')->name('report');
 	Route::get('/gallery', 'DashboardController@gallery')->name('gallery');
+	Route::get('/hashtag', 'DashboardController@hashtag')->name('hashtag');
 
     Route::get('/export/kpi', 'ExcelController@kpiToExcel')->name('export-kpi');
 	Route::get('/export/answer', 'ExcelController@answerToExcel')->name('export-answer');

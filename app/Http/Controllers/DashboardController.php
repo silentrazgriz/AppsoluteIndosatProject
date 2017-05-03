@@ -11,6 +11,7 @@ use App\Models\SalesArea;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Thujohn\Twitter\Facades\Twitter;
 
 class DashboardController extends Controller
 {
@@ -132,6 +133,19 @@ class DashboardController extends Controller
 	    );
 
 	    return view('admin.gallery', ['page' => 'gallery', 'data' => $data]);
+    }
+
+    public function hashtag(Request $request)
+    {
+    	if (isset($request['q'])) {
+		    $tweets = Twitter::getSearch([
+			    'q' => $request['q'],
+			    'result_type' => 'recent',
+			    'count' => 48
+		    ]);
+	    }
+
+    	return view('admin.hashtag', ['page' => 'hashtag', 'data' => isset($tweets) ? $tweets->statuses : [], 'q' => $request['q'] ?? '#']);
     }
 
     private function getGalleryAnswers($eventId, $date, $imageKeys)

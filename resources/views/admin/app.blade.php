@@ -86,11 +86,14 @@
 							<a href="{{ route('area') }}"><span><i class="fa fa-map"></i> Lihat Daftar Area</span></a>
 						</li>
 						<li class="header">MEDIA</li>
-						<li @if($page == 'report') class="active" @endif>
-							<a href="{{ route('report') }}"><span><i class="fa fa-file-excel-o"></i> Download laporan</span></a>
-						</li>
 						<li @if($page == 'gallery') class="active" @endif>
 							<a href="{{ route('gallery') }}"><span><i class="fa fa-file-image-o"></i> Gallery</span></a>
+						</li>
+						<li @if($page == 'hashtag') class="active" @endif>
+							<a href="{{ route('hashtag') }}"><span><i class="fa fa-hashtag"></i> Hashtag Grabber</span></a>
+						</li>
+						<li @if($page == 'report') class="active" @endif>
+							<a href="{{ route('report') }}"><span><i class="fa fa-file-excel-o"></i> Download laporan</span></a>
 						</li>
 					</ul>
 				</div>
