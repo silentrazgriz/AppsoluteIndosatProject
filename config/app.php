@@ -181,6 +181,7 @@ return [
 	    Krlove\EloquentModelGenerator\Provider\GeneratorServiceProvider::class,
 	    Maatwebsite\Excel\ExcelServiceProvider::class,
 	    Thujohn\Twitter\TwitterServiceProvider::class,
+	    Intervention\Image\ImageServiceProvider::class,
     ],
 
     /*
@@ -232,6 +233,7 @@ return [
 
 	    'Excel' => \Maatwebsite\Excel\Facades\Excel::class,
 	    'Twitter' => \Thujohn\Twitter\Facades\Twitter::class,
+	    'Image' => \Intervention\Image\Facades\Image::class
     ],
 
 ];

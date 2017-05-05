@@ -8,7 +8,7 @@
 				<input type="radio"
 				       name="{{ $field['key'] }}"
 				       value="{{ $value['key'] }}"
-				       @if(isset($value['checked']) && $value['checked']) checked @endif>
+				       @if($key == 0) checked @endif>
 				<span class="indicator"><span></span></span>
 				{{ $value['text'] }}
 			</label>

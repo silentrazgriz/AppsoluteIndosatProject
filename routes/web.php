@@ -71,3 +71,5 @@ Route::group(['middleware' => 'admin', 'prefix' => 'cms'], function() {
 	Route::post('/number', 'NumberListController@store')->name('post-number');
 	Route::delete('/number/{id}', 'NumberListController@destroy')->name('delete-number');
 });
+
+Route::get('/compress', 'DashboardController@compressImage');

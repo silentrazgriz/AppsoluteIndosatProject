@@ -3,14 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\DateHelpers;
+use App\Helpers\ImageHelper;
 use App\Helpers\KpiHelpers;
 use App\Helpers\SurveyHelpers;
+use App\Models\CompressImage;
 use App\Models\Event;
 use App\Models\EventAnswer;
 use App\Models\SalesArea;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Thujohn\Twitter\Facades\Twitter;
 
 class DashboardController extends Controller
@@ -146,6 +149,32 @@ class DashboardController extends Controller
 	    }
 
     	return view('admin.hashtag', ['page' => 'hashtag', 'data' => isset($tweets) ? $tweets->statuses : [], 'q' => $request['q'] ?? '#']);
+    }
+
+    public function compressImage()
+    {
+    	$start = microtime(true);
+    	$files = Storage::allFiles('');
+    	$index = 0;
+		$count = 0;
+		$message = '';
+    	while (microtime(true) - $start < 29) {
+			$compressed = CompressImage::where('path', $files[$index])
+				->first();
+			if (!$compressed) {
+				$filename = ImageHelper::compressImage($files[$index]);
+				if (!empty($filename)) {
+					$message .= $filename . " compressed\n";
+					CompressImage::create(['path' => $filename]);
+					$count++;
+				}
+			}
+			$index++;
+	    }
+	    $message .= 'Done compressing ' . $count . ' files';
+    	$now = Carbon::now();
+    	Storage::put('compress-report-' . $now->toDateString() . '-' . $now->format('H-i-s') . '.txt', $message);
+    	return 'Done compressing ' . $count . ' files';
     }
 
     private function getGalleryAnswers($eventId, $date, $imageKeys)
