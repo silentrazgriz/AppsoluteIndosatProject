@@ -176,18 +176,16 @@ class DashboardController extends Controller
 	{
 		$start = microtime(true);
 		$compressedFiles = array_column(CompressImage::get()->toArray(), 'path');
-		$files = Storage::allFiles('');
+		$files = array_values(array_diff(Storage::allFiles(''), $compressedFiles));
 		$index = 0;
 		$count = 0;
 		$message = '';
-		while (microtime(true) - $start < 59) {
-			if (!in_array($files[$index], $compressedFiles)) {
-				$filename = ImageHelper::compressImage($files[$index]);
-				if (!empty($filename)) {
-					$message .= $filename . " compressed\n";
-					CompressImage::create(['path' => $filename]);
-					$count++;
-				}
+		while (microtime(true) - $start < 29) {
+			$filename = ImageHelper::compressImage($files[$index]);
+			if (!empty($filename)) {
+				$message .= $filename . " compressed\n";
+				CompressImage::create(['path' => $filename]);
+				$count++;
 			}
 			$index++;
 		}
