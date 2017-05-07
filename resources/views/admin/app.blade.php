@@ -56,7 +56,7 @@
 						</li>
 						<li class="header">SALES</li>
 						<li @if($page == 'create-sales') class="active" @endif>
-							<a href="{{ route('create-sales') }}"><span><i class="fa fa-user-plus"></i> Buat Buddies Baru</span></a>
+							<a href="{{ route('create-sales') }}"><span><i class="fa fa-user-plus"></i> Tambah Buddies Baru</span></a>
 						</li>
 						<li @if($page == 'sales-balance') class="active" @endif>
 							<a href="{{ route('sales-balance') }}"><span><i class="fa fa-credit-card"></i> Tambah Saldo Buddies</span></a>
@@ -78,7 +78,6 @@
 						<li @if($page == 'event') class="active" @endif>
 							<a href="{{ route('event') }}"><span><i class="fa fa-calendar"></i> Lihat Daftar Event</span></a>
 						</li>
-						<li class="header">AREA</li>
 						<li @if($page == 'create-area') class="active" @endif>
 							<a href="{{ route('create-area') }}"><span><i class="fa fa-map-marker"></i> Buat Area</span></a>
 						</li>

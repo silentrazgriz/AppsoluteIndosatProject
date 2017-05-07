@@ -175,7 +175,7 @@ class KpiHelpers
 		];
 
 		foreach ($question['package']['values'] as $value) {
-			$packages[$value['key']] = [];
+			$packages[strtolower($value['key'])] = [];
 		}
 
 		foreach ($question['voucher']['values'] as $value) {
@@ -224,7 +224,7 @@ class KpiHelpers
 						$buyPackage = false;
 					}
 
-					$packages[$sale['package']][$date]++;
+					$packages[strtolower($sale['package'])][$date]++;
 
 					if (isset($sale['voucher'])) {
 						$buyVoucher = true;

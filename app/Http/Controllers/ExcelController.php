@@ -56,17 +56,18 @@ class ExcelController
 
 	public function answerToExcel(Request $request)
 	{
-		$unset = [];
+		$unset = ['sales'];
+		$results = [];
 
 		$eventId = $request['event_id'];
 		$from = $request['from'];
 		$to = $request['to'];
 
-		$eventAnswers = EventAnswer::select('created_at as date', 'area', 'answer')
+		$eventAnswers = EventAnswer::with('user')
 			->where('event_id', $eventId)
 			->where('created_at', '>=', DateHelpers::getDateFromFormat($from)->format(config('constants.DATE_FORMAT.MYSQL')))
 			->where('created_at', '<=', DateHelpers::getDateFromFormat($to)->format(config('constants.DATE_FORMAT.MYSQL')))
-			->orderBy('date', 'desc')
+			->orderBy('created_at', 'desc')
 			->get()
 			->toArray();
 
@@ -79,33 +80,38 @@ class ExcelController
 		}
 
 		foreach ($eventAnswers as &$answer) {
-			$answer = array_merge($answer, $answer['answer']);
-			unset($answer['answer']);
+			$result = [];
 
-			$answer['new_number'] = strval($this->splitColumnArray($answer['sales'], 'new_number', "|"));
-			$answer['old_number'] = strval($this->splitColumnArray($answer['sales'], 'old_number', "|"));
-			$answer['package'] = $this->splitColumnArray($answer['sales'], 'package', "|");
-			$answer['voucher'] = $this->splitVoucherData($answer['sales']);
+			$result['date'] = $answer['created_at'];
+			$result['buddies'] = $answer['user']['name'];
+			$result['area'] = $answer['area'];
+
+			$result['new_number'] = strval($this->splitColumnArray($answer['answer']['sales'], 'new_number', '|'));
+			$result['old_number'] = strval($this->splitColumnArray($answer['answer']['sales'], 'old_number', '|'));
+			$result['package'] = $this->splitColumnArray($answer['answer']['sales'], 'package', "|");
+			$result['voucher'] = $this->splitVoucherData($answer['answer']['sales']);
 			unset($answer['sales']);
 
-			foreach ($answer as &$value) {
-				if (is_array($value)) {
-					$value = implode(";", $value);
+			foreach ($answer['answer'] as $key => &$value) {
+				if (!in_array($key, $unset)) {
+					if (is_array($value)) {
+						$result[$key] = implode(";", $value);
+					} else {
+						$result[$key] = $value;
+					}
 				}
 			}
 			unset($value);
 
-			foreach ($unset as $key) {
-				unset($answer[$key]);
-			}
+			array_push($results, $result);
 		}
 		unset($answer);
 
-		Excel::create('Report-Answer-' . $from . '-' . $to, function ($excel) use ($eventAnswers) {
+		Excel::create('Report-Answer-' . $from . '-' . $to, function ($excel) use ($results) {
 			$excel = $this->getExcelConfig($excel);
 
-			$excel->sheet('Answer Summary', function ($sheet) use ($eventAnswers) {
-				$sheet->fromArray($eventAnswers, null, 'A1', true);
+			$excel->sheet('Answer Summary', function ($sheet) use ($results) {
+				$sheet->fromArray($results, null, 'A1', true);
 			});
 		})->download('xls');
 	}
@@ -159,9 +165,10 @@ class ExcelController
 
 			$temp = '';
 			foreach ($vouchers as $voucher) {
-				$temp .= implode(';', $voucher) . "|";
+				$temp .= (!empty($temp)) ? '|' . implode(';', $voucher) : implode(';', $voucher);
 			}
-			return $temp;
+
+			return (empty($temp)) ? '-' : $temp;
 		}
 
 		return '-';
@@ -169,7 +176,12 @@ class ExcelController
 
 	private function splitColumnArray($array, $key, $delimiter)
 	{
-		return (isset($array)) ? implode($delimiter, array_column($array, $key)) : '-';
+		$result = '-';
+		if (isset($array)) {
+			$temp = implode($delimiter, array_column($array, $key));
+			$result = (count($temp) != count($array) - 1) ? $temp : '-';
+ 		}
+		return (!empty($result)) ? $result : '-';
 	}
 
 	private function processSummary($summary, $sheetData)
