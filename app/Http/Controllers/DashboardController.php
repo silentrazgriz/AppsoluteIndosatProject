@@ -175,14 +175,13 @@ class DashboardController extends Controller
 	public function compressImage()
 	{
 		$start = microtime(true);
+		$compressedFiles = array_column(CompressImage::get()->toArray(), 'path');
 		$files = Storage::allFiles('');
 		$index = 0;
 		$count = 0;
 		$message = '';
-		while (microtime(true) - $start < 29) {
-			$compressed = CompressImage::where('path', $files[$index])
-				->first();
-			if (!$compressed) {
+		while (microtime(true) - $start < 59) {
+			if (!in_array($files[$index], $compressedFiles)) {
 				$filename = ImageHelper::compressImage($files[$index]);
 				if (!empty($filename)) {
 					$message .= $filename . " compressed\n";
