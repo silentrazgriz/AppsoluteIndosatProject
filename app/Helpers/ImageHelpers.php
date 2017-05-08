@@ -7,7 +7,7 @@ namespace App\Helpers;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
 
-class ImageHelper
+class ImageHelpers
 {
 	public static function compressImage($filename)
 	{

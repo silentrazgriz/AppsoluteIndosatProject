@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\DateHelpers;
-use App\Helpers\ImageHelper;
+use App\Helpers\ImageHelpers;
 use App\Helpers\KpiHelpers;
 use App\Helpers\SurveyHelpers;
 use App\Helpers\TableHelpers;
@@ -181,7 +181,7 @@ class DashboardController extends Controller
 		$count = 0;
 		$message = '';
 		while (microtime(true) - $start < 29) {
-			$filename = ImageHelper::compressImage($files[$index]);
+			$filename = ImageHelpers::compressImage($files[$index]);
 			if (!empty($filename)) {
 				$message .= $filename . " compressed\n";
 				CompressImage::create(['path' => $filename]);

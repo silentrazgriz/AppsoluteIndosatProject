@@ -4,7 +4,7 @@
 namespace App\Http\Controllers;
 
 
-use App\Helpers\ImageHelper;
+use App\Helpers\ImageHelpers;
 use App\Helpers\SurveyHelpers;
 use App\Models\BalanceHistory;
 use App\Models\CompressImage;
@@ -174,7 +174,7 @@ class SurveyController extends Controller
 					case 'image':
 						if (isset($data[$key])) {
 							$path = $data[$key]->store($event['id'] . '/' . $key . '/' . $userId);
-							CompressImage::create(['path' => ImageHelper::compressImage($path)]);
+							CompressImage::create(['path' => ImageHelpers::compressImage($path)]);
 							$data[$key] = $path;
 						}
 						break;
