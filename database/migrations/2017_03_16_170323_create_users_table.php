@@ -24,7 +24,7 @@ class CreateUsersTable extends Migration
             $table->string('gender');
             $table->string('phone');
             $table->unsignedBigInteger('balance');
-	        $table->boolean('is_admin')->default(false);
+	        $table->smallInteger('is_admin')->default(0);
 	        $table->string('remember_token')->nullable();
             $table->timestamps();
             $table->softDeletes();

@@ -43,6 +43,7 @@ Route::group(['middleware' => 'admin', 'prefix' => 'cms'], function() {
 	Route::get('/export/sales', 'ExcelController@salesToExcel')->name('export-sales');
 
 	Route::get('/sales', 'SalesController@index')->name('sales');
+	Route::get('/admin/new', 'SalesController@createAdmin')->name('create-admin');
 	Route::get('/sales/new', 'SalesController@create')->name('create-sales');
 	Route::get('/sales/edit/balance', 'SalesController@editBalance')->name('sales-balance');
 	Route::get('/sales/{id}/edit', 'SalesController@edit')->name('edit-sales');

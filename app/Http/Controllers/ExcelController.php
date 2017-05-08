@@ -9,6 +9,8 @@ use App\Helpers\KpiHelpers;
 use App\Helpers\SurveyHelpers;
 use App\Models\Event;
 use App\Models\EventAnswer;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -19,14 +21,24 @@ class ExcelController
 		$eventId = $request['event_id'];
 		$from = $request['from'];
 		$to = $request['to'];
+		$userId = $request['user_id'];
+		$salesAreaId = $request['sales_area_id'];
 
 		$result = [];
 
 		$eventAnswers = EventAnswer::select('created_at as date', 'area', 'answer')
 			->where('event_id', $eventId)
 			->where('created_at', '>=', DateHelpers::getDateFromFormat($from)->format(config('constants.DATE_FORMAT.MYSQL')))
-			->where('created_at', '<=', DateHelpers::getDateFromFormat($to)->format(config('constants.DATE_FORMAT.MYSQL')))
-			->orderBy('date', 'desc')
+			->where('created_at', '<=', DateHelpers::getDateFromFormat($to)->format(config('constants.DATE_FORMAT.MYSQL')));
+
+		if ($userId != 0) {
+			$eventAnswers = $eventAnswers->where('user_id', $userId);
+		} else if ($salesAreaId != 0) {
+			$users = $this->getUserIdsInArea($salesAreaId);
+			$eventAnswers = $eventAnswers->whereIn('user_id', $users);
+		}
+
+		$eventAnswers = $eventAnswers->orderBy('date', 'desc')
 			->get()
 			->toArray();
 
@@ -34,8 +46,8 @@ class ExcelController
 			if (isset($answer['answer']['sales'])) {
 				foreach ($answer['answer']['sales'] as $sale) {
 					array_push($result, [
-						'date' => $answer['date'],
-						'area' => $answer['area'],
+						'date' => Carbon::parse($answer['created_at'])->toDateString(),
+						'time' => Carbon::parse($answer['created_at'])->toTimeString(),
 						'new_number' => $sale['new_number'],
 						'old_number' => $sale['old_number'],
 						'package' => $sale['package'],
@@ -62,12 +74,22 @@ class ExcelController
 		$eventId = $request['event_id'];
 		$from = $request['from'];
 		$to = $request['to'];
+		$salesAreaId = $request['sales_area_id'];
+		$userId = $request['user_id'];
 
 		$eventAnswers = EventAnswer::with('user')
 			->where('event_id', $eventId)
 			->where('created_at', '>=', DateHelpers::getDateFromFormat($from)->format(config('constants.DATE_FORMAT.MYSQL')))
-			->where('created_at', '<=', DateHelpers::getDateFromFormat($to)->format(config('constants.DATE_FORMAT.MYSQL')))
-			->orderBy('created_at', 'desc')
+			->where('created_at', '<=', DateHelpers::getDateFromFormat($to)->format(config('constants.DATE_FORMAT.MYSQL')));
+
+		if ($userId != 0) {
+			$eventAnswers = $eventAnswers->where('user_id', $userId);
+		} else if ($salesAreaId != 0) {
+			$users = $this->getUserIdsInArea($salesAreaId);
+			$eventAnswers = $eventAnswers->whereIn('user_id', $users);
+		}
+
+		$eventAnswers = $eventAnswers->orderBy('created_at', 'desc')
 			->get()
 			->toArray();
 
@@ -82,7 +104,8 @@ class ExcelController
 		foreach ($eventAnswers as &$answer) {
 			$result = [];
 
-			$result['date'] = $answer['created_at'];
+			$result['date'] = Carbon::parse($answer['created_at'])->toDateString();
+			$result['time'] = Carbon::parse($answer['created_at'])->toTimeString();
 			$result['buddies'] = $answer['user']['name'];
 			$result['area'] = $answer['area'];
 
@@ -124,6 +147,8 @@ class ExcelController
 		$eventId = $request['event_id'];
 		$from = $request['from'];
 		$to = $request['to'];
+		$userId = $request['user_id'];
+		$salesAreaId = $request['sales_area_id'];
 
 		$event = Event::find($eventId)->toArray();
 		$startDate = DateHelpers::getDateFromFormat($from);
@@ -136,13 +161,13 @@ class ExcelController
 			$startDate->addDay(1);
 		}
 
-		Excel::create('Report-Leaderboard-Indosat-' . $from . '-' . $to, function ($excel) use ($data, &$summary) {
+		Excel::create('Report-Leaderboard-Indosat-' . $from . '-' . $to, function ($excel) use ($data, &$summary, $userId, $salesAreaId) {
 			$excel = $this->getExcelConfig($excel);
 
 			foreach ($data as $date => $leaderboard) {
-				$excel->sheet($date, function ($sheet) use (&$summary, $leaderboard) {
-					$sheetData = $this->parseLeaderboardToArray($leaderboard);
-					$summary = $this->processSummary($summary, $sheetData);
+				$excel->sheet($date, function ($sheet) use (&$summary, $leaderboard, $userId, $salesAreaId) {
+					$sheetData = $this->parseLeaderboardToArray($leaderboard, $userId, $salesAreaId);
+					$summary = $this->processSummary($summary, $sheetData, $userId, $salesAreaId);
 
 					$sheet = $this->getKpiSheetConfig($sheet, $sheetData);
 					$sheet->fromArray($sheetData, null, 'A1', true);
@@ -184,7 +209,7 @@ class ExcelController
 		return (!empty($result)) ? $result : '-';
 	}
 
-	private function processSummary($summary, $sheetData)
+	private function processSummary($summary, $sheetData, $userId, $salesAreaId)
 	{
 		if (count($summary) != count($sheetData)) {
 			foreach ($sheetData as $index => $data) {
@@ -205,24 +230,38 @@ class ExcelController
 		return $summary;
 	}
 
-	private function parseLeaderboardToArray($leaderboard)
+	private function parseLeaderboardToArray($leaderboard, $userId, $salesAreaId)
 	{
 		$result = [];
 
 		foreach ($leaderboard['data'] as $data) {
-			$row = [
-				'Nama' => $data['user']['name'],
-				'Area' => $data['user']['sales_area']['description'] ?? '-'
-			];
+			if (
+				($userId != 0 && $data['user']['id'] == $userId) ||
+				($salesAreaId != 0 && $data['user']['sales_area']['id'] == $salesAreaId) ||
+				($userId == 0 && $salesAreaId == 0)
+			) {
+				$row = [
+					'Nama' => $data['user']['name'],
+					'Area' => $data['user']['sales_area']['description'] ?? '-'
+				];
 
-			foreach ($leaderboard['columns'] as $key => $column) {
-				$row[$column] = $data['kpis'][$key]['result'];
+				foreach ($leaderboard['columns'] as $key => $column) {
+					$row[$column] = $data['kpis'][$key]['result'];
+				}
+
+				array_push($result, $row);
 			}
-
-			array_push($result, $row);
 		}
 
 		return $result;
+	}
+
+	private function getUserIdsInArea($salesAreaId)
+	{
+		return array_column(User::where('sales_area_id', $salesAreaId)
+			->select('id')
+			->get()
+			->toArray(), 'id');
 	}
 
 	private function getKpiSheetConfig($sheet, $data)

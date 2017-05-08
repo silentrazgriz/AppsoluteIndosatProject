@@ -44,16 +44,23 @@
 			<aside class="main-sidebar">
 				<div class="sidebar">
 					<ul class="sidebar-menu">
-						<li class="header">Dashboard</li>
-						<li @if($page == 'dashboard') class="active" @endif>
-							<a href="{{ route('dashboard') }}"><span><i class="fa fa-dashboard"></i> Dashboard</span></a>
-						</li>
-						<li @if($page == 'dashboard-area') class="active" @endif>
-							<a href="{{ route('dashboard-area') }}"><span><i class="fa fa-map-o"></i> Dashboard Per Area</span></a>
-						</li>
-						<li @if($page == 'dashboard-agent') class="active" @endif>
-							<a href="{{ route('dashboard-agent') }}"><span><i class="fa fa-user"></i> Dashboard Per Agent</span></a>
-						</li>
+						@if (Auth::user()->is_admin >= 2)
+							<li class="header">Dashboard</li>
+							<li @if($page == 'dashboard') class="active" @endif>
+								<a href="{{ route('dashboard') }}"><span><i class="fa fa-dashboard"></i> Dashboard</span></a>
+							</li>
+							<li @if($page == 'dashboard-area') class="active" @endif>
+								<a href="{{ route('dashboard-area') }}"><span><i class="fa fa-map-o"></i> Dashboard Per Area</span></a>
+							</li>
+							<li @if($page == 'dashboard-agent') class="active" @endif>
+								<a href="{{ route('dashboard-agent') }}"><span><i class="fa fa-user"></i> Dashboard Per Agent</span></a>
+							</li>
+							@if (Auth::user()->is_admin == 3)
+								<li @if($page == 'create-admin') class="active" @endif>
+									<a href="{{ route('create-admin') }}"><span><i class="fa fa-user-plus"></i> Tambah Admin Baru</span></a>
+								</li>
+							@endif
+						@endif
 						<li class="header">SALES</li>
 						<li @if($page == 'create-sales') class="active" @endif>
 							<a href="{{ route('create-sales') }}"><span><i class="fa fa-user-plus"></i> Tambah Buddies Baru</span></a>
@@ -72,12 +79,14 @@
 							<a href="{{ route('number') }}"><span><i class="fa fa-address-book-o"></i> Lihat Daftar Nomor HP</span></a>
 						</li>
 						<li class="header">EVENT</li>
-						<li @if($page == 'create-event') class="active" @endif>
-							<a href="{{ route('create-event') }}"><span><i class="fa fa-calendar-plus-o"></i> Buat Event</span></a>
-						</li>
-						<li @if($page == 'event') class="active" @endif>
-							<a href="{{ route('event') }}"><span><i class="fa fa-calendar"></i> Lihat Daftar Event</span></a>
-						</li>
+						@if (Auth::user()->is_admin == 3)
+							<li @if($page == 'create-event') class="active" @endif>
+								<a href="{{ route('create-event') }}"><span><i class="fa fa-calendar-plus-o"></i> Buat Event</span></a>
+							</li>
+							<li @if($page == 'event') class="active" @endif>
+								<a href="{{ route('event') }}"><span><i class="fa fa-calendar"></i> Lihat Daftar Event</span></a>
+							</li>
+						@endif
 						<li @if($page == 'create-area') class="active" @endif>
 							<a href="{{ route('create-area') }}"><span><i class="fa fa-map-marker"></i> Buat Area</span></a>
 						</li>

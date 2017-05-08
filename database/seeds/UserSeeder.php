@@ -26,7 +26,7 @@ class UserSeeder extends Seeder
 			    "gender" => "male",
 			    "phone" => "081211221122",
 			    "balance" => "500000",
-			    "is_admin" => true,
+			    "is_admin" => 3,
 			    "created_at" => $date,
 			    "updated_at" => $date
 		    ],
@@ -38,7 +38,7 @@ class UserSeeder extends Seeder
 			    "gender" => "male",
 			    "phone" => "081211223344",
 			    "balance" => "1000000",
-			    "is_admin" => false,
+			    "is_admin" => 0,
 			    "created_at" => $date,
 			    "updated_at" => $date
 		    ],
@@ -50,7 +50,7 @@ class UserSeeder extends Seeder
 			    "gender" => "male",
 			    "phone" => "081211223355",
 			    "balance" => "1000000",
-			    "is_admin" => false,
+			    "is_admin" => 0,
 			    "created_at" => $date,
 			    "updated_at" => $date
 		    ],
@@ -62,7 +62,7 @@ class UserSeeder extends Seeder
 			    "gender" => "female",
 			    "phone" => "081244223344",
 			    "balance" => "1000000",
-			    "is_admin" => false,
+			    "is_admin" => 0,
 			    "created_at" => $date,
 			    "updated_at" => $date
 		    ],

@@ -12,7 +12,8 @@ use Illuminate\Support\Facades\Validator;
 
 class SalesController extends Controller
 {
-	public function storeValidator($data) {
+	public function storeValidator($data)
+	{
 		return Validator::make($data, [
 			'sales_area_id' => 'required|exists:sales_areas,id',
 			'name' => 'required|max:255',
@@ -24,7 +25,8 @@ class SalesController extends Controller
 		]);
 	}
 
-	public function updateValidator($data) {
+	public function updateValidator($data)
+	{
 		return Validator::make($data, [
 			'sales_area_id' => 'exists:sales_areas,id',
 			'name' => 'max:255',
@@ -35,20 +37,23 @@ class SalesController extends Controller
 		]);
 	}
 
-	public function updateBalanceValidator($data) {
+	public function updateBalanceValidator($data)
+	{
 		return Validator::make($data, [
 			'id' => 'exists:users,id',
 			'balance' => 'numeric'
 		]);
 	}
 
-	public function updateSalesBalanceValidator($data) {
+	public function updateSalesBalanceValidator($data)
+	{
 		return Validator::make($data, [
 			'balance' => 'numeric'
 		]);
 	}
 
-	public function index() {
+	public function index()
+	{
 		$data = [
 			'id' => 'sales-table',
 			'columns' => array(),
@@ -72,25 +77,34 @@ class SalesController extends Controller
 		return view('admin.sales.list', ['page' => 'sales', 'data' => $data]);
 	}
 
-	public function create() {
-		return view("admin.sales.create", ['page' => 'create-sales']);
+	public function create()
+	{
+		return view("admin.sales.create", ['page' => 'create-sales', 'admin' => false]);
 	}
 
-	public function edit($id) {
+	public function createAdmin()
+	{
+		return view("admin.sales.create", ['page' => 'create-admin', 'admin' => true]);
+	}
+
+	public function edit($id)
+	{
 		$sales = User::find($id)->toArray();
 
 		return view('admin.sales.edit', ['page' => 'sales', 'data' => $sales]);
 	}
 
-	public function editBalance() {
+	public function editBalance()
+	{
 		$sales = User::select('id as key', 'email as text')->get()->toArray();
 
 		return view('admin.sales.balance', ['page' => 'sales-balance', 'data' => $sales]);
 	}
 
-	public function store(Request $request) {
+	public function store(Request $request)
+	{
 		$data = $request->only([
-			'sales_area_id', 'name', 'email', 'password', 'password_confirmation', 'gender', 'phone', 'balance'
+			'sales_area_id', 'name', 'email', 'password', 'password_confirmation', 'gender', 'phone', 'balance', 'is_admin'
 		]);
 
 		$validator = $this->storeValidator($data);
@@ -104,13 +118,16 @@ class SalesController extends Controller
 		DB::transaction(function () use ($data) {
 			unset($data['password-confirmation']);
 			$data['password'] = bcrypt($data['password']);
+			$data['phone'] = '+62' . $data['phone'];
+			$data['is_admin'] = $data['is_admin'] ?? 0;
 			User::create($data);
 		});
 
 		return redirect()->route('sales');
 	}
 
-	public function updateSalesBalance(Request $request) {
+	public function updateSalesBalance(Request $request)
+	{
 		$data = $request->only([
 			'balance'
 		]);
@@ -138,7 +155,8 @@ class SalesController extends Controller
 		return redirect()->route('home');
 	}
 
-	public function updateBalance(Request $request) {
+	public function updateBalance(Request $request)
+	{
 		$data = $request->only([
 			'id', 'balance'
 		]);
@@ -166,7 +184,8 @@ class SalesController extends Controller
 		return redirect()->route('sales');
 	}
 
-	public function update($id, Request $request) {
+	public function update($id, Request $request)
+	{
 		$data = $request->only([
 			'sales_area_id', 'name', 'email', 'gender', 'phone', 'balance'
 		]);
@@ -196,7 +215,8 @@ class SalesController extends Controller
 		return redirect()->route('sales');
 	}
 
-	public function destroy($id) {
+	public function destroy($id)
+	{
 		DB::transaction(function () use ($id) {
 			User::destroy($id);
 		});

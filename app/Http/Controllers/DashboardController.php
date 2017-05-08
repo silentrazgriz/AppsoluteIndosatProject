@@ -130,7 +130,9 @@ class DashboardController extends Controller
 		$data = array(
 			'eventLists' => $this->eventLists,
 			'date' => $date,
-			'form' => $request->all()
+			'users' => array_merge([['key' => '0', 'text' => 'Semua']], $this->getUserLists()),
+			'areas' => $this->getSalesAreaLists(),
+			'form' => $request->all(),
 		);
 
 		return view('admin.report', ['page' => 'report', 'data' => $data]);

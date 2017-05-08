@@ -70,7 +70,7 @@ class LoginController extends Controller
 		$this->saveLocation($request, 'login');
 
 		return $this->authenticated($request, $this->guard()->user())
-			?: (Auth::user()->is_admin) ? redirect()->route('dashboard') : redirect()->intended($this->redirectPath());
+			?: (Auth::user()->is_admin == 0) ? redirect()->intended($this->redirectPath()) : (Auth::user()->is_admin == 1) ? redirect()->route('sales') : redirect()->route('dashboard');
 	}
 
 	public function login(Request $request)

@@ -36,7 +36,7 @@ class KpiHelpers
 	{
 		$kpis = $event['kpi'];
 		$users = User::with('salesArea')
-			->where('is_admin', false)
+			->where('is_admin', 0)
 			->orderBy('name', 'asc')
 			->get()
 			->toArray();
@@ -314,7 +314,7 @@ class KpiHelpers
 						->toArray();
 
 					foreach ($salesArea['users'] as $user) {
-						if ($user['is_admin'] == false) {
+						if ($user['is_admin'] == 0) {
 							$userKpis = self::getUserKpi($event, $user['id'], $startDate->format('Y-m-d'), null);
 							$data = self::kpiToChartFormat($data, $userKpis, $description);
 						}
@@ -338,7 +338,7 @@ class KpiHelpers
 				$description = str_replace(' ', '_', $salesArea['description']);
 
 				foreach ($salesArea['users'] as $user) {
-					if ($user['is_admin'] == false) {
+					if ($user['is_admin'] == 0) {
 						$userKpis = self::getUserKpi($event, $user['id'], $from, $to);
 						$data = self::kpiToChartFormat($data, $userKpis, $description);
 					}

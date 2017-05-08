@@ -31,9 +31,9 @@
 	<div>
 		<a href="{{ route('leaderboard') }}" class="btn btn-primary border-round">PERFORMANCE BOARD</a>
 	</div>
-	@if(Auth::user()->is_admin)
+	@if(Auth::user()->is_admin != 0)
 		<div>
-			<a href="{{ route('dashboard') }}" class="btn btn-primary border-round">CMS</a>
+			<a href="{{ (Auth::user()->is_admin == 1) ? route('sales') : route('dashboard') }}" class="btn btn-primary border-round">CMS</a>
 		</div>
 	@endif
 </div>

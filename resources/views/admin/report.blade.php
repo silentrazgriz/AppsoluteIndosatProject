@@ -37,6 +37,28 @@
 				</div>
 			</div>
 			<div class="row">
+				<div class="col-xs-4">
+					@include('fields.dropdown', [
+						'field' => [
+							'key' => 'sales_area_id',
+							'text' => 'Area',
+							'values' => $data['areas'],
+							'value' => $data['form']['sales_area_id'] ?? '0'
+						]
+					])
+				</div>
+				<div class="col-xs-4">
+					@include('fields.dropdown', [
+						'field' => [
+							'key' => 'user_id',
+							'text' => 'Buddies',
+							'values' => $data['users'],
+							'value' => $data['form']['user_id'] ?? '0'
+						]
+					])
+				</div>
+			</div>
+			<div class="row">
 				<div class="col-xs-12">
 					<div class="form-group text-center">
 						<a href="{{ route('export-kpi') }}" id="export-kpi-link" class="btn btn-primary border-round">Export KPI</a>

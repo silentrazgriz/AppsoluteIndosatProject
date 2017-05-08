@@ -16,7 +16,7 @@ class AdminOnly
      */
     public function handle($request, Closure $next)
     {
-    	if (Auth::guest() || !Auth::user()->is_admin) {
+    	if (Auth::guest() || Auth::user()->is_admin == 0) {
 			return redirect('/');
 	    }
         return $next($request);
