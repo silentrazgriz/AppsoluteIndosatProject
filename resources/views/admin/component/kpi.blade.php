@@ -5,7 +5,7 @@
 	<div class="form-group">
 		<button type="button" class="btn btn-info border-round" onclick="addKpi()">Tambah KPI</button>
 	</div>
-	<input type="hidden" name="kpi" value="@if(isset($field['value'])){{ json_encode($field['value']) }}@endif">
+	<input type="hidden" name="kpi" value="{{ old('kpi') ?? ((isset($field['value'])) ? json_encode($field['value']) : config('constants.EVENT.DEFAULT_KPI')) }}">
 </div>
 
 @section('scripts')
@@ -15,11 +15,7 @@
 	<script src="{{ asset('js/kpi.editor.js') }}"></script>
 	<script>
 		$(function () {
-			if (kpiEdit) {
-				processKpiCurrentData();
-			} else {
-				addKpi();
-			}
+			processKpiCurrentData();
 		});
 	</script>
 @append

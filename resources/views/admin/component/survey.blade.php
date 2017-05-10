@@ -5,7 +5,7 @@
 	<div class="form-group">
 		<button type="button" class="btn btn-info border-round" onclick="addStep()">Tambah Langkah</button>
 	</div>
-	<input type="hidden" name="survey" value="@if(isset($field['value'])){{ json_encode($field['value']) }}@endif">
+	<input type="hidden" name="survey" value="{{ old('survey') ?? ((isset($field['value'])) ? json_encode($field['value']) : config('constants.EVENT.DEFAULT_SURVEY')) }}">
 </div>
 
 @section('scripts')
@@ -15,11 +15,7 @@
 	<script src="{{ asset('js/survey.editor.js') }}"></script>
 	<script>
 		$(function () {
-			if (surveyEdit) {
-				processSurveyCurrentData();
-			} else {
-				addStep();
-			}
+			processSurveyCurrentData();
 		});
 	</script>
 @append

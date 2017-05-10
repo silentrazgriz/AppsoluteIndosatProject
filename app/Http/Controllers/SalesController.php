@@ -96,7 +96,7 @@ class SalesController extends Controller
 
 	public function editBalance()
 	{
-		$sales = User::select('id as key', 'email as text')->get()->toArray();
+		$sales = User::select('id as key', 'email as text')->orderBy('text', 'asc')->get()->toArray();
 
 		return view('admin.sales.balance', ['page' => 'sales-balance', 'data' => $sales]);
 	}

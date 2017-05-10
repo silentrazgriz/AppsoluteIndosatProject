@@ -82,7 +82,7 @@ class SurveyController extends Controller
 				'is_terminated' => $isTerminated
 			]);
 
-			if (isset($data['sales']) && !empty($data['sales']['new_number'])) {
+			if (isset($data['sales'])) {
 				$this->removeTakenNumber($data['sales']);
 			}
 
@@ -205,10 +205,8 @@ class SurveyController extends Controller
 	{
 		$total = 0;
 		foreach ($data as $sales) {
-			if (!empty($sales['number'])) {
-				foreach ($sales['voucher'] as $denom) {
-					$total += $denom;
-				}
+			foreach ($sales['voucher'] as $denom) {
+				$total += $denom;
 			}
 		}
 		return $total;
