@@ -8,6 +8,7 @@ use App\Models\BalanceHistory;
 use App\Models\Event;
 use App\Models\EventAnswer;
 use App\Models\NumberList;
+use App\Models\SalesArea;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -47,19 +48,33 @@ class EventController extends Controller
 		return view('admin.event.list', ['page' => 'event', 'data' => $data]);
 	}
 
-	public function show($id)
+	public function show($id, Request $request)
 	{
-		$event = Event::find($id)
-			->select('id', 'name', 'start_date as mulai', 'end_date as selesai', 'survey as column')
-			->first()
+		$userId = $request['user_id'] ?? 0;
+		$salesAreaId = $request['sales_area_id'] ?? 0;
+
+		$event = Event::select('id', 'name', 'start_date as mulai', 'end_date as selesai', 'survey as column')
+			->find($id)
 			->toArray();
 
 		$eventAnswers = EventAnswer::where('event_answers.event_id', $id)
 			->join('users', 'event_answers.user_id', '=', 'users.id')
-			->select('event_answers.id', 'users.name as sales', 'users.email as email',
+			->select('event_answers.id', 'users.name as buddies', 'users.email as email',
 				'event_answers.step', 'event_answers.is_terminated as status',
-				'event_answers.created_at as time')
-			->orderBy('event_answers.created_at', 'desc')
+				'event_answers.created_at as time');
+
+		if ($userId != 0) {
+			$eventAnswers = $eventAnswers->where('event_answers.user_id', $userId);
+		} else if ($salesAreaId != 0) {
+			$users = array_column(User::where('sales_area_id', $salesAreaId)
+				->select('id')
+				->get()
+				->toArray(), 'id');
+
+			$eventAnswers = $eventAnswers->whereIn('user_id', $users);
+		}
+
+		$eventAnswers = $eventAnswers->orderBy('event_answers.created_at', 'desc')
 			->paginate(config('constants.ITEM_PER_PAGE'));
 
 		$answerValues = $this->parseSurveyAnswer($eventAnswers->toArray()['data']);
@@ -70,7 +85,21 @@ class EventController extends Controller
 			'summary' => $event,
 			'columns' => array(),
 			'values' => $answerValues,
-			'detail' => 'edit-survey'
+			'detail' => 'edit-survey',
+			'form' => $request->all(),
+			'users' => array_merge(
+				[['key' => '0', 'text' => 'Semua']],
+				User::select('id as key', 'email as text')
+					->orderBy('text', 'asc')
+					->get()
+					->toArray()
+			),
+			'salesAreas' => array_merge(
+				[['key' => '0', 'text' => 'Semua']],
+				SalesArea::select('id as key', 'description as text')
+					->get()
+					->toArray()
+			)
 		];
 
 		if (count($eventAnswers) > 0) {
