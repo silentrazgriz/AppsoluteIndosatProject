@@ -152,7 +152,7 @@ class ExcelController
 
 		$event = Event::find($eventId)->toArray();
 		$startDate = DateHelpers::getDateFromFormat($from);
-		$endDate = DateHelpers::getDateFromFormat($to);
+		$endDate = DateHelpers::getDateFromFormat($to)->addDay(1);
 
 		while ($startDate->diffInDays($endDate) != 0) {
 			$date = $startDate->format(config('constants.DATE_FORMAT.DEFAULT'));

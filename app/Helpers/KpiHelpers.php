@@ -183,7 +183,7 @@ class KpiHelpers
 		}
 
 		$startDate = DateHelpers::getDateFromFormat($from);
-		$endDate = DateHelpers::getDateFromFormat($to);
+		$endDate = DateHelpers::getDateFromFormat($to)->addDay(1);
 
 		$dates = [];
 		while ($startDate->diffInDays($endDate) != 0) {
@@ -303,7 +303,7 @@ class KpiHelpers
 
 		if (isset($areaId) || isset($userId)) {
 			$startDate = DateHelpers::getDateFromFormat($from);
-			$endDate = DateHelpers::getDateFromFormat($to);
+			$endDate = DateHelpers::getDateFromFormat($to)->addDay(1);
 
 			while ($startDate->diffInDays($endDate) != 0) {
 				$description = $startDate->format($chartDateFormat);

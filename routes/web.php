@@ -28,8 +28,8 @@ Route::group(['middleware' => 'auth'], function() {
 
 Route::group(['middleware' => 'admin', 'prefix' => 'cms'], function() {
 	Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
-	Route::get('/dashboad/area', 'DashboardController@dashboardPerArea')->name('dashboard-area');
-    Route::get('/dashboad/agent', 'DashboardController@dashboardPerAgent')->name('dashboard-agent');
+	Route::get('/dashboard/area', 'DashboardController@dashboardPerArea')->name('dashboard-area');
+    Route::get('/dashboard/agent', 'DashboardController@dashboardPerAgent')->name('dashboard-agent');
 
 	Route::get('/survey/{id}/edit', 'SurveyController@edit')->name('edit-survey');
 	Route::put('/survey/{id}', 'SurveyController@update')->name('put-survey');
