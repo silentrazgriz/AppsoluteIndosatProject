@@ -70,7 +70,7 @@
 		</div>
 		<div class="row">
 			<h3>Daftar Jawaban</h3>
-			@include('admin.component.table', ['data' => $data])
+			@include('admin.component.scroller_table', ['data' => $data])
 			<div class="text-center">
 				{{ $data['pages']->links() }}
 			</div>

@@ -26,21 +26,30 @@ class SalesAreaController
 
 	public function index()
 	{
-		$salesArea = SalesArea::select('id', 'description as area')
-			->paginate(config('constants.ITEM_PER_PAGE'));
+        $salesAreas = SalesArea::select('id', 'description as area')
+			->get()
+            ->toArray();
 
 		$data = [
-			'pages' => $salesArea,
 			'id' => 'area-table',
 			'columns' => array(),
-			'values' => $salesArea->toArray()['data'],
-			'edit' => 'edit-area',
-			'destroy' => 'delete-area'
+			'values' => $salesAreas,
+            'actions' => true
 		];
 
 		if (count($data['values']) > 0) {
 			$data['columns'] = TableHelpers::getColumns($data['values'][0], ['id']);
+			foreach ($data['values'] as &$value) {
+                $value['actions'] = '<a href="' . route('edit-area', ['id' => $value['id']]) . '" class="btn btn-info btn-xs"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Ubah</a> <form method="POST" action="' . route('delete-area', ['id' => $value['id']]) . '" class="inline">' . csrf_field() . '<input name="_method" type="hidden" value="DELETE"><button type="submit" class="btn btn-danger btn-xs"><i class="fa fa-times" aria-hidden="true"></i> Hapus</button></form>';
+
+                unset($value['id']);
+
+                $value = array_values($value);
+            }
+            unset($value);
 		}
+
+        $data['values'] = json_encode($data['values']);
 
 		return view('admin.area.list', ['page' => 'area', 'data' => $data]);
 	}

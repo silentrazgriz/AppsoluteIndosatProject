@@ -37,14 +37,22 @@ class EventController extends Controller
 			'id' => 'event-table',
 			'columns' => array(),
 			'values' => $events,
-			'edit' => 'edit-event',
-			'destroy' => 'delete-event',
-			'detail' => 'show-event'
+            'actions' => true
 		];
 		if (count($events) > 0) {
 			$data['columns'] = TableHelpers::getColumns($events[0], ['id']);
+
+            foreach ($data['values'] as &$value) {
+                $value['actions'] = '<a href="' . route('show-event', ['id' => $value['id']]) . '" class="btn btn-primary btn-xs"><i class="fa fa-search" aria-hidden="true"></i> Lihat</a> <a href="' . route('edit-event', ['id' => $value['id']]) . '" class="btn btn-info btn-xs"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Ubah</a> <form method="POST" action="' . route('delete-event', ['id' => $value['id']]) . '" class="inline">' . csrf_field() . '<input name="_method" type="hidden" value="DELETE"><button type="submit" class="btn btn-danger btn-xs"><i class="fa fa-times" aria-hidden="true"></i> Hapus</button></form>';
+                unset($value['id']);
+
+                $value = array_values($value);
+            }
+            unset($value);
 		}
 
+        $data['values'] = json_encode($data['values']);
+		
 		return view('admin.event.list', ['page' => 'event', 'data' => $data]);
 	}
 
@@ -75,17 +83,15 @@ class EventController extends Controller
 		}
 
 		$eventAnswers = $eventAnswers->orderBy('event_answers.created_at', 'desc')
-			->paginate(config('constants.ITEM_PER_PAGE'));
-
-		$answerValues = $this->parseSurveyAnswer($eventAnswers->toArray()['data']);
+			->get()
+            ->toArray();
 
 		$data = [
-			'pages' => $eventAnswers,
 			'id' => 'answer-table',
 			'summary' => $event,
 			'columns' => array(),
-			'values' => $answerValues,
-			'detail' => 'edit-survey',
+			'values' => $eventAnswers,
+            'actions' => true,
 			'form' => $request->all(),
 			'users' => array_merge(
 				[['key' => '0', 'text' => 'Semua']],
@@ -103,8 +109,19 @@ class EventController extends Controller
 		];
 
 		if (count($eventAnswers) > 0) {
-			$data['columns'] = TableHelpers::getColumns($answerValues[0], ['id', 'detail', 'key']);
+			$data['columns'] = TableHelpers::getColumns($eventAnswers[0], ['id', 'detail', 'key']);
+			foreach ($data['values'] as &$value) {
+                $value['status'] = ($value['status'] == 0) ? 'Success' : 'Terminated';
+
+                $value['actions'] = '<a href="' . route('edit-survey', ['id' => $value['id']]) . '" class="btn btn-primary btn-xs"><i class="fa fa-search" aria-hidden="true"></i> Lihat</a>';
+			    unset($value['id']);
+
+                $value = array_values($value);
+            }
+            unset($value);
 		}
+
+        $data['values'] = json_encode($data['values']);
 
 		return view('admin.answer.list', ['page' => 'event', 'data' => $data]);
 	}
@@ -183,15 +200,5 @@ class EventController extends Controller
 		});
 
 		return redirect()->route('event');
-	}
-
-	private function parseSurveyAnswer($answers)
-	{
-		foreach ($answers as &$answer) {
-			$answer['status'] = ($answer['status'] == 0) ? 'Success' : 'Terminated';
-		}
-		unset($answer);
-
-		return $answers;
 	}
 }

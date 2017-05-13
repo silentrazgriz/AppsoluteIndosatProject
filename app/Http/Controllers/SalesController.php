@@ -62,17 +62,24 @@ class SalesController extends Controller
 				->select('users.id', 'email', 'name', 'gender', 'description as area', 'phone', 'balance')
 				->get()
 				->toArray(),
-			'edit' => 'edit-sales',
-			'destroy' => 'delete-sales'
+            'actions' => true
 		];
+
 		if (count($data['values']) > 0) {
 			$data['columns'] = TableHelpers::getColumns($data['values'][0], ['id']);
 			foreach ($data['values'] as &$value) {
 				$value['gender'] = ucfirst($value['gender']);
 				$value['balance'] = 'Rp. ' . number_format($value['balance']);
+				$value['actions'] = '<a href="' . route('edit-sales', ['id' => $value['id']]) . '" class="btn btn-info btn-xs"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Ubah</a> <form method="POST" action="' . route('delete-sales', ['id' => $value['id']]) . '" class="inline">' . csrf_field() . '<input name="_method" type="hidden" value="DELETE"><button type="submit" class="btn btn-danger btn-xs"><i class="fa fa-times" aria-hidden="true"></i> Hapus</button></form>';
+
+				unset($value['id']);
+
+				$value = array_values($value);
 			}
 			unset($value);
 		}
+
+		$data['values'] = json_encode($data['values']);
 
 		return view('admin.sales.list', ['page' => 'sales', 'data' => $data]);
 	}

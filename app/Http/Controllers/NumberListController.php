@@ -19,23 +19,29 @@ class NumberListController extends Controller
     public function index() {
 		$numbers = NumberList::select('id', 'number', 'is_taken as taken')
 			->orderBy('is_taken', 'asc')
-			->paginate(config('constants.ITEM_PER_PAGE'));
+            ->get()
+            ->toArray();
 
 	    $data = [
-	    	'pages' => $numbers,
 		    'id' => 'number-table',
 		    'columns' => array(),
-		    'values' => $numbers->toArray()['data'],
-		    'destroy' => 'delete-number'
+		    'values' => $numbers,
+		    'actions' => true
 	    ];
 
 	    if (count($data['values']) > 0) {
 			$data['columns'] = TableHelpers::getColumns($data['values'][0], ['id']);
 			foreach ($data['values'] as &$value) {
 				$value['taken'] = ($value['taken']) ? 'YES' : 'NO';
+				$value['destroy'] = '<form method="POST" action="' . route('delete-number', ['id' => $value['id']]) . '" class="inline">' . csrf_field() . '<input name="_method" type="hidden" value="DELETE"><button type="submit" class="btn btn-danger btn-xs"><i class="fa fa-times" aria-hidden="true"></i> Hapus</button></form>';
+
+				unset($value['id']);
+				$value = array_values($value);
 			}
 			unset($value);
 	    }
+
+	    $data['values'] = json_encode($data['values']);
 
 	    return view('admin.number.list', ['page' => 'number', 'data' => $data]);
     }
@@ -57,14 +63,15 @@ class NumberListController extends Controller
 				->withInput();
 		}
 
-	    DB::transaction(function () use ($data) {
-			$numbers = explode("\r\n", $data['number']);
-			foreach ($numbers as $number) {
-				if (!empty($number)) {
-					NumberList::create(['number' => $number]);
-				}
-			}
-	    });
+        DB::transaction(function () use ($data) {
+            $numbers = explode("\r\n", $data['number']);
+            $currentNumbers = array_column(NumberList::all()->toArray(), 'number');
+            foreach ($numbers as $number) {
+                if (!empty($number) && !in_array($number, $currentNumbers)) {
+                    NumberList::create(['number' => $number]);
+                }
+            }
+        });
 
 	    return redirect()->route('number');
     }
