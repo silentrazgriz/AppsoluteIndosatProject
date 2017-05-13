@@ -34,7 +34,7 @@ class DashboardController extends Controller
 
 		$date = [
 			'from' => $request['from'] ?? Carbon::now()->subWeek(1)->toDateString(),
-			'to' => $request['to'] ?? Carbon::now()->subDay(1)->toDateString()
+			'to' => $request['to'] ?? Carbon::now()->toDateString()
 		];
 
 		$event = Event::find($eventId);
@@ -58,7 +58,7 @@ class DashboardController extends Controller
 
 		$date = [
 			'from' => $request['from'] ?? Carbon::now()->subWeek(1)->toDateString(),
-			'to' => $request['to'] ?? Carbon::now()->subDay(1)->toDateString()
+			'to' => $request['to'] ?? Carbon::now()->toDateString()
 		];
 
 		$event = Event::find($eventId);
@@ -84,7 +84,7 @@ class DashboardController extends Controller
 
 		$date = [
 			'from' => $request['from'] ?? Carbon::now()->subWeek(1)->toDateString(),
-			'to' => $request['to'] ?? Carbon::now()->subDay(1)->toDateString()
+			'to' => $request['to'] ?? Carbon::now()->toDateString()
 		];
 
 		$event = Event::find($eventId);
@@ -132,7 +132,7 @@ class DashboardController extends Controller
 	{
 		$date = [
 			'from' => $request['from'] ?? Carbon::now()->subWeek(1)->toDateString(),
-			'to' => $request['to'] ?? Carbon::now()->subDay(1)->toDateString()
+			'to' => $request['to'] ?? Carbon::now()->toDateString()
 		];
 
 		$data = array(
@@ -152,7 +152,7 @@ class DashboardController extends Controller
 
 		$date = [
 			'from' => $request['from'] ?? Carbon::now()->subWeek(1)->toDateString(),
-			'to' => $request['to'] ?? Carbon::now()->subDay(1)->toDateString()
+			'to' => $request['to'] ?? Carbon::now()->toDateString()
 		];
 
 		$imageKeys = $this->getImageKeys($eventId);
