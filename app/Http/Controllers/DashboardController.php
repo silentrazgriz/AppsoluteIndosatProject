@@ -90,6 +90,7 @@ class DashboardController extends Controller
 		$event = Event::find($eventId);
 
 		$eventAnswers = EventAnswer::select('created_at as time', 'area as location', 'step', 'is_terminated as status', 'answer')
+		    ->where('event_id', $eventId)
 			->where('user_id', $userId)
 			->where('created_at', '>=', DateHelpers::getDateFromFormat($date['from'])->toDateTimeString())
 			->where('created_at', '<=', DateHelpers::getDateFromFormat($date['to'])->toDateTimeString())
