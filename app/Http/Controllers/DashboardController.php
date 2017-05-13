@@ -94,7 +94,8 @@ class DashboardController extends Controller
 			->where('created_at', '>=', DateHelpers::getDateFromFormat($date['from'])->toDateTimeString())
 			->where('created_at', '<=', DateHelpers::getDateFromFormat($date['to'])->toDateTimeString())
 			->orderBy('time', 'desc')
-			->paginate(config('constants.ITEM_PER_PAGE'));
+			->get()
+            ->toArray();
 
 		$data = array(
 			'eventLists' => $this->eventLists,
@@ -104,18 +105,24 @@ class DashboardController extends Controller
 			'chartData' => KpiHelpers::getAnswerReport($event, $userId, null, $date['from'], $date['to']),
 
 			'id' => 'answer-table',
-			'pages' => $eventAnswers,
 			'columns' => array(),
-			'values' => $this->processAnswerPerAgent($eventAnswers->toArray()['data'])
+			'values' => $this->processAnswerPerAgent($eventAnswers),
+            'actions' => false
 		);
 
 		if (count($data['values']) > 0) {
 			$data['columns'] = TableHelpers::getColumns($data['values'][0], ['id']);
 			foreach ($data['values'] as &$value) {
 				$value['status'] = ($value['status']) ? 'Failed' : 'Success';
+
+                unset($value['id']);
+
+                $value = array_values($value);
 			}
 			unset($value);
 		}
+
+		$data['values'] = json_encode($data['values']);
 
 		return view('admin.dashboard.agent', ['page' => 'dashboard-agent', 'data' => $data]);
 	}

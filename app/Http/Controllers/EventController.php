@@ -52,7 +52,7 @@ class EventController extends Controller
 		}
 
         $data['values'] = json_encode($data['values']);
-		
+
 		return view('admin.event.list', ['page' => 'event', 'data' => $data]);
 	}
 
@@ -114,6 +114,7 @@ class EventController extends Controller
                 $value['status'] = ($value['status'] == 0) ? 'Success' : 'Terminated';
 
                 $value['actions'] = '<a href="' . route('edit-survey', ['id' => $value['id']]) . '" class="btn btn-primary btn-xs"><i class="fa fa-search" aria-hidden="true"></i> Lihat</a>';
+
 			    unset($value['id']);
 
                 $value = array_values($value);
