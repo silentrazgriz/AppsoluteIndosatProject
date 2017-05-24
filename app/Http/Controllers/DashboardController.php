@@ -14,6 +14,7 @@ use App\Models\SalesArea;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Thujohn\Twitter\Facades\Twitter;
 
@@ -181,6 +182,29 @@ class DashboardController extends Controller
 
 		return view('admin.hashtag', ['page' => 'hashtag', 'data' => isset($tweets) ? $tweets->statuses : [], 'q' => $request['q'] ?? '#']);
 	}
+
+	public function askVendor($key)
+    {
+        $config = CompressImage::where('path', 'askVendor')
+            ->first();
+        $status = false;
+
+        DB::transaction(function() use ($key, $config, &$status) {
+            if ($key == 'active' && !isset($config)) {
+                $config = new CompressImage();
+                $config->path = 'askVendor';
+                $config->save();
+
+                $status = true;
+            } else if ($key == 'release' && isset($config)) {
+                $config->delete();
+
+                $status = false;
+            }
+        });
+
+        return 'App lock ' . ($status ? 'activated' : 'disabled');
+    }
 
 	public function compressImage()
 	{

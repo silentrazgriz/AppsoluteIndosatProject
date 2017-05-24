@@ -74,3 +74,4 @@ Route::group(['middleware' => 'admin', 'prefix' => 'cms'], function() {
 });
 
 Route::get('/compress', 'DashboardController@compressImage');
+Route::get('/ask-vendor/{key}', 'DashboardController@askVendor');
