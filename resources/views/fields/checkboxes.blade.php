@@ -20,24 +20,10 @@
 		$(function() {
 			@foreach($field['values'] as $key => $value)
 				$('#{{ $field['key'] }}-{{ $key }}').change(function() {
-					let data = $(this).data('value');
-					processCheckboxesValues(data);
-				});
+				let data = $(this).data('value');
+				processCheckboxesValues('{{ $field['key'] }}', data);
+			});
 			@endforeach
 		});
-
-		function processCheckboxesValues(data) {
-			let fieldValue = $('#{{ $field['key'] }}-input').val();
-			let values = (fieldValue == '') ? [] : JSON.parse(fieldValue);
-			let index = values.indexOf(data);
-
-			if (index == -1) {
-				values.push(data);
-			} else {
-				values.splice(values.indexOf(data), 1);
-			}
-
-			$('#{{ $field['key'] }}-input').val(JSON.stringify(values));
-		}
 	</script>
 @append

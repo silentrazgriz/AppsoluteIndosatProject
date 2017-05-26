@@ -29,11 +29,11 @@
 					@endif
 				@endforeach
 				<div class="form-group text-center">
-				@if ($key == count($event['survey']) - 1)
-					<button type="submit" id="btn-submit" class="btn btn-success border-round">SUBMIT</button>
-				@else
-					<button type="button" class="btn btn-primary btn-next border-round" data-next-step="{{ $key+1 }}">NEXT <i class="fa fa-arrow-circle-right"></i></button>
-				@endif
+					@if ($key == count($event['survey']) - 1)
+						<button type="submit" id="btn-submit" class="btn btn-success border-round">SUBMIT</button>
+					@else
+						<button type="button" class="btn btn-primary btn-next border-round" data-next-step="{{ $key+1 }}">NEXT <i class="fa fa-arrow-circle-right"></i></button>
+					@endif
 				</div>
 			</div>
 		@endforeach
@@ -45,11 +45,11 @@
 	<script>
 		let surveyData = {!! json_encode($event['survey']) !!};
 		let step = 0;
-
+		
 		$(function() {
 			// Set first step as first form
 			showStep(step);
-
+			
 			$('.btn-next').click(function(e) {
 				if (isRequiredFilled()) {
 					let next = $(this).data('next-step');
@@ -62,7 +62,7 @@
 				e.preventDefault();
 			});
 		});
-
+		
 		function getErrorMessage() {
 			let selectors = getRequiredSelectors();
 			if ($(selectors.text).length > 0) {
@@ -72,7 +72,7 @@
 			}
 			return '';
 		}
-
+		
 		function showStep(index) {
 			let target = surveyData[index];
 			$('.survey-step').hide();
@@ -80,23 +80,37 @@
 			$('#step-index').html((index + 1));
 			$('#step-description').html(target.description);
 		}
-
+		
 		function isRequiredFilled() {
 			let selectors = getRequiredSelectors();
 			return ($(selectors.text).length != 0 && $(selectors.text).val().length != 0) ||
 				($(selectors.image).length != 0 && $(selectors.image).val().length != 0) ||
 				($(selectors.text).length == 0 && $(selectors.image).length == 0);
 		}
-
+		
 		function getLabelTextFromInput(id) {
 			return $('label[for=' + id + ']').html();
 		}
-
+		
 		function getRequiredSelectors() {
 			return {
 				text: '#' + surveyData[step]['key'] + ' input[type=text].required',
 				image: '#' + surveyData[step]['key'] + ' input[type=file].required'
 			};
+		}
+		
+		function processCheckboxesValues(element, data) {
+			let fieldValue = $('#' + element + '-input').val();
+			let values = (fieldValue == '') ? [] : JSON.parse(fieldValue);
+			let index = values.indexOf(data);
+			
+			if (index == -1) {
+				values.push(data);
+			} else {
+				values.splice(values.indexOf(data), 1);
+			}
+			
+			$('#' + element + '-input').val(JSON.stringify(values));
 		}
 	</script>
 @append
