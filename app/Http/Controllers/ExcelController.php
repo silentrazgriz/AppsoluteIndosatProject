@@ -109,11 +109,13 @@ class ExcelController
 			$result['buddies'] = $answer['user']['name'];
 			$result['area'] = $answer['area'];
 
-			$result['new_number'] = strval($this->splitColumnArray($answer['answer']['sales'], 'new_number', '|'));
-			$result['old_number'] = strval($this->splitColumnArray($answer['answer']['sales'], 'old_number', '|'));
-			$result['package'] = $this->splitColumnArray($answer['answer']['sales'], 'package', "|");
-			$result['voucher'] = $this->splitVoucherData($answer['answer']['sales']);
-			unset($answer['sales']);
+			if (isset($answer['answer']['sales'])) {
+				$result['new_number'] = strval($this->splitColumnArray($answer['answer']['sales'], 'new_number', '|'));
+				$result['old_number'] = strval($this->splitColumnArray($answer['answer']['sales'], 'old_number', '|'));
+				$result['package'] = $this->splitColumnArray($answer['answer']['sales'], 'package', "|");
+				$result['voucher'] = $this->splitVoucherData($answer['answer']['sales']);
+				unset($answer['sales']);
+			}
 
 			foreach ($answer['answer'] as $key => &$value) {
 				if (!in_array($key, $unset)) {

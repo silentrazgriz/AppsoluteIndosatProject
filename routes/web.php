@@ -32,6 +32,7 @@ Route::group(['middleware' => 'admin', 'prefix' => 'cms'], function() {
     Route::get('/dashboard/agent', 'DashboardController@dashboardPerAgent')->name('dashboard-agent');
 
 	Route::get('/survey/{id}/edit', 'SurveyController@edit')->name('edit-survey');
+	Route::get('/survey/number/{number}', 'SurveyController@showByNumber')->name('show-survey-by-number');
 	Route::put('/survey/{id}', 'SurveyController@update')->name('put-survey');
 
     Route::get('/report', 'DashboardController@report')->name('report');

@@ -327,7 +327,7 @@ class DashboardController extends Controller
 	private function getEventLists()
 	{
 		return Event::select('id as key', 'name as text')
-			->orderBy('created_at', 'asc')
+			->orderBy('created_at', 'desc')
 			->get()
 			->toArray();
 	}

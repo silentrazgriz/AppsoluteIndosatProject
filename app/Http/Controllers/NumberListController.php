@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\TableHelpers;
+use App\Models\EventAnswer;
 use App\Models\NumberList;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -33,13 +34,19 @@ class NumberListController extends Controller
 			$data['columns'] = TableHelpers::getColumns($data['values'][0], ['id']);
 			foreach ($data['values'] as &$value) {
 				$value['taken'] = ($value['taken']) ? 'YES' : 'NO';
-				$value['destroy'] = '<form method="POST" action="' . route('delete-number', ['id' => $value['id']]) . '" class="inline">' . csrf_field() . '<input name="_method" type="hidden" value="DELETE"><button type="submit" class="btn btn-danger btn-xs"><i class="fa fa-times" aria-hidden="true"></i> Hapus</button></form>';
+				$value['actions'] = '<form method="POST" action="' . route('delete-number', ['id' => $value['id']]) . '" class="inline">' . csrf_field() . '<input name="_method" type="hidden" value="DELETE"><button type="submit" class="btn btn-danger btn-xs"><i class="fa fa-times" aria-hidden="true"></i> Hapus</button></form>';
+
+				if ($value['taken'] == 'YES') {
+					$value['actions'] = '<a href="' . route('show-survey-by-number', ['number' => $value['number']]) . '" class="btn btn-primary btn-xs"><i class="fa fa-search"></i> Lihat</a> ' . $value['actions'];
+				}
 
 				unset($value['id']);
 				$value = array_values($value);
 			}
 			unset($value);
 	    }
+
+	    dd($data['values']);
 
 	    $data['values'] = json_encode($data['values']);
 

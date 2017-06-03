@@ -61,6 +61,18 @@ class SurveyController extends Controller
 		return view('web.survey', $data);
 	}
 
+	public function showByNumber($number)
+	{
+		$eventAnswer = EventAnswer::where('answer', 'like', '%' . $number . '%')
+			->first();
+
+		if (isset($eventAnswer)) {
+			return redirect()->route('edit-survey', ['id' => $eventAnswer->id]);
+		}
+
+		return redirect()->back();
+	}
+
 	public function store($eventId, Request $request)
 	{
 		$event = Event::find($eventId)->toArray();
