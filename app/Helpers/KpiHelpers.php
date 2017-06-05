@@ -141,9 +141,11 @@ class KpiHelpers
 		}
 
 		foreach ($answers as $answer) {
-			if ($question['type'] == 'checkboxes' && isset($answer['answer'][$question['key']])) {
+			if ($question['type'] == 'checkboxes' && isset($answer['answer'][$question['key']]) && is_array($answer['answer'][$question['key']])) {
 				foreach ($answer['answer'][$question['key']] as $value) {
-					$data[$value]++;
+					if (isset($data[$value])) {
+						$data[$value]++;
+					}
 				}
 			} else if (isset($answer['answer'][$question['key']])) {
 				$data[$answer['answer'][$question['key']]]++;
@@ -219,17 +221,25 @@ class KpiHelpers
 					$buyPackage = true;
 					$buyVoucher = false;
 
-					$packageValue = explode('_', $sale['package']);
-					if (array_pop($packageValue) == 0) {
+					if (isset($sale['package'])) {
+						$packageValue = explode('_', $sale['package']);
+						if (array_pop($packageValue) == 0) {
+							$buyPackage = false;
+						}
+
+						if (isset($packages[strtolower($sale['package'])])) {
+							$packages[strtolower($sale['package'])][$date]++;
+						}
+					} else {
 						$buyPackage = false;
 					}
-
-					$packages[strtolower($sale['package'])][$date]++;
 
 					if (isset($sale['voucher'])) {
 						$buyVoucher = true;
 						foreach ($sale['voucher'] as $voucher) {
-							$vouchers[$voucher][$date]++;
+							if (isset($vouchers[$voucher])) {
+								$vouchers[$voucher][$date]++;
+							}
 						}
 					}
 
@@ -325,7 +335,7 @@ class KpiHelpers
 					$data = self::kpiToChartFormat($data, $userKpis, $description);
 				}
 
-				array_push($labels, $startDate->format($chartDateFormat));
+				array_push($labels, $description);
 
 				$startDate->addDay(1);
 			}
