@@ -17,20 +17,20 @@ class NumberListController extends Controller
 		]);
 	}
 
-    public function index() {
+	public function index() {
 		$numbers = NumberList::select('id', 'number', 'is_taken as taken')
 			->orderBy('is_taken', 'asc')
-            ->get()
-            ->toArray();
+			->get()
+			->toArray();
 
-	    $data = [
-		    'id' => 'number-table',
-		    'columns' => array(),
-		    'values' => $numbers,
-		    'actions' => true
-	    ];
+		$data = [
+			'id' => 'number-table',
+			'columns' => array(),
+			'values' => $numbers,
+			'actions' => true
+		];
 
-	    if (count($data['values']) > 0) {
+		if (count($data['values']) > 0) {
 			$data['columns'] = TableHelpers::getColumns($data['values'][0], ['id']);
 			foreach ($data['values'] as &$value) {
 				$value['taken'] = ($value['taken']) ? 'YES' : 'NO';
@@ -44,20 +44,18 @@ class NumberListController extends Controller
 				$value = array_values($value);
 			}
 			unset($value);
-	    }
+		}
 
-	    dd($data['values']);
+		$data['values'] = json_encode($data['values']);
 
-	    $data['values'] = json_encode($data['values']);
+		return view('admin.number.list', ['page' => 'number', 'data' => $data]);
+	}
 
-	    return view('admin.number.list', ['page' => 'number', 'data' => $data]);
-    }
+	public function create() {
+		return view("admin.number.create", ['page' => 'create-number']);
+	}
 
-    public function create() {
-	    return view("admin.number.create", ['page' => 'create-number']);
-    }
-
-    public function store(Request $request) {
+	public function store(Request $request) {
 		$data = $request->only([
 			'number'
 		]);
@@ -70,24 +68,24 @@ class NumberListController extends Controller
 				->withInput();
 		}
 
-        DB::transaction(function () use ($data) {
-            $numbers = explode("\r\n", $data['number']);
-            $currentNumbers = array_column(NumberList::all()->toArray(), 'number');
-            foreach ($numbers as $number) {
-                if (!empty($number) && !in_array($number, $currentNumbers)) {
-                    NumberList::create(['number' => $number]);
-                }
-            }
-        });
+		DB::transaction(function () use ($data) {
+			$numbers = explode("\r\n", $data['number']);
+			$currentNumbers = array_column(NumberList::all()->toArray(), 'number');
+			foreach ($numbers as $number) {
+				if (!empty($number) && !in_array($number, $currentNumbers)) {
+					NumberList::create(['number' => $number]);
+				}
+			}
+		});
 
-	    return redirect()->route('number');
-    }
+		return redirect()->route('number');
+	}
 
-    public function destroy($id) {
-	    DB::transaction(function () use ($id) {
-		    NumberList::destroy($id);
-	    });
+	public function destroy($id) {
+		DB::transaction(function () use ($id) {
+			NumberList::destroy($id);
+		});
 
-	    return redirect()->route('number');
-    }
+		return redirect()->route('number');
+	}
 }

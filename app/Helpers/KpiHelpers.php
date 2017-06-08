@@ -147,7 +147,7 @@ class KpiHelpers
 						$data[$value]++;
 					}
 				}
-			} else if (isset($answer['answer'][$question['key']])) {
+			} else if (isset($answer['answer'][$question['key']]) && isset($data[$answer['answer'][$question['key']]])) {
 				$data[$answer['answer'][$question['key']]]++;
 			}
 		}

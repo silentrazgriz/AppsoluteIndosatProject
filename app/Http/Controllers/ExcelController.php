@@ -46,11 +46,11 @@ class ExcelController
 			if (isset($answer['answer']['sales'])) {
 				foreach ($answer['answer']['sales'] as $sale) {
 					array_push($result, [
-						'date' => Carbon::parse($answer['created_at'])->toDateString(),
-						'time' => Carbon::parse($answer['created_at'])->toTimeString(),
+						'date' => Carbon::parse($answer['date'])->toDateString(),
+						'time' => Carbon::parse($answer['date'])->toTimeString(),
 						'new_number' => $sale['new_number'],
 						'old_number' => $sale['old_number'],
-						'package' => $sale['package'],
+						'package' => isset($sale['package']) ? $sale['package'] : '-',
 						'voucher' => implode(";", $sale['voucher'])
 					]);
 				}
@@ -76,6 +76,7 @@ class ExcelController
 		$to = $request['to'];
 		$salesAreaId = $request['sales_area_id'];
 		$userId = $request['user_id'];
+		$isSales = false;
 
 		$eventAnswers = EventAnswer::with('user')
 			->where('event_id', $eventId)
@@ -99,6 +100,9 @@ class ExcelController
 			if (isset($question['key']) && $question['type'] == 'image') {
 				array_push($unset, $question['key']);
 			}
+			if (isset($question['key']) && $question['type'] == 'number_sales') {
+				$isSales = true;
+			}
 		}
 
 		foreach ($eventAnswers as &$answer) {
@@ -115,6 +119,11 @@ class ExcelController
 				$result['package'] = $this->splitColumnArray($answer['answer']['sales'], 'package', "|");
 				$result['voucher'] = $this->splitVoucherData($answer['answer']['sales']);
 				unset($answer['sales']);
+			} else if ($isSales) {
+				$result['new_number'] = '-';
+				$result['old_number'] = '-';
+				$result['package'] = '-';
+				$result['voucher'] = '-';
 			}
 
 			foreach ($answer['answer'] as $key => &$value) {
@@ -122,7 +131,7 @@ class ExcelController
 					if (is_array($value)) {
 						$result[$key] = implode(";", $value);
 					} else {
-						$result[$key] = $value;
+						$result[$key] = $this->cleanEmoji($value);
 					}
 				}
 			}
@@ -154,7 +163,7 @@ class ExcelController
 
 		$event = Event::find($eventId)->toArray();
 		$startDate = DateHelpers::getDateFromFormat($from);
-		$endDate = DateHelpers::getDateFromFormat($to)->addDay(1);
+		$endDate = DateHelpers::getDateFromFormat($to);
 
 		while ($startDate->diffInDays($endDate) != 0) {
 			$date = $startDate->format(config('constants.DATE_FORMAT.DEFAULT'));
@@ -207,7 +216,7 @@ class ExcelController
 		if (isset($array)) {
 			$temp = implode($delimiter, array_column($array, $key));
 			$result = (count($temp) != count($array) - 1) ? $temp : '-';
- 		}
+		}
 		return (!empty($result)) ? $result : '-';
 	}
 
@@ -297,5 +306,30 @@ class ExcelController
 			->setCategory("Report Leaderboard");
 
 		return $excel;
+	}
+
+	private function cleanEmoji($string)
+	{
+		// Match Emoticons
+		$regex_emoticons = '/[\x{1F600}-\x{1F64F}]/u';
+		$clear_string = preg_replace($regex_emoticons, '', $string);
+
+		// Match Miscellaneous Symbols and Pictographs
+		$regex_symbols = '/[\x{1F300}-\x{1F5FF}]/u';
+		$clear_string = preg_replace($regex_symbols, '', $clear_string);
+
+		// Match Transport And Map Symbols
+		$regex_transport = '/[\x{1F680}-\x{1F6FF}]/u';
+		$clear_string = preg_replace($regex_transport, '', $clear_string);
+
+		// Match Miscellaneous Symbols
+		$regex_misc = '/[\x{2600}-\x{26FF}]/u';
+		$clear_string = preg_replace($regex_misc, '', $clear_string);
+
+		// Match Dingbats
+		$regex_dingbats = '/[\x{2700}-\x{27BF}]/u';
+		$clear_string = preg_replace($regex_dingbats, '', $clear_string);
+
+		return $clear_string;
 	}
 }

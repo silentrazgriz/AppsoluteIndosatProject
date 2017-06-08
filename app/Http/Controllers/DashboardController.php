@@ -91,13 +91,13 @@ class DashboardController extends Controller
 		$event = Event::find($eventId);
 
 		$eventAnswers = EventAnswer::select('created_at as time', 'area as location', 'step', 'is_terminated as status', 'answer')
-		    ->where('event_id', $eventId)
+			->where('event_id', $eventId)
 			->where('user_id', $userId)
 			->where('created_at', '>=', DateHelpers::getDateFromFormat($date['from'])->toDateTimeString())
 			->where('created_at', '<=', DateHelpers::getDateFromFormat($date['to'])->toDateTimeString())
 			->orderBy('time', 'desc')
 			->get()
-            ->toArray();
+			->toArray();
 
 		$data = array(
 			'eventLists' => $this->eventLists,
@@ -109,7 +109,7 @@ class DashboardController extends Controller
 			'id' => 'answer-table',
 			'columns' => array(),
 			'values' => $this->processAnswerPerAgent($eventAnswers),
-            'actions' => false
+			'actions' => false
 		);
 
 		if (count($data['values']) > 0) {
@@ -117,9 +117,9 @@ class DashboardController extends Controller
 			foreach ($data['values'] as &$value) {
 				$value['status'] = ($value['status']) ? 'Failed' : 'Success';
 
-                unset($value['id']);
+				unset($value['id']);
 
-                $value = array_values($value);
+				$value = array_values($value);
 			}
 			unset($value);
 		}
@@ -184,27 +184,27 @@ class DashboardController extends Controller
 	}
 
 	public function askVendor($key)
-    {
-        $config = CompressImage::where('path', 'askVendor')
-            ->first();
-        $status = false;
+	{
+		$config = CompressImage::where('path', 'askVendor')
+			->first();
+		$status = false;
 
-        DB::transaction(function() use ($key, $config, &$status) {
-            if ($key == 'active' && !isset($config)) {
-                $config = new CompressImage();
-                $config->path = 'askVendor';
-                $config->save();
+		DB::transaction(function() use ($key, $config, &$status) {
+			if ($key == 'active' && !isset($config)) {
+				$config = new CompressImage();
+				$config->path = 'askVendor';
+				$config->save();
 
-                $status = true;
-            } else if ($key == 'release' && isset($config)) {
-                $config->delete();
+				$status = true;
+			} else if ($key == 'release' && isset($config)) {
+				$config->delete();
 
-                $status = false;
-            }
-        });
+				$status = false;
+			}
+		});
 
-        return 'App lock ' . ($status ? 'activated' : 'disabled');
-    }
+		return 'App lock ' . ($status ? 'activated' : 'disabled');
+	}
 
 	public function compressImage()
 	{
